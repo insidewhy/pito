@@ -7,8 +7,9 @@
 // function todo: chown
 // function todo: fchownat
 
-int open(const char *pathname, int flags) {
-}
+// dunno aobut this
+// int open(const char *pathname, int flags) {
+// }
 
 int open(const char *pathname, int flags, mode_t mode) {
 }
