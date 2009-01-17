@@ -1,5 +1,7 @@
 #include <sys/types.h>
 
+extern "C" {
+
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
 // function todo: chmod
@@ -58,4 +60,6 @@ int creat(const char *pathname, mode_t mode) {
 // extra intercepts
 uid_t getuid(void) {
     return 0;
+}
+
 }
