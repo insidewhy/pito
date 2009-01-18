@@ -9,6 +9,6 @@ set(SHARE_DIR_SUFFIX ${CONFIG_DIR_SUFFIX})
 include(Installer)
 configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_BINARY_DIR}/config.hpp)
 
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/..)
 
 add_subdirectory(interceptor)
