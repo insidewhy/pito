@@ -6,10 +6,12 @@
 // function todo: fchownat
 
 // see what to do about optional argument
-int open(const char *pathname, int flags, mode_t mode);
+int open(const char *pathname, int flags, mode_t mode) {
+}
 
 // function todo: openat
-int creat(const char *pathname, mode_t mode);
+int creat(const char *pathname, mode_t mode) {
+}
 
 // function todo: fopen
 // function todo: lchown
