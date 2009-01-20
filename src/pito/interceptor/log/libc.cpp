@@ -132,12 +132,12 @@ int open(const char *pathname, int flags, mode_t mode) {
 // char *getcwd(char *buf, size_t size) {
 //     return PITO_SUPER(getcwd)(buf, size);
 // }
-// 
-// int open64(const char *pathname, int flags, mode_t mode) {
-//     std::cout << "wrapping open64(" << pathname << ", " << flags << ", " << mode << ")\n";
-//     return PITO_SUPER(open)(pathname, flags, mode);
-// }
-// 
+
+int open64(const char *pathname, int flags, mode_t mode) {
+    std::cout << "wrapping open64(" << pathname << ", " << flags << ", " << mode << ")\n";
+    return PITO_SUPER(open)(pathname, flags, mode);
+}
+
 // int openat64(int dirfd, const char *pathname, int flags, mode_t mode) {
 //     return PITO_SUPER(openat64)(dirfd, pathname, flags, mode);
 // }

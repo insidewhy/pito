@@ -10,9 +10,9 @@ namespace system_call {
 
 template <>
 struct SystemCall<system_call::open> 
-  : SystemCallHelper<library::c, int, const char *, int, mode_t> 
+  : SystemCallHelper<library::c, int(const char *, int, mode_t)> 
 {
-    SystemCall() : SystemCallHelper<library::c, int, const char *, int, mode_t>("open") {}
+    SystemCall() : SystemCallHelper<library::c, int(const char *, int, mode_t)>("open") {}
 };
 
 } }

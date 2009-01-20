@@ -15,7 +15,10 @@ template <class Tag>
 struct SystemCall;
 
 template <class LibraryTag, class Ret, class... Args>
-struct SystemCallHelper {
+struct SystemCallHelper;
+
+template <class LibraryTag, class Ret, class... Args>
+struct SystemCallHelper<LibraryTag, Ret (Args...)> {
     typedef Ret (*call_t)(Args...);
 
     SystemCallHelper(std::string const& name) : call_(0), name_(name) {}
