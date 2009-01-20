@@ -1,24 +1,27 @@
-#ifndef _PITO_INTERCEPTOR_LIBRARY_
-#define _PITO_INTERCEPTOR_LIBRARY_
+#ifndef _PITO_INTERCEPTOR_LIBRARY_HPP_
+#define _PITO_INTERCEPTOR_LIBRARY_HPP_
 
 #include <boost/pool/detail/singleton.hpp>
 
-namespace pito { namespace interceptor { namespace library {
+namespace pito { namespace interceptor { 
+
+namespace library {
+    struct c {};
+}
 
 using boost::details::pool::singleton_default;
 
-struct c {};
+class LibraryBase {
+    void *handler_;
+};
 
 template <class LibraryName>
 struct Library;
 
 template <>
-struct Library<c> : singleton_default< Library<c> > {
-
-  private:
-    void *handler_;
+struct Library<library::c> : LibraryBase, singleton_default< Library<library::c> > {
 };
 
-} } }
+} }
 
 #endif
