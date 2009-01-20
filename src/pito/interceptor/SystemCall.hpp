@@ -5,10 +5,14 @@
 
 namespace pito { namespace interceptor {
 
-template <class Library>
+template <class LibraryTag>
 struct SystemCall;
 
-struct SystemCallAbstract {
+struct SystemCallHelper {
+};
+
+template <>
+struct SystemCall<library::c> : SystemCallHelper {
 };
 
 } }

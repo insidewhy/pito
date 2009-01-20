@@ -1,7 +1,6 @@
 #include <pito/interceptor/SystemCall.hpp>
 
 #include <sys/types.h>
-#include <dlfcn.h>
 
 extern "C" {
 
