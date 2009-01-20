@@ -38,13 +38,6 @@ struct SystemCallHelper {
     std::string name_;
 };
 
-template <>
-struct SystemCall<system_call::open> 
-  : SystemCallHelper<library::c, int, const char *, int, mode_t> 
-{
-    SystemCall() : SystemCallHelper<library::c, int, const char *, int, mode_t>("open") {}
-};
-
 namespace system_call {
     template <class Tag>
     SystemCall<Tag>& instance() {
@@ -53,5 +46,7 @@ namespace system_call {
 }
 
 } }
+
+#define PITO_SUPER(calltype)   system_call::instance<system_call:: calltype >()
 
 #endif
