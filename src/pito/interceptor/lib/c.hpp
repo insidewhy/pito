@@ -54,299 +54,304 @@ namespace system_call {
     struct lutimes {};
 };
 
+// super experts can override this!
+#ifndef PITO_SYSTEMCALL_BASE
+#define PITO_SYSTEMCALL_BASE  SystemCallHelper
+#endif
+
 template <>
 struct SystemCall<system_call::chmod>
-  : SystemCallHelper<library::c, int(const char *, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, mode_t)>("chmod") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>("chmod") {}
 };
 
 template <>
 struct SystemCall<system_call::fchmod>
-  : SystemCallHelper<library::c, int(int, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, mode_t)>("fchmod") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, mode_t)>("fchmod") {}
 };
 
 template <>
 struct SystemCall<system_call::fchmodat>
-  : SystemCallHelper<library::c, int(int, const char *, mode_t, int)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t, int)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, mode_t, int)>("fchmodat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t, int)>("fchmodat") {}
 };
 
 template <>
 struct SystemCall<system_call::chown>
-  : SystemCallHelper<library::c, int(const char *, uid_t, gid_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, uid_t, gid_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, uid_t, gid_t)>("chown") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, uid_t, gid_t)>("chown") {}
 };
 
 template <>
 struct SystemCall<system_call::fchown>
-  : SystemCallHelper<library::c, int(int, uid_t, gid_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, uid_t, gid_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, uid_t, gid_t)>("fchown") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, uid_t, gid_t)>("fchown") {}
 };
 
 template <>
 struct SystemCall<system_call::fchownat>
-  : SystemCallHelper<library::c, int(int, const char *, uid_t, gid_t, int)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, uid_t, gid_t, int)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, uid_t, gid_t, int)>("fchownat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, uid_t, gid_t, int)>("fchownat") {}
 };
 
 template <>
 struct SystemCall<system_call::open>
-  : SystemCallHelper<library::c, int(const char *, int, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, int, mode_t)>("open") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int, mode_t)>("open") {}
 };
 
 template <>
 struct SystemCall<system_call::openat>
-  : SystemCallHelper<library::c, int(int, const char *, int, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, int, mode_t)>("openat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, mode_t)>("openat") {}
 };
 
 template <>
 struct SystemCall<system_call::creat>
-  : SystemCallHelper<library::c, int(const char *, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, mode_t)>("creat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>("creat") {}
 };
 
 template <>
 struct SystemCall<system_call::fopen>
-  : SystemCallHelper<library::c, FILE *(const char *, const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, FILE *(const char *, const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, FILE *(const char *, const char *)>("fopen") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, FILE *(const char *, const char *)>("fopen") {}
 };
 
 template <>
 struct SystemCall<system_call::lchown>
-  : SystemCallHelper<library::c, int(const char *, uid_t, gid_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, uid_t, gid_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, uid_t, gid_t)>("lchown") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, uid_t, gid_t)>("lchown") {}
 };
 
 template <>
 struct SystemCall<system_call::link>
-  : SystemCallHelper<library::c, int(const char *, const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, const char *)>("link") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const char *)>("link") {}
 };
 
 template <>
 struct SystemCall<system_call::linkat>
-  : SystemCallHelper<library::c, int(int, const char *, int, const char *, int)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, const char *, int)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, int, const char *, int)>("linkat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, const char *, int)>("linkat") {}
 };
 
 template <>
 struct SystemCall<system_call::mkdir>
-  : SystemCallHelper<library::c, int(const char *, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, mode_t)>("mkdir") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>("mkdir") {}
 };
 
 template <>
 struct SystemCall<system_call::mkdirat>
-  : SystemCallHelper<library::c, int(int, const char *, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, mode_t)>("mkdirat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t)>("mkdirat") {}
 };
 
 template <>
 struct SystemCall<system_call::opendir>
-  : SystemCallHelper<library::c, DIR *(const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, DIR *(const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, DIR *(const char *)>("opendir") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, DIR *(const char *)>("opendir") {}
 };
 
 template <>
 struct SystemCall<system_call::mknod>
-  : SystemCallHelper<library::c, int(const char *, mode_t, dev_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t, dev_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, mode_t, dev_t)>("mknod") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t, dev_t)>("mknod") {}
 };
 
 template <>
 struct SystemCall<system_call::mknodat>
-  : SystemCallHelper<library::c, int(int, const char *, mode_t, dev_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t, dev_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, mode_t, dev_t)>("mknodat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t, dev_t)>("mknodat") {}
 };
 
 // function todo: __xmknod
 template <>
 struct SystemCall<system_call::mkfifo>
-  : SystemCallHelper<library::c, int(const char *, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, mode_t)>("mkfifo") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>("mkfifo") {}
 };
 
 template <>
 struct SystemCall<system_call::mkfifoat>
-  : SystemCallHelper<library::c, int(int, const char *, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, mode_t)>("mkfifoat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, mode_t)>("mkfifoat") {}
 };
 
 template <>
 struct SystemCall<system_call::access>
-  : SystemCallHelper<library::c, int(const char *, int)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, int)>("access") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int)>("access") {}
 };
 
 template <>
 struct SystemCall<system_call::faccessat>
-  : SystemCallHelper<library::c, int(int, const char *, int, int)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, int)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, int, int)>("faccessat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, int)>("faccessat") {}
 };
 
 template <>
 struct SystemCall<system_call::rename>
-  : SystemCallHelper<library::c, int(const char *, const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, const char *)>("rename") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const char *)>("rename") {}
 };
 
 template <>
 struct SystemCall<system_call::renameat>
-  : SystemCallHelper<library::c, int(int, const char *, int, const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, int, const char *)>("renameat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, const char *)>("renameat") {}
 };
 
 template <>
 struct SystemCall<system_call::rmdir>
-  : SystemCallHelper<library::c, int(const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *)>("rmdir") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *)>("rmdir") {}
 };
 
 template <>
 struct SystemCall<system_call::symlink>
-  : SystemCallHelper<library::c, int(const char *, const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, const char *)>("symlink") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const char *)>("symlink") {}
 };
 
 template <>
 struct SystemCall<system_call::symlinkat>
-  : SystemCallHelper<library::c, int(const char *, int, const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int, const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, int, const char *)>("symlinkat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int, const char *)>("symlinkat") {}
 };
 
 template <>
 struct SystemCall<system_call::truncate>
-  : SystemCallHelper<library::c, int(const char *, off_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, off_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, off_t)>("truncate") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, off_t)>("truncate") {}
 };
 
 template <>
 struct SystemCall<system_call::unlink>
-  : SystemCallHelper<library::c, int(const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *)>("unlink") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *)>("unlink") {}
 };
 
 template <>
 struct SystemCall<system_call::unlinkat>
-  : SystemCallHelper<library::c, int(int, const char *, int)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, int)>("unlinkat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int)>("unlinkat") {}
 };
 
 template <>
 struct SystemCall<system_call::getcwd>
-  : SystemCallHelper<library::c, char *(char *, size_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, char *(char *, size_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, char *(char *, size_t)>("getcwd") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, char *(char *, size_t)>("getcwd") {}
 };
 
 template <>
 struct SystemCall<system_call::open64>
-  : SystemCallHelper<library::c, int(const char *, int, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, int, mode_t)>("open64") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, int, mode_t)>("open64") {}
 };
 
 template <>
 struct SystemCall<system_call::openat64>
-  : SystemCallHelper<library::c, int(int, const char *, int, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, int, mode_t)>("openat64") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, int, mode_t)>("openat64") {}
 };
 
 template <>
 struct SystemCall<system_call::creat64>
-  : SystemCallHelper<library::c, int(const char *, mode_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, mode_t)>("creat64") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, mode_t)>("creat64") {}
 };
 
 template <>
 struct SystemCall<system_call::fopen64>
-  : SystemCallHelper<library::c, FILE *(const char *, const char *)>
+  : PITO_SYSTEMCALL_BASE<library::c, FILE *(const char *, const char *)>
 {
-    SystemCall() : SystemCallHelper<library::c, FILE *(const char *, const char *)>("fopen64") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, FILE *(const char *, const char *)>("fopen64") {}
 };
 
 template <>
 struct SystemCall<system_call::truncate64>
-  : SystemCallHelper<library::c, int(const char *, __off64_t)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, __off64_t)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, __off64_t)>("truncate64") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, __off64_t)>("truncate64") {}
 };
 
 template <>
 struct SystemCall<system_call::execve>
-  : SystemCallHelper<library::c, int(const char *, char *const argv[], char *const[])>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, char *const argv[], char *const[])>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, char *const argv[], char *const[])>("execve") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, char *const argv[], char *const[])>("execve") {}
 };
 
 template <>
 struct SystemCall<system_call::utime>
-  : SystemCallHelper<library::c, int(const char *, const struct utimbuf *)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const struct utimbuf *)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, const struct utimbuf *)>("utime") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const struct utimbuf *)>("utime") {}
 };
 
 template <>
 struct SystemCall<system_call::utimes>
-  : SystemCallHelper<library::c, int(const char *, const struct timeval[2])>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const struct timeval[2])>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, const struct timeval[2])>("utimes") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const struct timeval[2])>("utimes") {}
 };
 
 template <>
 struct SystemCall<system_call::utimensat>
-  : SystemCallHelper<library::c, int(int, const char *, const struct timespec[2], int)>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, const struct timespec[2], int)>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, const struct timespec[2], int)>("utimensat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, const struct timespec[2], int)>("utimensat") {}
 };
 
 template <>
 struct SystemCall<system_call::futimesat>
-  : SystemCallHelper<library::c, int(int, const char *, const struct timeval[2])>
+  : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, const struct timeval[2])>
 {
-    SystemCall() : SystemCallHelper<library::c, int(int, const char *, const struct timeval[2])>("futimesat") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(int, const char *, const struct timeval[2])>("futimesat") {}
 };
 
 template <>
 struct SystemCall<system_call::lutimes>
-  : SystemCallHelper<library::c, int(const char *, const struct timeval[2])>
+  : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const struct timeval[2])>
 {
-    SystemCall() : SystemCallHelper<library::c, int(const char *, const struct timeval[2])>("lutimes") {}
+    SystemCall() : PITO_SYSTEMCALL_BASE<library::c, int(const char *, const struct timeval[2])>("lutimes") {}
 };
 
 } }
