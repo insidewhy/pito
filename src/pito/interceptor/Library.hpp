@@ -19,6 +19,7 @@ struct LibraryHelper {
     void *handle() {
         if (! handle_) {
             handle_ = dlopen(name_.c_str(), RTLD_LAZY);
+            // TODO: error checking
         }
         return handle_;
     }
@@ -28,7 +29,7 @@ struct LibraryHelper {
     std::string name_;
 };
 
-template <class LibraryTag>
+template <class Tag>
 struct Library;
 
 template <>
@@ -37,9 +38,9 @@ struct Library<library::c> : LibraryHelper {
 };
 
 namespace library {
-    template <class LibraryTag>
-    Library<LibraryTag>& instance() {
-        return singleton_default< Library<LibraryTag> >::instance();
+    template <class Tag>
+    Library<Tag>& instance() {
+        return singleton_default< Library<Tag> >::instance();
     }
 }
 
