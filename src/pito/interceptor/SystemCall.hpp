@@ -2,6 +2,11 @@
 #define _PITO_INTERCEPTOR_SYSTEM_CALL_HPP_
 
 #include <pito/interceptor/Library.hpp>
+
+#include <boost/pool/detail/singleton.hpp>
+#include <dlfcn.h>
+#include <string>
+
 #include <sys/types.h>
 
 namespace pito { namespace interceptor {
@@ -21,7 +26,9 @@ struct SystemCallHelper {
 
     Ret operator()(Args... args) {
         if (! call_) {
-            call_ = dlsym(library::instance<LibraryTag>().handle(), name_.c_str());
+            // the following might be needed for another architecture
+            // call_ = reinterpret_cast<call_t>(dlsym(library::instance<LibraryTag>().handle(), name_.c_str()));
+            call_ = reinterpret_cast<call_t>(dlsym(RTLD_NEXT, name_.c_str()));
         }
         return call_(args...);
     }
@@ -38,7 +45,7 @@ struct SystemCall<system_call::open>
     SystemCall() : SystemCallHelper<library::c, int, const char *, int, mode_t>("open") {}
 };
 
-namespace library {
+namespace system_call {
     template <class Tag>
     SystemCall<Tag>& instance() {
         return singleton_default< SystemCall<Tag> >::instance();
