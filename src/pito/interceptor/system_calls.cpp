@@ -1,16 +1,4 @@
-#include <pito/interceptor/SystemCall.hpp>
-#include <iostream>
-
-namespace pito { namespace interceptor {
-
-template <>
-struct SystemCall<system_call::open> 
-  : SystemCallHelper<library::c, int, const char *, int, mode_t> 
-{
-    SystemCall() : SystemCallHelper<library::c, int, const char *, int, mode_t>("open") {}
-};
-
-} }
+#include <pito/interceptor/lib/c.hpp>
 
 extern "C" {
 

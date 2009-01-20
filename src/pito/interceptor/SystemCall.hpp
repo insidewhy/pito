@@ -11,10 +11,6 @@
 
 namespace pito { namespace interceptor {
 
-namespace system_call {
-    struct open {};
-};
-
 template <class Tag>
 struct SystemCall;
 
