@@ -7,8 +7,6 @@
 #include <dlfcn.h>
 #include <string>
 
-#include <sys/types.h>
-
 namespace pito { namespace interceptor {
 
 template <class Tag>
