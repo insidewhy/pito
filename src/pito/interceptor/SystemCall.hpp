@@ -5,6 +5,12 @@
 
 namespace pito { namespace interceptor {
 
+template <class Library>
+struct SystemCall;
+
+struct SystemCallAbstract {
+};
+
 } }
 
 #endif

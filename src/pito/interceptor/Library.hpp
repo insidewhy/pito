@@ -13,6 +13,8 @@ using boost::details::pool::singleton_default;
 
 class LibraryBase {
     void *handler_;
+
+    LibraryBase() : handler_(0) {}
 };
 
 template <class LibraryName>

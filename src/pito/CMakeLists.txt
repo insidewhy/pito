@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
 
+include(C++0x)
 project(pito)
 
 set(CONFIG_DIR_SUFFIX /pito)
