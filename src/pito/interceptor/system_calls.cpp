@@ -17,4 +17,6 @@ int open64(const char *pathname, int flags, mode_t mode) {
     return super(open)(pathname, flags, mode);
 }
 
+#undef super
+
 }
