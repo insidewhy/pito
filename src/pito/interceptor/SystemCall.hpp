@@ -38,6 +38,13 @@ struct SystemCall<system_call::open>
     SystemCall() : SystemCallHelper<library::c, int, const char *, int, mode_t>("open") {}
 };
 
+namespace library {
+    template <class Tag>
+    SystemCall<Tag>& instance() {
+        return singleton_default< SystemCall<Tag> >::instance();
+    }
+}
+
 } }
 
 #endif
