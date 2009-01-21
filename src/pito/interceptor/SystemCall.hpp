@@ -19,7 +19,9 @@ template <class LibraryTag, class Ret, class... Args>
 struct SystemCallHelper<LibraryTag, Ret (Args...)> {
     typedef Ret (*call_t)(Args..., ...);
 
-    Ret operator()(Args... args) {
+    // to handle variadic template parameters
+    template <class... OtherArgs>
+    Ret operator()(OtherArgs... args) {
         if (! call_) {
             // the following might be needed for another architecture
             // call_ = reinterpret_cast<call_t>(dlsym(library::instance<LibraryTag>().handle(), name_.c_str()));
