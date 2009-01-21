@@ -45,7 +45,8 @@ struct SystemCall;
 template <class Tag, class LibraryTag, class Ret, class... Args>
 struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallHelper<Tag, LibraryTag, Ret(Args...)> {
     typedef SystemCallHelper<Tag, LibraryTag, Ret(Args...)> base_t;
-    // to handle variadic templates
+
+    // to handle variadic c argument lists
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
         std::cout << "calling " << system_call::traits<Tag>::name << "(";
