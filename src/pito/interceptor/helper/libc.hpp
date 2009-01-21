@@ -1,6 +1,7 @@
 // include this after #defining PITO_SYSTEM_CALL_BASE
 
 #include <pito/interceptor/lib/c.hpp>
+#include <pito/interceptor/jail/libc.hpp>
 
 #include <stdarg.h>
 #include <fcntl.h>
@@ -185,8 +186,6 @@ FILE *fopen64(const char *path, const char *mode) {
 int truncate64(const char *path, off64_t length) {
     return PITO_SUPER(truncate64)(path, length);
 }
-
-#include <pito/interceptor/jail/libc.hpp>
 
 int utime(const char *filename, const struct utimbuf *times) {
     return PITO_SUPER(utime)(filename, times);
