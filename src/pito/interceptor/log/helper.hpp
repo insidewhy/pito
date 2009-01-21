@@ -38,12 +38,12 @@ struct PrintArgs<Arg, Args...> {
     }
 };
 
-template <class LibraryTag, class Ret, class... Args>
+template <class Tag, class LibraryTag, class Ret, class... Args>
 struct SystemCall;
 
-template <class LibraryTag, class Ret, class... Args>
-struct SystemCall<LibraryTag, Ret (Args...)> : SystemCallHelper<LibraryTag, Ret(Args...)> {
-    typedef SystemCallHelper<LibraryTag, Ret(Args...)> base_t;
+template <class Tag, class LibraryTag, class Ret, class... Args>
+struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallHelper<Tag, LibraryTag, Ret(Args...)> {
+    typedef SystemCallHelper<Tag, LibraryTag, Ret(Args...)> base_t;
     SystemCall(std::string const& name) : base_t(name) {}
 
     // to handle variadic templates

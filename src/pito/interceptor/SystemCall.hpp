@@ -12,11 +12,11 @@ namespace pito { namespace interceptor {
 template <class Tag>
 struct SystemCall;
 
-template <class LibraryTag, class Ret, class... Args>
+template <class Tag, class LibraryTag, class Ret, class... Args>
 struct SystemCallHelper;
 
-template <class LibraryTag, class Ret, class... Args>
-struct SystemCallHelper<LibraryTag, Ret (Args...)> {
+template <class Tag, class LibraryTag, class Ret, class... Args>
+struct SystemCallHelper<Tag, LibraryTag, Ret (Args...)> {
     typedef Ret (*call_t)(Args..., ...);
 
     // to handle variadic template parameters
