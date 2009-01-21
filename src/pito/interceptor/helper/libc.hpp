@@ -48,9 +48,16 @@ int open(const char *pathname, int flags, ...) {
 }
 
 int openat(int dirfd, const char *pathname, int flags, ...) {
-    // TODO: use extra arg
-    return PITO_SUPER(openat)(dirfd, pathname, flags);
+    if (flags & O_CREAT) {
+        va_list ap;
+        va_start(ap, flags);
+        mode_t mode = va_arg(ap, int);
+        va_end(ap);
+        return PITO_SUPER(openat)(dirfd, pathname, flags, mode);
+    }
+    else return PITO_SUPER(openat)(dirfd, pathname, flags);
 }
+
 
 int creat(const char *pathname, mode_t mode) {
     return PITO_SUPER(creat)(pathname, mode);
@@ -157,8 +164,14 @@ int open64(const char *pathname, int flags, ...) {
 }
 
 int openat64(int dirfd, const char *pathname, int flags, ...) {
-    // TODO: something with mode
-    return PITO_SUPER(openat64)(dirfd, pathname, flags);
+    if (flags & O_CREAT) {
+        va_list ap;
+        va_start(ap, flags);
+        mode_t mode = va_arg(ap, int);
+        va_end(ap);
+        return PITO_SUPER(openat64)(dirfd, pathname, flags, mode);
+    }
+    else return PITO_SUPER(openat64)(dirfd, pathname, flags);
 }
 
 int creat64(const char *pathname, mode_t mode) {
