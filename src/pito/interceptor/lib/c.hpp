@@ -173,39 +173,15 @@ struct SystemCall<truncate64>
 
 template <>
 struct SystemCall<execve>
-  : PITO_SYSTEM_CALL_BASE<execve, library::c, int(const char *, char *const[], char *const[])>
-{
-    typedef PITO_SYSTEM_CALL_BASE<execve, library::c, int(const char *, char *const[], char *const[])> base_t;
-
-    int operator()(const char *cmd, char *const argv[], char *const envp[]) {
-        // TODO: force LD_PRELOAD back in envp if necessary
-        return base_t::operator()(cmd, argv, envp);
-    }
-};
+  : PITO_SYSTEM_CALL_BASE<execve, library::c, int(const char *, char *const[], char *const[])> {};
 
 template <>
 struct SystemCall<execv>
-  : PITO_SYSTEM_CALL_BASE<execv, library::c, int(const char *, char *const[])>
-{
-    typedef PITO_SYSTEM_CALL_BASE<execv, library::c, int(const char *, char *const[])> base_t;
-
-    int operator()(const char *cmd, char *const argv[]) {
-        // TODO: force LD_PRELOAD back in environ if necessary
-        return base_t::operator()(cmd, argv);
-    }
-};
+  : PITO_SYSTEM_CALL_BASE<execv, library::c, int(const char *, char *const[])> {};
 
 template <>
 struct SystemCall<execvp>
-  : PITO_SYSTEM_CALL_BASE<execvp, library::c, int(const char *, char *const[])>
-{
-    typedef PITO_SYSTEM_CALL_BASE<execvp, library::c, int(const char *, char *const[])> base_t;
-
-    int operator()(const char *cmd, char *const argv[]) {
-        // TODO: force LD_PRELOAD back in environ if necessary
-        return base_t::operator()(cmd, argv);
-    }
-};
+  : PITO_SYSTEM_CALL_BASE<execvp, library::c, int(const char *, char *const[])> {};
 
 template <>
 struct SystemCall<utime>
