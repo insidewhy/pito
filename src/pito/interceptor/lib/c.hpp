@@ -8,6 +8,11 @@
 
 namespace pito { namespace interceptor {
 
+template <>
+struct Library<library::c> : LibraryHelper {
+    Library() : LibraryHelper("libc.so") {}
+};
+
 namespace system_call {
     struct chmod {};
     struct fchmod {};

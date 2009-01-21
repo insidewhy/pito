@@ -32,11 +32,6 @@ struct LibraryHelper {
 template <class Tag>
 struct Library;
 
-template <>
-struct Library<library::c> : LibraryHelper {
-    Library() : LibraryHelper("libc.so") {}
-};
-
 namespace library {
     template <class Tag>
     Library<Tag>& instance() {
