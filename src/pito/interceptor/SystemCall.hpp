@@ -19,7 +19,7 @@ template <class Tag, class LibraryTag, class Ret, class... Args>
 struct SystemCallHelper<Tag, LibraryTag, Ret (Args...)> {
     typedef Ret (*call_t)(Args..., ...);
 
-    // to handle variadic template parameters
+    // to handle variadic c functions, must accept other args
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
         if (! call_) {
