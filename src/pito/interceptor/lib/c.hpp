@@ -55,6 +55,7 @@ namespace system_call {
     struct fopen64 {};
     struct truncate64 {};
     struct execve {};
+    struct execv {};
     struct execvp {};
     struct utime {};
     struct utimes {};
@@ -332,6 +333,20 @@ struct SystemCall<system_call::execve>
         // TODO: force LD_PRELOAD back in env
         // setenv("LD_PRELOAD", "obj/interceptor/log/libpito_log.so", 1);
         return base_t::operator()(cmd, argv, envp);
+    }
+};
+
+template <>
+struct SystemCall<system_call::execv>
+  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const[])>
+{
+    typedef PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const[])> base_t;
+    SystemCall() : base_t("execv") {}
+
+    int operator()(const char *cmd, char *const argv[]) {
+        // TODO: force LD_PRELOAD back in env
+        // setenv("LD_PRELOAD", "obj/interceptor/log/libpito_log.so", 1);
+        return base_t::operator()(cmd, argv);
     }
 };
 
