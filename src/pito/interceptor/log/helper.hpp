@@ -7,6 +7,37 @@
 
 namespace pito { namespace interceptor { namespace log {
 
+template <class... Args> struct PrintArgs;
+template <class... Args> struct PrintTailArgs;
+
+template <>
+struct PrintArgs<> {
+    static void exec() {
+    }
+};
+
+template <>
+struct PrintTailArgs<> {
+    static void exec() {
+    }
+};
+
+template <class Arg, class... Args>
+struct PrintTailArgs<Arg, Args...> {
+    static void exec(Arg const& arg, Args... args) {
+        std::cout << ", " << arg;
+        PrintTailArgs<Args...>::exec(args...);
+    }
+};
+
+template <class Arg, class... Args>
+struct PrintArgs<Arg, Args...> {
+    static void exec(Arg const& arg, Args... args) {
+        std::cout << arg;
+        PrintTailArgs<Args...>::exec(args...);
+    }
+};
+
 template <class LibraryTag, class Ret, class... Args>
 struct SystemCall;
 
@@ -16,7 +47,9 @@ struct SystemCall<LibraryTag, Ret (Args...)> : SystemCallHelper<LibraryTag, Ret(
     SystemCall(std::string const& name) : base_t(name) {}
 
     Ret operator()(Args... args) {
-        std::cout << "calling " << base_t::name() << std::endl;
+        std::cout << "calling " << base_t::name() << "(";
+        PrintArgs<Args...>::exec(args...);
+        std::cout << ")" << std::endl;
         return base_t::operator()(args...);
     }
 };
