@@ -6,6 +6,8 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
+#include "config.hpp"
+
 extern "C" {
 
 using namespace pito::interceptor;
@@ -183,7 +185,7 @@ FILE *fopen64(const char *path, const char *mode) {
     return PITO_SUPER(fopen64)(path, mode);
 }
 
-int truncate64(const char *path, off64_t length) {
+int truncate64(const char *path, PITO_OFF64_TYPE length) {
     return PITO_SUPER(truncate64)(path, length);
 }
 

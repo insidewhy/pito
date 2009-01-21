@@ -12,6 +12,8 @@
 #include <iostream>
 #include <stdlib.h>
 
+#include "config.hpp"
+
 namespace pito { namespace interceptor {
 
 using namespace system_call;
@@ -169,7 +171,7 @@ struct SystemCall<fopen64>
 
 template <>
 struct SystemCall<truncate64>
-  : PITO_SYSTEM_CALL_BASE<truncate64, library::c, int(const char *, off64_t)> {};
+  : PITO_SYSTEM_CALL_BASE<truncate64, library::c, int(const char *, PITO_OFF64_TYPE)> {};
 
 template <>
 struct SystemCall<execve>

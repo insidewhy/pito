@@ -8,6 +8,15 @@ project(pito)
 set(CONFIG_DIR_SUFFIX /pito)
 set(SHARE_DIR_SUFFIX ${CONFIG_DIR_SUFFIX})
 include(Installer)
+
+include(CheckTypeSize)
+check_type_size(__off64_t OFF64_SIZE)
+if(OFF64_SIZE)
+    set(OFF64_TYPE "__off64_t")
+else()
+    set(OFF64_TYPE "off_t")
+endif()
+
 configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_BINARY_DIR}/config.hpp)
 
 include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/..)
