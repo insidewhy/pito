@@ -48,7 +48,7 @@ struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallHelper<Tag, Librar
     // to handle variadic templates
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
-        std::cout << "calling " << base_t::name() << "(";
+        std::cout << "calling " << system_call::traits<Tag>::name << "(";
         PrintArgs<OtherArgs...>::exec(args...);
         std::cout << ")" << std::endl;
         return base_t::operator()(args...);

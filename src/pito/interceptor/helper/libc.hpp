@@ -2,8 +2,6 @@
 
 #include <pito/interceptor/lib/c.hpp>
 
-#include <iostream>
-
 extern "C" {
 
 using namespace pito::interceptor;
