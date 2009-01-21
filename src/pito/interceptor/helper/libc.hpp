@@ -150,7 +150,7 @@ FILE *fopen64(const char *path, const char *mode) {
     return PITO_SUPER(fopen64)(path, mode);
 }
 
-int truncate64(const char *path, __off64_t length) {
+int truncate64(const char *path, off64_t length) {
     return PITO_SUPER(truncate64)(path, length);
 }
 

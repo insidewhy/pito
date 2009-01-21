@@ -169,7 +169,7 @@ struct SystemCall<fopen64>
 
 template <>
 struct SystemCall<truncate64>
-  : PITO_SYSTEM_CALL_BASE<truncate64, library::c, int(const char *, __off64_t)> {};
+  : PITO_SYSTEM_CALL_BASE<truncate64, library::c, int(const char *, off64_t)> {};
 
 template <>
 struct SystemCall<execve>
