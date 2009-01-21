@@ -5,6 +5,8 @@ set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
 include(C++0x)
 project(pito)
 
+################################################################################
+# configuration
 set(CONFIG_DIR_SUFFIX /pito)
 set(SHARE_DIR_SUFFIX ${CONFIG_DIR_SUFFIX})
 include(Installer)
@@ -17,7 +19,12 @@ else()
     set(OFF64_TYPE "off_t")
 endif()
 
+# TODO: detect this properly
+set(SHARED_LIB_FILE_EXTENSION .so)
+
 configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_BINARY_DIR}/config.hpp)
+# end configuration
+################################################################################
 
 include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/..)
 
