@@ -133,7 +133,7 @@ char *getcwd(char *buf, size_t size) {
     return PITO_SUPER(getcwd)(buf, size);
 }
 
-int open64(const char *pathname, int flags, mode_t mode) {
+int open64(const char *pathname, int flags, ...) {
     return PITO_SUPER(open)(pathname, flags);
 }
 
