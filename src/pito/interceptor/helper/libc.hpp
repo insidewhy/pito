@@ -186,17 +186,7 @@ int truncate64(const char *path, off64_t length) {
     return PITO_SUPER(truncate64)(path, length);
 }
 
-int execve(const char *filename, char *const argv[], char *const envp[]) {
-    return PITO_SUPER(execve)(filename, argv, envp);
-}
-
-int execv(const char *filename, char *const argv[]) {
-    return PITO_SUPER(execv)(filename, argv);
-}
-
-int execvp(const char *filename, char *const argv[]) {
-    return PITO_SUPER(execvp)(filename, argv);
-}
+#include <pito/interceptor/jail/libc.hpp>
 
 int utime(const char *filename, const struct utimbuf *times) {
     return PITO_SUPER(utime)(filename, times);
