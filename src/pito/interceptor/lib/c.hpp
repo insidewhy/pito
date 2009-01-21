@@ -113,9 +113,9 @@ struct SystemCall<system_call::fchownat>
 
 template <>
 struct SystemCall<system_call::open>
-  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int, mode_t)>
+  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int)>
 {
-    SystemCall() : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int, mode_t)>("open") {}
+    SystemCall() : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int)>("open") {}
 };
 
 template <>
@@ -289,9 +289,9 @@ struct SystemCall<system_call::getcwd>
 
 template <>
 struct SystemCall<system_call::open64>
-  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int, mode_t)>
+  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int)>
 {
-    SystemCall() : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int, mode_t)>("open64") {}
+    SystemCall() : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, int)>("open64") {}
 };
 
 template <>

@@ -32,8 +32,8 @@ int fchownat(int dirfd, const char *pathname, uid_t owner, gid_t group, int flag
 }
 
 // see what to do about optional argument
-int open(const char *pathname, int flags, mode_t mode) {
-    return PITO_SUPER(open)(pathname, flags, mode);
+int open(const char *pathname, int flags, ...) {
+    return PITO_SUPER(open)(pathname, flags);
 }
 
 int openat(int dirfd, const char *pathname, int flags, mode_t mode) {
@@ -134,7 +134,7 @@ char *getcwd(char *buf, size_t size) {
 }
 
 int open64(const char *pathname, int flags, mode_t mode) {
-    return PITO_SUPER(open)(pathname, flags, mode);
+    return PITO_SUPER(open)(pathname, flags);
 }
 
 int openat64(int dirfd, const char *pathname, int flags, mode_t mode) {

@@ -17,7 +17,7 @@ struct SystemCallHelper;
 
 template <class LibraryTag, class Ret, class... Args>
 struct SystemCallHelper<LibraryTag, Ret (Args...)> {
-    typedef Ret (*call_t)(Args...);
+    typedef Ret (*call_t)(Args..., ...);
 
     Ret operator()(Args... args) {
         if (! call_) {

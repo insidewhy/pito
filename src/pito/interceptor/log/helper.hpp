@@ -46,7 +46,7 @@ struct SystemCall<LibraryTag, Ret (Args...)> : SystemCallHelper<LibraryTag, Ret(
     typedef SystemCallHelper<LibraryTag, Ret(Args...)> base_t;
     SystemCall(std::string const& name) : base_t(name) {}
 
-    Ret operator()(Args... args) {
+    Ret operator()(Args... args, ...) {
         std::cout << "calling " << base_t::name() << "(";
         PrintArgs<Args...>::exec(args...);
         std::cout << ")" << std::endl;
