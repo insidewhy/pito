@@ -1,6 +1,30 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
+#include <iostream>
+#include <algorithm>
+
+namespace pito { namespace interceptor { namespace jail {
+
+struct Init {
+    Init() {
+        char const *begin = getenv("LD_PRELOAD");
+        char const *end = begin;
+        while (*(++end) != '\0') {}
+
+        char const *colon = begin;
+        do {
+            colon = std::find(colon, end, ':');
+            std::cout << "got preload entry (" << begin << ")" << std::endl;
+        } while (colon != end);
+        // first find libpito_[a-z]*.so entry
+    }
+};
+
+Init init;
+
+} } }
+
 extern "C" {
 
 using namespace pito::interceptor;
