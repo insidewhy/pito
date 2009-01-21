@@ -19,8 +19,6 @@ template <class LibraryTag, class Ret, class... Args>
 struct SystemCallHelper<LibraryTag, Ret (Args...)> {
     typedef Ret (*call_t)(Args...);
 
-    SystemCallHelper(std::string const& name) : call_(0), name_(name) {}
-
     Ret operator()(Args... args) {
         if (! call_) {
             // the following might be needed for another architecture
@@ -30,6 +28,8 @@ struct SystemCallHelper<LibraryTag, Ret (Args...)> {
         return call_(args...);
     }
 
+    SystemCallHelper(std::string const& name) : call_(0), name_(name) {}
+    std::string name() { return name_; }
   private:
     call_t call_;
     std::string name_;

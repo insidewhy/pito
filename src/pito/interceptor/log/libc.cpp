@@ -1,3 +1,5 @@
+#include <pito/interceptor/log/helper.hpp>
+#define PITO_SYSTEMCALL_BASE  log::SystemCall
 #include <pito/interceptor/lib/c.hpp>
 
 #include <iostream>
@@ -34,7 +36,6 @@ int fchownat(int dirfd, const char *pathname, uid_t owner, gid_t group, int flag
 
 // see what to do about optional argument
 int open(const char *pathname, int flags, mode_t mode) {
-    std::cout << "wrapping open(" << pathname << ", " << flags << ", " << mode << ")\n";
     return PITO_SUPER(open)(pathname, flags, mode);
 }
 
@@ -136,7 +137,6 @@ char *getcwd(char *buf, size_t size) {
 }
 
 int open64(const char *pathname, int flags, mode_t mode) {
-    std::cout << "wrapping open64(" << pathname << ", " << flags << ", " << mode << ")\n";
     return PITO_SUPER(open)(pathname, flags, mode);
 }
 
