@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
     int status;
@@ -9,4 +9,6 @@ int main(int argc, char *argv[]) {
     }
     wait(&status);
     system("/bin/false");
+
+    execl("/bin/ls", "-l", 0);
 }
