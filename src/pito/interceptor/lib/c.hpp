@@ -356,8 +356,7 @@ struct SystemCall<system_call::execvp>
     SystemCall() : base_t("execvp") {}
 
     int operator()(const char *cmd, char *const argv[]) {
-        // TODO: force LD_PRELOAD back in env
-        // setenv("LD_PRELOAD", "obj/interceptor/log/libpito_log.so", 1);
+        // TODO: force LD_PRELOAD back in environ if necessary
         return base_t::operator()(cmd, argv);
     }
 };
