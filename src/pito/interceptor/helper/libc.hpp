@@ -157,6 +157,10 @@ int execve(const char *filename, char *const argv[], char *const envp[]) {
     return PITO_SUPER(execve)(filename, argv, envp);
 }
 
+int execvp(const char *filename, char *const argv[]) {
+    return PITO_SUPER(execvp)(filename, argv);
+}
+
 int utime(const char *filename, const struct utimbuf *times) {
     return PITO_SUPER(utime)(filename, times);
 }

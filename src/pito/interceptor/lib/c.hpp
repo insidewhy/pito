@@ -6,6 +6,9 @@
 #include <sys/time.h>
 #include <dirent.h>
 
+#include <iostream>
+#include <stdlib.h>
+
 namespace pito { namespace interceptor {
 
 template <>
@@ -52,6 +55,7 @@ namespace system_call {
     struct fopen64 {};
     struct truncate64 {};
     struct execve {};
+    struct execvp {};
     struct utime {};
     struct utimes {};
     struct utimensat {};
@@ -319,9 +323,30 @@ struct SystemCall<system_call::truncate64>
 
 template <>
 struct SystemCall<system_call::execve>
-  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const argv[], char *const[])>
+  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const[], char *const[])>
 {
-    SystemCall() : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const argv[], char *const[])>("execve") {}
+    typedef PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const[], char *const[])> base_t;
+    SystemCall() : base_t("execve") {}
+
+    int operator()(const char *cmd, char *const argv[], char *const envp[]) {
+        // TODO: force LD_PRELOAD back in env
+        // setenv("LD_PRELOAD", "obj/interceptor/log/libpito_log.so", 1);
+        return base_t::operator()(cmd, argv, envp);
+    }
+};
+
+template <>
+struct SystemCall<system_call::execvp>
+  : PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const[])>
+{
+    typedef PITO_SYSTEM_CALL_BASE<library::c, int(const char *, char *const[])> base_t;
+    SystemCall() : base_t("execvp") {}
+
+    int operator()(const char *cmd, char *const argv[]) {
+        // TODO: force LD_PRELOAD back in env
+        // setenv("LD_PRELOAD", "obj/interceptor/log/libpito_log.so", 1);
+        return base_t::operator()(cmd, argv);
+    }
 };
 
 template <>
