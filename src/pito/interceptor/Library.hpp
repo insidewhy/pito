@@ -14,9 +14,10 @@ namespace library {
 using boost::details::pool::singleton_default;
 
 struct LibraryHelper {
-    LibraryHelper(std::string const& name) : handle_(0), name_(name) {}
+    LibraryHelper(std::string const& name) : name_(name) {}
 
     void *handle() {
+        static void *handle_ = 0;
         if (! handle_) {
             handle_ = dlopen(name_.c_str(), RTLD_LAZY);
             // TODO: error checking
@@ -25,7 +26,6 @@ struct LibraryHelper {
     }
 
   private:
-    void *handle_;
     std::string name_;
 };
 
