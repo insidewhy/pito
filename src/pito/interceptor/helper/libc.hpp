@@ -2,6 +2,9 @@
 
 #include <pito/interceptor/lib/c.hpp>
 
+#include <stdarg.h>
+#include <fcntl.h>
+
 extern "C" {
 
 using namespace pito::interceptor;
@@ -33,12 +36,20 @@ int fchownat(int dirfd, const char *pathname, uid_t owner, gid_t group, int flag
 }
 
 // see what to do about optional argument
-int open(const char *pathname, int flags, mode_t mode) {
-    return PITO_SUPER(open)(pathname, flags, mode);
+int open(const char *pathname, int flags, ...) {
+    if (flags & O_CREAT) {
+        va_list ap;
+        va_start(ap, flags);
+        mode_t mode = va_arg(ap, int);
+        va_end(ap);
+        return PITO_SUPER(open)(pathname, flags, mode);
+    }
+    else return PITO_SUPER(open)(pathname, flags);
 }
 
-int openat(int dirfd, const char *pathname, int flags, mode_t mode) {
-    return PITO_SUPER(openat)(dirfd, pathname, flags, mode);
+int openat(int dirfd, const char *pathname, int flags, ...) {
+    // TODO: use extra arg
+    return PITO_SUPER(openat)(dirfd, pathname, flags);
 }
 
 int creat(const char *pathname, mode_t mode) {
@@ -134,12 +145,20 @@ char *getcwd(char *buf, size_t size) {
     return PITO_SUPER(getcwd)(buf, size);
 }
 
-int open64(const char *pathname, int flags, mode_t mode) {
-    return PITO_SUPER(open)(pathname, flags, mode);
+int open64(const char *pathname, int flags, ...) {
+    if (flags & O_CREAT) {
+        va_list ap;
+        va_start(ap, flags);
+        mode_t mode = va_arg(ap, int);
+        va_end(ap);
+        return PITO_SUPER(open64)(pathname, flags, mode);
+    }
+    else return PITO_SUPER(open64)(pathname, flags);
 }
 
-int openat64(int dirfd, const char *pathname, int flags, mode_t mode) {
-    return PITO_SUPER(openat64)(dirfd, pathname, flags, mode);
+int openat64(int dirfd, const char *pathname, int flags, ...) {
+    // TODO: something with mode
+    return PITO_SUPER(openat64)(dirfd, pathname, flags);
 }
 
 int creat64(const char *pathname, mode_t mode) {

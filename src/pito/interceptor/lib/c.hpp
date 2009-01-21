@@ -56,7 +56,7 @@ struct SystemCall<open>
 
 template <>
 struct SystemCall<openat>
-  : PITO_SYSTEM_CALL_BASE<openat, library::c, int(int, const char *, int, mode_t)> {};
+  : PITO_SYSTEM_CALL_BASE<openat, library::c, int(int, const char *, int)> {};
 
 template <>
 struct SystemCall<creat>
@@ -157,7 +157,7 @@ struct SystemCall<open64>
 
 template <>
 struct SystemCall<openat64>
-  : PITO_SYSTEM_CALL_BASE<openat64, library::c, int(int, const char *, int, mode_t)> {};
+  : PITO_SYSTEM_CALL_BASE<openat64, library::c, int(int, const char *, int)> {};
 
 template <>
 struct SystemCall<creat64>
