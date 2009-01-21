@@ -13,3 +13,7 @@ configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_BINARY_DIR}/config.h
 include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/..)
 
 add_subdirectory(interceptor)
+
+add_executable(pito pito.cpp)
+install_targets(/bin pito)
+
