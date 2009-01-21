@@ -1,6 +1,9 @@
 // include this after #defining PITO_SYSTEM_CALL_BASE
 
 #include <pito/interceptor/lib/c.hpp>
+
+#include <iostream>
+
 extern "C" {
 
 using namespace pito::interceptor;

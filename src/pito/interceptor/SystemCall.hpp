@@ -25,16 +25,14 @@ struct SystemCallHelper<Tag, LibraryTag, Ret (Args...)> {
         if (! call_) {
             // the following might be needed for another architecture
             // call_ = reinterpret_cast<call_t>(dlsym(library::instance<LibraryTag>().handle(), name_.c_str()));
-            call_ = reinterpret_cast<call_t>(dlsym(RTLD_NEXT, name_.c_str()));
+            call_ = reinterpret_cast<call_t>(dlsym(RTLD_NEXT, system_call::traits<Tag>::name));
         }
         return call_(args...);
     }
 
-    SystemCallHelper(std::string const& name) : call_(0), name_(name) {}
-    std::string name() { return name_; }
+    SystemCallHelper() : call_(0) {}
   private:
     call_t call_;
-    std::string name_;
 };
 
 namespace system_call {

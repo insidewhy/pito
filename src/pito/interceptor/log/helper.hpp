@@ -1,6 +1,7 @@
 #ifndef _PITO_INTERCEPTOR_LOG_HELPER_
 #define _PITO_INTERCEPTOR_LOG_HELPER_
 
+#include <pito/interceptor/lib/c_traits.hpp>
 #include <pito/interceptor/SystemCall.hpp>
 
 #include <iostream>
@@ -44,8 +45,6 @@ struct SystemCall;
 template <class Tag, class LibraryTag, class Ret, class... Args>
 struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallHelper<Tag, LibraryTag, Ret(Args...)> {
     typedef SystemCallHelper<Tag, LibraryTag, Ret(Args...)> base_t;
-    SystemCall(std::string const& name) : base_t(name) {}
-
     // to handle variadic templates
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
