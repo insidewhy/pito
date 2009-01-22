@@ -209,5 +209,9 @@ int lutimes(const char *filename, const struct timeval tv[2]) {
     return PITO_SUPER(lutimes)(filename, tv);
 }
 
+uid_t getuid(void) {
+    return PITO_SUPER(getuid)();
+}
+
 }
 

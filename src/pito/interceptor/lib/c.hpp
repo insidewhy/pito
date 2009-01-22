@@ -205,6 +205,10 @@ template <>
 struct SystemCall<lutimes>
   : PITO_SYSTEM_CALL_BASE<lutimes, library::c, int(const char *, const struct timeval[2])> {};
 
+template <>
+struct SystemCall<getuid>
+  : PITO_SYSTEM_CALL_BASE<getuid, library::c, int()> {};
+
 } }
 
 #endif
