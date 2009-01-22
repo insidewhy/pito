@@ -48,38 +48,10 @@ PITO_SYSTEM_CALL(fchmodat, c, int, (int, const char *, mode_t, int), \
                                    (dirfd, path, mode, flags), \
                                    (int dirfd, char const *path, mode_t mode, int flags))
 
-PITO_SYSTEM_CALL_TRAIT(chown)
-template <>
-struct SystemCall<chown>
-  : PITO_SYSTEM_CALL_BASE<chown, library::c, int(const char *, uid_t, gid_t)> {};
+PITO_SYSTEM_CALL(chown, c, int, (const char *, uid_t, gid_t), (path, owner, group), (const char *path, uid_t owner, gid_t group))
+PITO_SYSTEM_CALL(fchown, c, int, (int, uid_t, gid_t), (fd, owner, group), (int fd, uid_t owner, gid_t group))
 
-extern "C" {
-    int chown(const char *path, uid_t owner, gid_t group) {
-        return PITO_SUPER(chown)(path, owner, group);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(fchown)
-template <>
-struct SystemCall<fchown>
-  : PITO_SYSTEM_CALL_BASE<fchown, library::c, int(int, uid_t, gid_t)> {};
-
-extern "C" {
-    int fchown(int fd, uid_t owner, gid_t group) {
-        return PITO_SUPER(fchown)(fd, owner, group);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(fchownat)
-template <>
-struct SystemCall<fchownat>
-  : PITO_SYSTEM_CALL_BASE<fchownat, library::c, int(int, const char *, uid_t, gid_t, int)> {};
-
-extern "C" {
-    int fchownat(int dirfd, const char *pathname, uid_t owner, gid_t group, int flags) {
-        return PITO_SUPER(fchownat)(dirfd, pathname, owner, group, flags);
-    }
-}
+PITO_SYSTEM_CALL(fchownat, c, int, (int, const char *, uid_t, gid_t, int), (dirfd, pathname, owner, group, flags), (int dirfd, const char *pathname, uid_t owner, gid_t group, int flags))
 
 PITO_SYSTEM_CALL_TRAIT(open)
 template <>
@@ -117,259 +89,30 @@ extern "C" {
     }
 }
 
-PITO_SYSTEM_CALL_TRAIT(creat)
-template <>
-struct SystemCall<creat>
-  : PITO_SYSTEM_CALL_BASE<creat, library::c, int(const char *, mode_t)> {};
-
-extern "C" {
-    int creat(const char *pathname, mode_t mode) {
-        return PITO_SUPER(creat)(pathname, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(fopen)
-template <>
-struct SystemCall<fopen>
-  : PITO_SYSTEM_CALL_BASE<fopen, library::c, FILE *(const char *, const char *)> {};
-
-extern "C" {
-    FILE *fopen(const char *path, const char *mode) {
-        return PITO_SUPER(fopen)(path, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(lchown)
-template <>
-struct SystemCall<lchown>
-  : PITO_SYSTEM_CALL_BASE<lchown, library::c, int(const char *, uid_t, gid_t)> {};
-
-extern "C" {
-    int lchown(const char *path, uid_t owner, gid_t group) {
-        return PITO_SUPER(lchown)(path, owner, group);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(link)
-template <>
-struct SystemCall<link>
-  : PITO_SYSTEM_CALL_BASE<link, library::c, int(const char *, const char *)> {};
-
-extern "C" {
-    int link(const char *oldpath, const char *newpath) {
-        return PITO_SUPER(link)(oldpath, newpath);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(linkat)
-template <>
-struct SystemCall<linkat>
-  : PITO_SYSTEM_CALL_BASE<linkat, library::c, int(int, const char *, int, const char *, int)> {};
-
-extern "C" {
-    int linkat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags) {
-        return PITO_SUPER(linkat)(olddirfd, oldpath, newdirfd, newpath, flags);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(mkdir)
-template <>
-struct SystemCall<mkdir>
-  : PITO_SYSTEM_CALL_BASE<mkdir, library::c, int(const char *, mode_t)> {};
-
-extern "C" {
-    int mkdir(const char *pathname, mode_t mode) {
-        return PITO_SUPER(mkdir)(pathname, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(mkdirat)
-template <>
-struct SystemCall<mkdirat>
-  : PITO_SYSTEM_CALL_BASE<mkdirat, library::c, int(int, const char *, mode_t)> {};
-
-extern "C" {
-    int mkdirat(int dirfd, const char *pathname, mode_t mode) {
-        return PITO_SUPER(mkdirat)(dirfd, pathname, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(opendir)
-template <>
-struct SystemCall<opendir>
-  : PITO_SYSTEM_CALL_BASE<opendir, library::c, DIR *(const char *)> {};
-
-extern "C" {
-    DIR *opendir(const char *name) {
-        return PITO_SUPER(opendir)(name);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(mknod)
-template <>
-struct SystemCall<mknod>
-  : PITO_SYSTEM_CALL_BASE<mknod, library::c, int(const char *, mode_t, dev_t)> {};
-
-extern "C" {
-    int mknod(const char *pathname, mode_t mode, dev_t dev) {
-        return PITO_SUPER(mknod)(pathname, mode, dev);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(mknodat)
-template <>
-struct SystemCall<mknodat>
-  : PITO_SYSTEM_CALL_BASE<mknodat, library::c, int(int, const char *, mode_t, dev_t)> {};
-
-extern "C" {
-    int mknodat(int dirfd, const char *pathname, mode_t mode, dev_t dev) {
-        return PITO_SUPER(mknodat)(dirfd, pathname, mode, dev);
-    }
-}
-
+PITO_SYSTEM_CALL(creat, c, int, (const char *, mode_t), (pathname, mode), (const char *pathname, mode_t mode))
+PITO_SYSTEM_CALL(fopen, c, FILE *, (const char *, const char *), (path, mode), (const char *path, const char *mode))
+PITO_SYSTEM_CALL(lchown, c, int, (const char *, uid_t, gid_t), (path, owner, group), (const char *path, uid_t owner, gid_t group))
+PITO_SYSTEM_CALL(link, c, int, (const char *, const char *), (oldpath, newpath), (const char *oldpath, const char *newpath))
+PITO_SYSTEM_CALL(linkat, c, int, (int, const char *, int, const char *, int), (olddirfd, oldpath, newdirfd, newpath, flags), (int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags))
+PITO_SYSTEM_CALL(mkdir, c, int, (const char *, mode_t), (pathname, mode), (const char *pathname, mode_t mode))
+PITO_SYSTEM_CALL(mkdirat, c, int, (int, const char *, mode_t), (dirfd, pathname, mode), (int dirfd, const char *pathname, mode_t mode))
+PITO_SYSTEM_CALL(opendir, c, DIR *, (const char *), (name), (const char *name))
+PITO_SYSTEM_CALL(mknod, c, int, (const char *, mode_t, dev_t), (pathname, mode, dev), (const char *pathname, mode_t mode, dev_t dev))
+PITO_SYSTEM_CALL(mknodat, c, int, (int, const char *, mode_t, dev_t), (dirfd, pathname, mode, dev), (int dirfd, const char *pathname, mode_t mode, dev_t dev))
 // function todo: __xmknod
-PITO_SYSTEM_CALL_TRAIT(mkfifo)
-template <>
-struct SystemCall<mkfifo>
-  : PITO_SYSTEM_CALL_BASE<mkfifo, library::c, int(const char *, mode_t)> {};
-
-extern "C" {
-    int mkfifo(const char *pathname, mode_t mode) {
-        return PITO_SUPER(mkfifo)(pathname, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(mkfifoat)
-template <>
-struct SystemCall<mkfifoat>
-  : PITO_SYSTEM_CALL_BASE<mkfifoat, library::c, int(int, const char *, mode_t)> {};
-
-extern "C" {
-    int mkfifoat(int dirfd, const char *pathname, mode_t mode) {
-        return PITO_SUPER(mkfifoat)(dirfd, pathname, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(access)
-template <>
-struct SystemCall<access>
-  : PITO_SYSTEM_CALL_BASE<access, library::c, int(const char *, int)> {};
-
-extern "C" {
-    int access(const char *pathname, int mode) {
-        return PITO_SUPER(access)(pathname, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(faccessat)
-template <>
-struct SystemCall<faccessat>
-  : PITO_SYSTEM_CALL_BASE<faccessat, library::c, int(int, const char *, int, int)> {};
-
-extern "C" {
-    int faccessat(int dirfd, const char *pathname, int mode, int flags) {
-        return PITO_SUPER(faccessat)(dirfd, pathname, mode, flags);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(rename)
-template <>
-struct SystemCall<rename>
-  : PITO_SYSTEM_CALL_BASE<rename, library::c, int(const char *, const char *)> {};
-
-extern "C" {
-    int rename(const char *oldpath, const char *newpath) {
-        return PITO_SUPER(rename)(oldpath, newpath);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(renameat)
-template <>
-struct SystemCall<renameat>
-  : PITO_SYSTEM_CALL_BASE<renameat, library::c, int(int, const char *, int, const char *)> {};
-
-extern "C" {
-    int renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath) {
-        return PITO_SUPER(renameat)(olddirfd, oldpath, newdirfd, newpath);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(rmdir)
-template <>
-struct SystemCall<rmdir>
-  : PITO_SYSTEM_CALL_BASE<rmdir, library::c, int(const char *)> {};
-
-extern "C" {
-    int rmdir(const char *pathname) {
-        return PITO_SUPER(rmdir)(pathname);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(symlink)
-template <>
-struct SystemCall<symlink>
-  : PITO_SYSTEM_CALL_BASE<symlink, library::c, int(const char *, const char *)> {};
-
-extern "C" {
-    int symlink(const char *oldpath, const char *newpath) {
-        return PITO_SUPER(symlink)(oldpath, newpath);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(symlinkat)
-template <>
-struct SystemCall<symlinkat>
-  : PITO_SYSTEM_CALL_BASE<symlinkat, library::c, int(const char *, int, const char *)> {};
-
-extern "C" {
-    int symlinkat(const char *oldpath, int newdirfd, const char *newpath) {
-        return PITO_SUPER(symlinkat)(oldpath, newdirfd, newpath);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(truncate)
-template <>
-struct SystemCall<truncate>
-  : PITO_SYSTEM_CALL_BASE<truncate, library::c, int(const char *, off_t)> {};
-
-extern "C" {
-    int truncate(const char *path, off_t length) {
-        return PITO_SUPER(truncate)(path, length);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(unlink)
-template <>
-struct SystemCall<unlink>
-  : PITO_SYSTEM_CALL_BASE<unlink, library::c, int(const char *)> {};
-
-extern "C" {
-    int unlink(const char *pathname) {
-        return PITO_SUPER(unlink)(pathname);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(unlinkat)
-template <>
-struct SystemCall<unlinkat>
-  : PITO_SYSTEM_CALL_BASE<unlinkat, library::c, int(int, const char *, int)> {};
-
-extern "C" {
-    int unlinkat(int dirfd, const char *pathname, int flags) {
-        return PITO_SUPER(unlinkat)(dirfd, pathname, flags);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(getcwd)
-template <>
-struct SystemCall<getcwd>
-  : PITO_SYSTEM_CALL_BASE<getcwd, library::c, char *(char *, size_t)> {};
-
-extern "C" {
-    char *getcwd(char *buf, size_t size) {
-        return PITO_SUPER(getcwd)(buf, size);
-    }
-}
+PITO_SYSTEM_CALL(mkfifo, c, int, (const char *, mode_t), (pathname, mode), (const char *pathname, mode_t mode))
+PITO_SYSTEM_CALL(mkfifoat, c, int, (int, const char *, mode_t), (dirfd, pathname, mode), (int dirfd, const char *pathname, mode_t mode))
+PITO_SYSTEM_CALL(access, c, int, (const char *, int), (pathname, mode), (const char *pathname, int mode))
+PITO_SYSTEM_CALL(faccessat, c, int, (int, const char *, int, int), (dirfd, pathname, mode, flags), (int dirfd, const char *pathname, int mode, int flags))
+PITO_SYSTEM_CALL(rename, c, int, (const char *, const char *), (oldpath, newpath), (const char *oldpath, const char *newpath))
+PITO_SYSTEM_CALL(renameat, c, int, (int, const char *, int, const char *), (olddirfd, oldpath, newdirfd, newpath), (int olddirfd, const char *oldpath, int newdirfd, const char *newpath))
+PITO_SYSTEM_CALL(rmdir, c, int, (const char *), (pathname), (const char *pathname))
+PITO_SYSTEM_CALL(symlink, c, int, (const char *, const char *), (oldpath, newpath), (const char *oldpath, const char *newpath))
+PITO_SYSTEM_CALL(symlinkat, c, int, (const char *, int, const char *), (oldpath, newdirfd, newpath), (const char *oldpath, int newdirfd, const char *newpath))
+PITO_SYSTEM_CALL(truncate, c, int, (const char *, off_t), (path, length), (const char *path, off_t length))
+PITO_SYSTEM_CALL(unlink, c, int, (const char *), (pathname), (const char *pathname))
+PITO_SYSTEM_CALL(unlinkat, c, int, (int, const char *, int), (dirfd, pathname, flags), (int dirfd, const char *pathname, int flags))
+PITO_SYSTEM_CALL(getcwd, c, char *, (char *, size_t), (buf, size), (char *buf, size_t size))
 
 PITO_SYSTEM_CALL_TRAIT(open64)
 template <>
@@ -407,38 +150,9 @@ extern "C" {
     }
 }
 
-PITO_SYSTEM_CALL_TRAIT(creat64)
-template <>
-struct SystemCall<creat64>
-  : PITO_SYSTEM_CALL_BASE<creat64, library::c, int(const char *, mode_t)> {};
-
-extern "C" {
-    int creat64(const char *pathname, mode_t mode) {
-        return PITO_SUPER(creat64)(pathname, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(fopen64)
-template <>
-struct SystemCall<fopen64>
-  : PITO_SYSTEM_CALL_BASE<fopen64, library::c, FILE *(const char *, const char *)> {};
-
-extern "C" {
-    FILE *fopen64(const char *path, const char *mode) {
-        return PITO_SUPER(fopen64)(path, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(truncate64)
-template <>
-struct SystemCall<truncate64>
-  : PITO_SYSTEM_CALL_BASE<truncate64, library::c, int(const char *, PITO_OFF64_TYPE)> {};
-
-extern "C" {
-    int truncate64(const char *path, PITO_OFF64_TYPE length) {
-        return PITO_SUPER(truncate64)(path, length);
-    }
-}
+PITO_SYSTEM_CALL(creat64, c, int, (const char *, mode_t), (pathname, mode), (const char *pathname, mode_t mode))
+PITO_SYSTEM_CALL(fopen64, c, FILE *, (const char *, const char *), (path, mode), (const char *path, const char *mode))
+PITO_SYSTEM_CALL(truncate64, c, int, (const char *, PITO_OFF64_TYPE), (path, length), (const char *path, PITO_OFF64_TYPE length))
 
 ////////////////////////////////////////////////////////////////////////////////
 // jail
@@ -483,78 +197,13 @@ extern "C" {
 // end jail
 ////////////////////////////////////////////////////////////////////////////////
 
-PITO_SYSTEM_CALL_TRAIT(utime)
-template <>
-struct SystemCall<utime>
-  : PITO_SYSTEM_CALL_BASE<utime, library::c, int(const char *, const struct utimbuf *)> {};
+PITO_SYSTEM_CALL(utime, c, int, (const char *, const struct utimbuf *), (filename, times), (const char *filename, const struct utimbuf *times))
+PITO_SYSTEM_CALL(utimes, c, int, (const char *, const struct timeval[2]), (filename, times), (const char *filename, const struct timeval times[2]))
+PITO_SYSTEM_CALL(utimensat, c, int, (int, const char *, const struct timespec[2], int), (dirfd, pathname, times, flags), (int dirfd, const char *pathname, const struct timespec times[2], int flags))
+PITO_SYSTEM_CALL(futimesat, c, int, (int, const char *, const struct timeval[2]), (dirfd, pathname, times), (int dirfd, const char *pathname, const struct timeval times[2]))
+PITO_SYSTEM_CALL(lutimes, c, int, (const char *, const struct timeval[2]), (filename, tv), (const char *filename, const struct timeval tv[2]))
+PITO_SYSTEM_CALL(getuid, c, int, (void), (), ())
 
-extern "C" {
-    int utime(const char *filename, const struct utimbuf *times) {
-        return PITO_SUPER(utime)(filename, times);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(utimes)
-template <>
-struct SystemCall<utimes>
-  : PITO_SYSTEM_CALL_BASE<utimes, library::c, int(const char *, const struct timeval[2])> {};
-
-extern "C" {
-    int utimes(const char *filename, const struct timeval times[2]) {
-        return PITO_SUPER(utimes)(filename, times);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(utimensat)
-template <>
-struct SystemCall<utimensat>
-  : PITO_SYSTEM_CALL_BASE<utimensat, library::c, int(int, const char *, const struct timespec[2], int)> {};
-
-extern "C" {
-    int utimensat(int dirfd, const char *pathname, const struct timespec times[2], int flags) {
-        return PITO_SUPER(utimensat)(dirfd, pathname, times, flags);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(futimesat)
-template <>
-struct SystemCall<futimesat>
-  : PITO_SYSTEM_CALL_BASE<futimesat, library::c, int(int, const char *, const struct timeval[2])> {};
-
-extern "C" {
-    int futimesat(int dirfd, const char *pathname, const struct timeval times[2]) {
-        return PITO_SUPER(futimesat)(dirfd, pathname, times); 
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(lutimes)
-template <>
-struct SystemCall<lutimes>
-  : PITO_SYSTEM_CALL_BASE<lutimes, library::c, int(const char *, const struct timeval[2])> {};
-
-extern "C" {
-    int lutimes(const char *filename, const struct timeval tv[2]) {
-        return PITO_SUPER(lutimes)(filename, tv);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(getuid)
-template <>
-struct SystemCall<getuid>
-  : PITO_SYSTEM_CALL_BASE<getuid, library::c, int()> {};
-
-extern "C" {
-    uid_t getuid(void) {
-        return PITO_SUPER(getuid)();
-    }
-}
-
-    // function todo: __xmknod
-
-
-// see what to do about optional argument
-
-// function todo: __xmknod
 } }
 
 #endif
