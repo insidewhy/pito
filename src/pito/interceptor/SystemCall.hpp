@@ -2,6 +2,7 @@
 #define _PITO_INTERCEPTOR_SYSTEM_CALL_HPP_
 
 #include <pito/interceptor/Library.hpp>
+#include <pito/interceptor/lib/traits.hpp>
 
 #include <boost/pool/detail/singleton.hpp>
 #include <dlfcn.h>
@@ -13,10 +14,10 @@ template <class Tag>
 struct SystemCall;
 
 template <class Tag, class LibraryTag, class Ret, class... Args>
-struct SystemCallHelper;
+struct SystemCallBase;
 
 template <class Tag, class LibraryTag, class Ret, class... Args>
-struct SystemCallHelper<Tag, LibraryTag, Ret (Args...)> {
+struct SystemCallBase<Tag, LibraryTag, Ret (Args...)> {
     typedef Ret (*call_t)(Args..., ...);
 
     // to handle variadic c functions, must accept other args
@@ -30,7 +31,7 @@ struct SystemCallHelper<Tag, LibraryTag, Ret (Args...)> {
         return call_(args...);
     }
 
-    SystemCallHelper() : call_(0) {}
+    SystemCallBase() : call_(0) {}
   private:
     call_t call_;
 };

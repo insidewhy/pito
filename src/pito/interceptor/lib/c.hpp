@@ -3,9 +3,6 @@
 
 // TODO: handle the jail differently
 #include <pito/interceptor/jail/libc.hpp>
-
-#include <pito/interceptor/Library.hpp>
-#include <pito/interceptor/lib/c_traits.hpp>
 #include <pito/interceptor/SystemCall.hpp>
 
 #include <sys/types.h>
@@ -29,11 +26,12 @@ struct Library<library::c> : LibraryHelper {
 
 // super experts can override this!
 #ifndef PITO_SYSTEM_CALL_BASE
-#define PITO_SYSTEM_CALL_BASE  SystemCallHelper
+#define PITO_SYSTEM_CALL_BASE  SystemCallBase
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
+PITO_SYSTEM_CALL_TRAIT(chmod)
 template <>
 struct SystemCall<chmod>
   : PITO_SYSTEM_CALL_BASE<chmod, library::c, int(const char *, mode_t)> {};
@@ -44,6 +42,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(fchmod)
 template <>
 struct SystemCall<fchmod>
   : PITO_SYSTEM_CALL_BASE<fchmod, library::c, int(int, mode_t)> {};
@@ -54,6 +53,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(fchmodat)
 template <>
 struct SystemCall<fchmodat>
   : PITO_SYSTEM_CALL_BASE<fchmodat, library::c, int(int, const char *, mode_t, int)> {};
@@ -64,6 +64,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(chown)
 template <>
 struct SystemCall<chown>
   : PITO_SYSTEM_CALL_BASE<chown, library::c, int(const char *, uid_t, gid_t)> {};
@@ -74,6 +75,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(fchown)
 template <>
 struct SystemCall<fchown>
   : PITO_SYSTEM_CALL_BASE<fchown, library::c, int(int, uid_t, gid_t)> {};
@@ -84,6 +86,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(fchownat)
 template <>
 struct SystemCall<fchownat>
   : PITO_SYSTEM_CALL_BASE<fchownat, library::c, int(int, const char *, uid_t, gid_t, int)> {};
@@ -94,6 +97,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(open)
 template <>
 struct SystemCall<open>
   : PITO_SYSTEM_CALL_BASE<open, library::c, int(const char *, int)> {};
@@ -111,6 +115,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(openat)
 template <>
 struct SystemCall<openat>
   : PITO_SYSTEM_CALL_BASE<openat, library::c, int(int, const char *, int)> {};
@@ -128,6 +133,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(creat)
 template <>
 struct SystemCall<creat>
   : PITO_SYSTEM_CALL_BASE<creat, library::c, int(const char *, mode_t)> {};
@@ -138,6 +144,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(fopen)
 template <>
 struct SystemCall<fopen>
   : PITO_SYSTEM_CALL_BASE<fopen, library::c, FILE *(const char *, const char *)> {};
@@ -148,6 +155,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(lchown)
 template <>
 struct SystemCall<lchown>
   : PITO_SYSTEM_CALL_BASE<lchown, library::c, int(const char *, uid_t, gid_t)> {};
@@ -158,6 +166,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(link)
 template <>
 struct SystemCall<link>
   : PITO_SYSTEM_CALL_BASE<link, library::c, int(const char *, const char *)> {};
@@ -168,6 +177,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(linkat)
 template <>
 struct SystemCall<linkat>
   : PITO_SYSTEM_CALL_BASE<linkat, library::c, int(int, const char *, int, const char *, int)> {};
@@ -178,6 +188,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(mkdir)
 template <>
 struct SystemCall<mkdir>
   : PITO_SYSTEM_CALL_BASE<mkdir, library::c, int(const char *, mode_t)> {};
@@ -188,6 +199,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(mkdirat)
 template <>
 struct SystemCall<mkdirat>
   : PITO_SYSTEM_CALL_BASE<mkdirat, library::c, int(int, const char *, mode_t)> {};
@@ -198,6 +210,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(opendir)
 template <>
 struct SystemCall<opendir>
   : PITO_SYSTEM_CALL_BASE<opendir, library::c, DIR *(const char *)> {};
@@ -208,6 +221,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(mknod)
 template <>
 struct SystemCall<mknod>
   : PITO_SYSTEM_CALL_BASE<mknod, library::c, int(const char *, mode_t, dev_t)> {};
@@ -218,6 +232,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(mknodat)
 template <>
 struct SystemCall<mknodat>
   : PITO_SYSTEM_CALL_BASE<mknodat, library::c, int(int, const char *, mode_t, dev_t)> {};
@@ -229,6 +244,7 @@ extern "C" {
 }
 
 // function todo: __xmknod
+PITO_SYSTEM_CALL_TRAIT(mkfifo)
 template <>
 struct SystemCall<mkfifo>
   : PITO_SYSTEM_CALL_BASE<mkfifo, library::c, int(const char *, mode_t)> {};
@@ -239,6 +255,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(mkfifoat)
 template <>
 struct SystemCall<mkfifoat>
   : PITO_SYSTEM_CALL_BASE<mkfifoat, library::c, int(int, const char *, mode_t)> {};
@@ -249,6 +266,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(access)
 template <>
 struct SystemCall<access>
   : PITO_SYSTEM_CALL_BASE<access, library::c, int(const char *, int)> {};
@@ -259,6 +277,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(faccessat)
 template <>
 struct SystemCall<faccessat>
   : PITO_SYSTEM_CALL_BASE<faccessat, library::c, int(int, const char *, int, int)> {};
@@ -269,6 +288,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(rename)
 template <>
 struct SystemCall<rename>
   : PITO_SYSTEM_CALL_BASE<rename, library::c, int(const char *, const char *)> {};
@@ -279,6 +299,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(renameat)
 template <>
 struct SystemCall<renameat>
   : PITO_SYSTEM_CALL_BASE<renameat, library::c, int(int, const char *, int, const char *)> {};
@@ -289,6 +310,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(rmdir)
 template <>
 struct SystemCall<rmdir>
   : PITO_SYSTEM_CALL_BASE<rmdir, library::c, int(const char *)> {};
@@ -299,6 +321,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(symlink)
 template <>
 struct SystemCall<symlink>
   : PITO_SYSTEM_CALL_BASE<symlink, library::c, int(const char *, const char *)> {};
@@ -309,6 +332,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(symlinkat)
 template <>
 struct SystemCall<symlinkat>
   : PITO_SYSTEM_CALL_BASE<symlinkat, library::c, int(const char *, int, const char *)> {};
@@ -319,6 +343,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(truncate)
 template <>
 struct SystemCall<truncate>
   : PITO_SYSTEM_CALL_BASE<truncate, library::c, int(const char *, off_t)> {};
@@ -329,6 +354,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(unlink)
 template <>
 struct SystemCall<unlink>
   : PITO_SYSTEM_CALL_BASE<unlink, library::c, int(const char *)> {};
@@ -339,6 +365,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(unlinkat)
 template <>
 struct SystemCall<unlinkat>
   : PITO_SYSTEM_CALL_BASE<unlinkat, library::c, int(int, const char *, int)> {};
@@ -349,6 +376,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(getcwd)
 template <>
 struct SystemCall<getcwd>
   : PITO_SYSTEM_CALL_BASE<getcwd, library::c, char *(char *, size_t)> {};
@@ -359,6 +387,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(open64)
 template <>
 struct SystemCall<open64>
   : PITO_SYSTEM_CALL_BASE<open64, library::c, int(const char *, int)> {};
@@ -376,6 +405,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(openat64)
 template <>
 struct SystemCall<openat64>
   : PITO_SYSTEM_CALL_BASE<openat64, library::c, int(int, const char *, int)> {};
@@ -393,6 +423,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(creat64)
 template <>
 struct SystemCall<creat64>
   : PITO_SYSTEM_CALL_BASE<creat64, library::c, int(const char *, mode_t)> {};
@@ -403,6 +434,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(fopen64)
 template <>
 struct SystemCall<fopen64>
   : PITO_SYSTEM_CALL_BASE<fopen64, library::c, FILE *(const char *, const char *)> {};
@@ -413,6 +445,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(truncate64)
 template <>
 struct SystemCall<truncate64>
   : PITO_SYSTEM_CALL_BASE<truncate64, library::c, int(const char *, PITO_OFF64_TYPE)> {};
@@ -427,6 +460,7 @@ extern "C" {
 // jail
 ////////////////////////////////////////////////////////////////////////////////
 // TODO: see previous TODO
+PITO_SYSTEM_CALL_TRAIT(execve)
 template <>
 struct SystemCall<execve>
   : PITO_SYSTEM_CALL_BASE<execve, library::c, int(const char *, char *const[], char *const[])> {};
@@ -438,6 +472,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(execv)
 template <>
 struct SystemCall<execv>
   : PITO_SYSTEM_CALL_BASE<execv, library::c, int(const char *, char *const[])> {};
@@ -449,6 +484,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(execvp)
 template <>
 struct SystemCall<execvp>
   : PITO_SYSTEM_CALL_BASE<execvp, library::c, int(const char *, char *const[])> {};
@@ -463,6 +499,7 @@ extern "C" {
 // end jail
 ////////////////////////////////////////////////////////////////////////////////
 
+PITO_SYSTEM_CALL_TRAIT(utime)
 template <>
 struct SystemCall<utime>
   : PITO_SYSTEM_CALL_BASE<utime, library::c, int(const char *, const struct utimbuf *)> {};
@@ -473,6 +510,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(utimes)
 template <>
 struct SystemCall<utimes>
   : PITO_SYSTEM_CALL_BASE<utimes, library::c, int(const char *, const struct timeval[2])> {};
@@ -483,6 +521,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(utimensat)
 template <>
 struct SystemCall<utimensat>
   : PITO_SYSTEM_CALL_BASE<utimensat, library::c, int(int, const char *, const struct timespec[2], int)> {};
@@ -493,6 +532,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(futimesat)
 template <>
 struct SystemCall<futimesat>
   : PITO_SYSTEM_CALL_BASE<futimesat, library::c, int(int, const char *, const struct timeval[2])> {};
@@ -503,6 +543,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(lutimes)
 template <>
 struct SystemCall<lutimes>
   : PITO_SYSTEM_CALL_BASE<lutimes, library::c, int(const char *, const struct timeval[2])> {};
@@ -513,6 +554,7 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL_TRAIT(getuid)
 template <>
 struct SystemCall<getuid>
   : PITO_SYSTEM_CALL_BASE<getuid, library::c, int()> {};
@@ -522,6 +564,9 @@ extern "C" {
         return PITO_SUPER(getuid)();
     }
 }
+
+    // function todo: __xmknod
+
 
 // see what to do about optional argument
 

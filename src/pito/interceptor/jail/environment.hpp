@@ -4,6 +4,7 @@
 #include "config.hpp"
 
 #include <algorithm>
+#include <string>
 
 #ifdef PITO_APPLE
 #include <crt_externs.h>

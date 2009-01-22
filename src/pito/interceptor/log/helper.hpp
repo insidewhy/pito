@@ -1,8 +1,8 @@
 #ifndef _PITO_INTERCEPTOR_LOG_HELPER_
 #define _PITO_INTERCEPTOR_LOG_HELPER_
 
-#include <pito/interceptor/lib/c_traits.hpp>
 #include <pito/interceptor/SystemCall.hpp>
+#include <pito/interceptor/lib/traits.hpp>
 
 #include <iostream>
 
@@ -43,8 +43,8 @@ template <class Tag, class LibraryTag, class Ret, class... Args>
 struct SystemCall;
 
 template <class Tag, class LibraryTag, class Ret, class... Args>
-struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallHelper<Tag, LibraryTag, Ret(Args...)> {
-    typedef SystemCallHelper<Tag, LibraryTag, Ret(Args...)> base_t;
+struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallBase<Tag, LibraryTag, Ret(Args...)> {
+    typedef SystemCallBase<Tag, LibraryTag, Ret(Args...)> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>
