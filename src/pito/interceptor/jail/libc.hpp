@@ -41,22 +41,6 @@ extern "C" {
 using namespace pito::interceptor;
 using namespace pito::interceptor::jail;
 
-// include this in a handler c file to include the pito jail
-int execve(const char *filename, char *const argv[], char *const envp[]) {
-    enforceEnvironment(envp);
-    return PITO_SUPER(execve)(filename, argv, envp);
-}
-
-int execv(const char *filename, char *const argv[]) {
-    enforceEnvironment();
-    return PITO_SUPER(execv)(filename, argv);
-}
-
-int execvp(const char *filename, char *const argv[]) {
-    enforceEnvironment();
-    return PITO_SUPER(execvp)(filename, argv);
-}
-
 }
 
 #endif
