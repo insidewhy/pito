@@ -66,8 +66,6 @@ inline int main(int argc, char *argv[]) {
                 char const *colon = ldPath;
                 do {
                     colon = std::find(colon + 1, ldPathEnd, ':');
-                    // TODO: search for libraryFileName in ldPath,colon
-
                     jail::preload.assign(ldPath, colon);
                     jail::preload.append("/").append(libraryFileName);
                     if (! access(jail::preload.c_str(), R_OK)) break;
