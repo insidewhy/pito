@@ -76,8 +76,9 @@ inline int main(int argc, char *argv[]) {
             std::cout << "load interceptor library (" << jail::preload << ")" << std::endl;
         }
 
-        // TODO: set argv[2] based on path and use execve
         jail::enforceEnvironment();
+
+        // TODO: set argv[2] based on path and use execv
         execvp(argv[2], argv + 2);
     }
 }

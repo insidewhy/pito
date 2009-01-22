@@ -21,6 +21,7 @@ endif()
 
 # TODO: detect this properly
 set(SHARED_LIB_FILE_EXTENSION .so)
+set(LD_PRELOAD_ENV_NAME LD_PRELOAD)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_BINARY_DIR}/config.hpp)
 # end configuration
