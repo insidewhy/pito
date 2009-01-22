@@ -77,7 +77,8 @@ inline int main(int argc, char *argv[]) {
                 } while (colon != ldPathEnd);
 
                 if (jail::preload.empty()) {
-                    std::cerr << "library " << libraryFileName << " could not be found" << std::endl;
+                    std::cerr << "library " << _LIB_DIR_  << libraryFileName << " does not exist and " << 
+                                 libraryFileName << " could not be found in $LD_LIBRARY_PATH" << std::endl;
                     return 1;
                 }
             }
