@@ -13,7 +13,7 @@ namespace pito { namespace interceptor { namespace jail {
 
 struct Init {
     Init() {
-        char const *begin = jail::getenv(_LD_PRELOAD);
+        char const *begin = jail::getenv(PITO_LD_PRELOAD);
         if (begin) {
             preload = begin;
             // TODO: find the library properly like this

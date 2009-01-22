@@ -26,7 +26,7 @@ inline int main(int argc, char *argv[]) {
         desc.add_options()
             ("v,verbose", verbose, "increase verbosity")
             ("h,help", showHelp, "show help")
-            ("l,library-dir", value(jail::preload).default_value(_LIB_DIR_), "pito library directory")
+            ("l,library-dir", value(jail::preload).default_value(PITO_LIB_DIR), "pito library directory")
             ;
 
         try {
@@ -52,7 +52,7 @@ inline int main(int argc, char *argv[]) {
         }
 
         std::string libraryFileName = "libpito_";
-        libraryFileName.append(argv[1]).append(_SHARED_LIB_FILE_EXTENSION_);
+        libraryFileName.append(argv[1]).append(PITO_SHARED_LIB_FILE_EXTENSION);
 
         if ('/' != *(jail::preload.end() - 1)) jail::preload.append("/");
         jail::preload.append(libraryFileName);
@@ -76,7 +76,7 @@ inline int main(int argc, char *argv[]) {
                 } while (colon < ldPathEnd);
 
                 if (jail::preload.empty()) {
-                    std::cerr << "library " << _LIB_DIR_  << libraryFileName << " does not exist and " << 
+                    std::cerr << "library " << PITO_LIB_DIR  << libraryFileName << " does not exist and " << 
                                  libraryFileName << " could not be found in $LD_LIBRARY_PATH" << std::endl;
                     return 1;
                 }

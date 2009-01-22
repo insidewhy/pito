@@ -18,6 +18,7 @@ if(OFF64_SIZE)
 else()
     set(OFF64_TYPE "off_t")
 endif()
+set(PITO_APPLE ${APPLE})
 
 configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_BINARY_DIR}/config.hpp)
 # end configuration

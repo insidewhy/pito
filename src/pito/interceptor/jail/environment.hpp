@@ -39,7 +39,7 @@ char *getenv(char const *key) {
 void enforceEnvironment() {
     // TODO: append to existing LD_PRELOAD 
     //       also consider modifying environ directly (might avoid extra LD_PRELOAD start)
-    setenv(_LD_PRELOAD, preload.c_str(), 1);
+    setenv(PITO_LD_PRELOAD, preload.c_str(), 1);
 #ifdef APPLE
     setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES", 1);
 #endif
