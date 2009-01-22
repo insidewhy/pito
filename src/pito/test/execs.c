@@ -4,16 +4,16 @@
 int main(int argc, char *argv[]) {
     int status;
 
-    printf("fork\n");
+    printf("*** fork\n");
     if (! fork()) {
         char* args[] = { "/bin/false", 0 };
-        printf("execv\n");
+        printf("*** execv\n");
         execv("/bin/false", args);
     }
     wait(&status);
-    printf("system\n");
+    printf("*** system\n");
     system("/bin/false");
 
-    printf("execl\n");
+    printf("*** execl\n");
     execl("/bin/ls", "-l", 0);
 }
