@@ -58,9 +58,33 @@ inline int main(int argc, char *argv[]) {
         jail::preload.append(libraryFileName);
 
         if (access(jail::preload.c_str(), R_OK)) {
-            // TODO: search for libraryFileName in LD_LIBRARY_PATH
-            std::cerr << "library " << jail::preload << " does not exist" << std::endl;
-            return 1;
+            char const *ldPath = getenv("LD_LIBRARY_PATH");
+            if (ldPath) {
+                char const *ldPathEnd = ldPath;
+                while (*(++ldPathEnd) != '\0') {}
+
+                char const *colon = ldPath;
+                do {
+                    colon = std::find(colon + 1, ldPathEnd, ':');
+                    // TODO: search for libraryFileName in ldPath,colon
+
+                    jail::preload.assign(ldPath, colon);
+                    jail::preload.append("/").append(libraryFileName);
+                    if (! access(jail::preload.c_str(), R_OK)) break;
+                    else jail::preload = "";
+
+                    ldPath = colon;
+                } while (colon != ldPathEnd);
+
+                if (jail::preload.empty()) {
+                    std::cerr << "library " << libraryFileName << " could not be found" << std::endl;
+                    return 1;
+                }
+            }
+            else {
+                std::cerr << "library " << jail::preload << " does not exist" << std::endl;
+                return 1;
+            }
         }
 
         // make the library an absolute path
@@ -72,9 +96,8 @@ inline int main(int argc, char *argv[]) {
             jail::preload = newLibraryPath;
         }
 
-        if (verbose) {
+        if (verbose)
             std::cout << "load interceptor library (" << jail::preload << ")" << std::endl;
-        }
 
         jail::enforceEnvironment();
 

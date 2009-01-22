@@ -19,10 +19,12 @@ struct Init {
 
         char const *colon = begin;
         do {
-            colon = std::find(colon, end, ':');
+            colon = std::find(colon + 1, end, ':');
             // std::cout << "got preload entry (" << begin << ")" << std::endl;
+            // TODO: test if range(begin,colon) matches libpito_[a-z]+.so
+
+            begin = colon;
         } while (colon != end);
-        // first find libpito_[a-z]*.so entry
     }
 };
 
