@@ -14,8 +14,11 @@ namespace pito { namespace interceptor { namespace jail {
 
 struct Init {
     Init() {
-#ifndef APPLE
+#ifdef APPLE
+        char const *begin = "poo poo poo";
+#else
         char const *begin = getenv("LD_PRELOAD");
+#endif
         char const *end = begin;
         while (*(++end) != '\0') {}
 
@@ -27,7 +30,6 @@ struct Init {
 
             begin = colon;
         } while (colon != end);
-#endif
     }
 };
 
