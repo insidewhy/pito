@@ -3,12 +3,14 @@
 
 #include "config.hpp"
 
-#include <unistd.h>
 #include <algorithm>
 
-extern "C" { 
-    extern char **environ;
-}
+#ifdef APPLE
+#include <crt_externs.h>
+#define environ (* _NSGetEnviron())
+#else
+#include <unistd.h>
+#endif
 
 namespace pito { namespace interceptor { namespace jail {
 
