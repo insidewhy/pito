@@ -43,28 +43,10 @@ struct Library<library::c> : LibraryHelper {
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
 PITO_SYSTEM_CALL(chmod, c, int, (const char *, mode_t), (path, mode), (char const *path, mode_t mode))
-
-PITO_SYSTEM_CALL_TRAIT(fchmod)
-template <>
-struct SystemCall<fchmod>
-  : PITO_SYSTEM_CALL_BASE<fchmod, library::c, int(int, mode_t)> {};
-
-extern "C" {
-    int fchmod(int fd, mode_t mode) {
-        return PITO_SUPER(fchmod)(fd, mode);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(fchmodat)
-template <>
-struct SystemCall<fchmodat>
-  : PITO_SYSTEM_CALL_BASE<fchmodat, library::c, int(int, const char *, mode_t, int)> {};
-
-extern "C" {
-    int fchmodat(int dirfd, const char *pathname, mode_t mode, int flags) {
-        return PITO_SUPER(fchmodat)(dirfd, pathname, mode, flags);
-    }
-}
+PITO_SYSTEM_CALL(fchmod, c, int, (int, mode_t), (fd, mode), (int fd, mode_t mode))
+PITO_SYSTEM_CALL(fchmodat, c, int, (int, const char *, mode_t, int), \
+                                   (dirfd, path, mode, flags), \
+                                   (int dirfd, char const *path, mode_t mode, int flags))
 
 PITO_SYSTEM_CALL_TRAIT(chown)
 template <>
