@@ -2,6 +2,7 @@
 #define _PITO_INTERCEPTOR_JAIL_LIBC_HPP_
 
 #include <pito/interceptor/jail/environment.hpp>
+#include "config.hpp"
 
 #include <stdarg.h>
 #include <fcntl.h>
@@ -13,6 +14,7 @@ namespace pito { namespace interceptor { namespace jail {
 
 struct Init {
     Init() {
+#ifndef APPLE
         char const *begin = getenv("LD_PRELOAD");
         char const *end = begin;
         while (*(++end) != '\0') {}
@@ -25,6 +27,7 @@ struct Init {
 
             begin = colon;
         } while (colon != end);
+#endif
     }
 };
 
