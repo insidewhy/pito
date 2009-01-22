@@ -66,12 +66,15 @@ inline int main(int argc, char *argv[]) {
                 char const *colon = ldPath;
                 do {
                     colon = std::find(colon + 1, ldPathEnd, ':');
-                    jail::preload.assign(ldPath, colon);
-                    jail::preload.append("/").append(libraryFileName);
-                    if (! access(jail::preload.c_str(), R_OK)) break;
-                    else jail::preload = "";
+                    if (colon != ldPath + 1) {
+                        jail::preload.assign(ldPath, colon);
+                        jail::preload.append("/").append(libraryFileName);
+                        if (! access(jail::preload.c_str(), R_OK)) break;
+                        else jail::preload = "";
 
-                    ldPath = colon;
+                        ldPath = colon;
+                    }
+                    ldPath = colon; 
                 } while (colon != ldPathEnd);
 
                 if (jail::preload.empty()) {
