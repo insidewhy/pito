@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-#ifdef APPLE
+#ifdef PITO_APPLE
 #include <crt_externs.h>
 #define environ (* _NSGetEnviron())
 #else
@@ -40,7 +40,7 @@ void enforceEnvironment() {
     // TODO: append to existing LD_PRELOAD 
     //       also consider modifying environ directly (might avoid extra LD_PRELOAD start)
     setenv(PITO_LD_PRELOAD, preload.c_str(), 1);
-#ifdef APPLE
+#ifdef PITO_APPLE
     setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES", 1);
 #endif
 }
