@@ -6,7 +6,7 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
-#include <iostream>
+// #include <iostream>
 #include <algorithm>
 
 namespace pito { namespace interceptor { namespace jail {
@@ -20,7 +20,7 @@ struct Init {
         char const *colon = begin;
         do {
             colon = std::find(colon, end, ':');
-            std::cout << "got preload entry (" << begin << ")" << std::endl;
+            // std::cout << "got preload entry (" << begin << ")" << std::endl;
         } while (colon != end);
         // first find libpito_[a-z]*.so entry
     }
