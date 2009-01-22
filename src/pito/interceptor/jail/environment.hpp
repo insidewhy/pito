@@ -6,6 +6,10 @@
 #include <unistd.h>
 #include <algorithm>
 
+extern "C" { 
+    extern char **environ;
+}
+
 namespace pito { namespace interceptor { namespace jail {
 
 // LD_PRELOAD entry
