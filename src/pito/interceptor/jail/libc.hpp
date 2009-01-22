@@ -15,17 +15,19 @@ struct Init {
     Init() {
         char const *begin = jail::getenv(_LD_PRELOAD);
         if (begin) {
-            char const *end = begin;
-            while (*(++end) != '\0') {}
+            preload = begin;
+            // TODO: find the library properly like this
+            // char const *end = begin;
+            // while (*(++end) != '\0') {}
 
-            char const *colon = begin;
-            do {
-                colon = std::find(colon + 1, end, ':');
-                // std::cout << "got preload entry (" << begin << ")" << std::endl;
-                // TODO: test if range(begin,colon) matches libpito_[a-z]+.so
+            // char const *colon = begin;
+            // do {
+            //     colon = std::find(colon + 1, end, ':');
+            //     // std::cout << "got preload entry (" << begin << ")" << std::endl;
+            //     // TODO: test if range(begin,colon) matches libpito_[a-z]+.so
 
-                begin = colon;
-            } while (colon != end);
+            //     begin = colon;
+            // } while (colon != end);
         }
     }
 };

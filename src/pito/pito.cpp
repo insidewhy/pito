@@ -3,8 +3,8 @@
 
 #include "config.hpp"
 
-#include <iostream>
 #include <unistd.h>
+#include <iostream>
 
 namespace pito {
 

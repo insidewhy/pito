@@ -6,14 +6,14 @@ int main(int argc, char *argv[]) {
 
     printf("*** fork\n");
     if (! fork()) {
-        char* args[] = { "/bin/false", 0 };
+        char* args[] = { "/bin/touch", "/tmp/cock", 0 };
         printf("*** execv\n");
-        execv("/bin/false", args);
+        execv("/bin/touch", args);
     }
     wait(&status);
     printf("*** system\n");
-    system("/bin/false");
+    system("/bin/touch /tmp/cock");
 
     printf("*** execl\n");
-    execl("/bin/ls", "-l", 0);
+    execl("/bin/touch", "/bin/touch", "/tmp/cock", 0);
 }
