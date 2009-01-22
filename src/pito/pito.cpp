@@ -58,7 +58,7 @@ inline int main(int argc, char *argv[]) {
         jail::preload.append(libraryFileName);
 
         if (access(jail::preload.c_str(), R_OK)) {
-            char const *ldPath = getenv("LD_LIBRARY_PATH");
+            char const *ldPath = jail::getenv("LD_LIBRARY_PATH");
             if (ldPath) {
                 char const *ldPathEnd = ldPath;
                 while (*(++ldPathEnd) != '\0') {}
