@@ -1,12 +1,34 @@
 #ifndef _PITO_INTERCEPTOR_JAIL_ENVIRONMENT_HPP_
 #define _PITO_INTERCEPTOR_JAIL_ENVIRONMENT_HPP_
-#include <unistd.h>
+
 #include "config.hpp"
+
+#include <unistd.h>
+#include <algorithm>
 
 namespace pito { namespace interceptor { namespace jail {
 
 // LD_PRELOAD entry
 std::string preload;
+
+template <class CharIt>
+CharIt end(CharIt begin) {
+    while (*begin != '\0') ++begin;
+    return begin;
+}
+
+// mac can't use the real getenv in the init
+char *getenv(char const *key) {
+    char const *keyEnd = end(key);
+    for (char **envp = environ; *envp != 0; ++envp) {
+        if (std::equal(*envp, *envp + (keyEnd - key), key) && 
+            '=' == (*envp)[keyEnd - key]) 
+        {
+            return *envp + (keyEnd - key) + 1;
+        }
+    }
+    return 0;
+}
 
 void enforceEnvironment() {
     // TODO: append to existing LD_PRELOAD 
