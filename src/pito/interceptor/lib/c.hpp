@@ -49,16 +49,14 @@ PITO_SYSTEM_CALL(fchmod, c, int, (int, mode_t), \
                  (fd, mode), \
                  (int fd, mode_t mode))
 PITO_SYSTEM_CALL(fchmodat, c, int, (int, const char *, mode_t, int), \
-                                   (dirfd, path, mode, flags), \
-                                   (int dirfd, char const *path, mode_t mode, int flags))
-
+                 (dirfd, path, mode, flags), \
+                 (int dirfd, char const *path, mode_t mode, int flags))
 PITO_SYSTEM_CALL(chown, c, int, (const char *, uid_t, gid_t), \
                  (path, owner, group), \
                  (const char *path, uid_t owner, gid_t group))
 PITO_SYSTEM_CALL(fchown, c, int, (int, uid_t, gid_t), \
                  (fd, owner, group), \
                  (int fd, uid_t owner, gid_t group))
-
 PITO_SYSTEM_CALL(fchownat, c, int, (int, const char *, uid_t, gid_t, int), \
                  (dirfd, pathname, owner, group, flags), \
                  (int dirfd, const char *pathname, uid_t owner, gid_t group, int flags))
@@ -108,7 +106,9 @@ PITO_SYSTEM_CALL(fopen, c, FILE *, (const char *, const char *), \
 PITO_SYSTEM_CALL(lchown, c, int, (const char *, uid_t, gid_t), \
                  (path, owner, group), \
                  (const char *path, uid_t owner, gid_t group))
-PITO_SYSTEM_CALL(link, c, int, (const char *, const char *), (oldpath, newpath), (const char *oldpath, const char *newpath))
+PITO_SYSTEM_CALL(link, c, int, (const char *, const char *), \
+                 (oldpath, newpath), \
+                 (const char *oldpath, const char *newpath))
 PITO_SYSTEM_CALL(linkat, c, int, (int, const char *, int, const char *, int), \
                  (olddirfd, oldpath, newdirfd, newpath, flags), \
                  (int olddirfd, const char *oldpath, int newdirfd, const char *newpath, int flags))
