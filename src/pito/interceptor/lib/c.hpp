@@ -29,18 +29,20 @@ struct Library<library::c> : LibraryHelper {
 #define PITO_SYSTEM_CALL_BASE  SystemCallBase
 #endif
 
+#define PITO_SYSTEM_CALL(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals ) \
+    PITO_SYSTEM_CALL_TRAIT(_name) \
+    template <> \
+    struct SystemCall<_name> \
+      : PITO_SYSTEM_CALL_BASE<_name, library::_library, _retVal _argTypes> {}; \
+    extern "C" { \
+        _retVal _name _argTypeVals { \
+            return PITO_SUPER(_name) _argVals; \
+        } \
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
-PITO_SYSTEM_CALL_TRAIT(chmod)
-template <>
-struct SystemCall<chmod>
-  : PITO_SYSTEM_CALL_BASE<chmod, library::c, int(const char *, mode_t)> {};
-
-extern "C" {
-    int chmod(const char *path, mode_t mode) {
-        return PITO_SUPER(chmod)(path, mode);
-    }
-}
+PITO_SYSTEM_CALL(chmod, c, int, (const char *, mode_t), (path, mode), (char const *path, mode_t mode))
 
 PITO_SYSTEM_CALL_TRAIT(fchmod)
 template <>
