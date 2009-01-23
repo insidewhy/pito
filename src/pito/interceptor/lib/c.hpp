@@ -203,7 +203,11 @@ struct SystemCall<openat64>
   : PITO_SYSTEM_CALL_BASE<openat64, library::c, int(int, const char *, int)> {};
 
 extern "C" {
-    int openat64(int dirfd, const char *pathname, int flags, ...) {
+    typedef SystemCall<openat64>::arg_types arg_types;
+    int openat64(type::at<0, arg_types>::type dirfd, 
+                 type::at<1, arg_types>::type pathname, 
+                 type::at<2, arg_types>::type flags, 
+                 ...) {
         if (flags & O_CREAT) {
             va_list ap;
             va_start(ap, flags);
