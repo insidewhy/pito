@@ -37,16 +37,20 @@ char *getenv(char const *key) {
     return 0;
 }
 
+char * const *enforceEnvironment(char * const *env) {
+    // TODO: return pointer to enforced environment
+    // don't have to care about memory management in this process as it
+    // is about to be thrown away
+    return env;
+}
+
 void enforceEnvironment() {
     // TODO: append to existing LD_PRELOAD 
-    //       also consider modifying environ directly (might avoid extra LD_PRELOAD start)
+    //       also consider modifying environ directly with the above call
     setenv(PITO_LD_PRELOAD, preload.c_str(), 1);
 #ifdef PITO_APPLE
     setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES", 1);
 #endif
-}
-
-void enforceEnvironment(char * const *env) {
 }
 
 } } }

@@ -30,8 +30,7 @@ struct Library<library::c> : LibraryHelper {
     Library() : LibraryHelper("libc.so") {}
 };
 
-#define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
-    PITO_SYSTEM_CALL_TRAIT(_name) \
+#define PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
     template <> \
     struct SystemCall<_name> \
       : _base <_name, library::_library, _retVal _argTypes> {}; \
@@ -41,8 +40,16 @@ struct Library<library::c> : LibraryHelper {
         } \
     }
 
+#define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
+    PITO_SYSTEM_CALL_TRAIT(_name) \
+    PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base)
+
 #define PITO_SYSTEM_CALL(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals) \
     PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, PITO_SYSTEM_CALL_BASE)
+
+#define PITO_SYSTEM_CALL_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals) \
+    PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, PITO_SYSTEM_CALL_BASE)
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
@@ -221,10 +228,13 @@ PITO_SYSTEM_CALL(truncate64, c, int, (const char *, PITO_OFF64_TYPE), \
 ////////////////////////////////////////////////////////////////////////////////
 // jail
 ////////////////////////////////////////////////////////////////////////////////
-PITO_SYSTEM_CALL_WITH_BASE(execve, c, int, (const char *, char *const[], char *const[]), \
-                           (filename, argv, envp), \
-                           (const char *filename, char *const argv[], char *const envp[]), \
-                           PITO_JAIL_BASE)
+#ifndef PITO_USING_JAIL
+PITO_SYSTEM_CALL_TRAIT(execve)
+#endif
+PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(execve, c, int, (const char *, char *const[], char *const[]), \
+                                    (filename, argv, envp), \
+                                    (const char *filename, char *const argv[], char *const envp[]), \
+                                    PITO_JAIL_BASE)
 PITO_SYSTEM_CALL_WITH_BASE(execv, c, int, (const char *, char *const[]), \
                            (filename, argv), \
                            (const char *filename, char *const argv[]), \

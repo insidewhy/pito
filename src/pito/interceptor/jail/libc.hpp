@@ -6,6 +6,7 @@
 #define PITO_SYSTEM_CALL_BASE  SystemCallBase
 #endif
 
+#define PITO_USING_JAIL
 #define PITO_JAIL_BASE jail::SystemCall
 
 #include <pito/interceptor/SystemCall.hpp>
@@ -19,7 +20,11 @@
 #include <algorithm>
 #include <iostream>
 
-namespace pito { namespace interceptor { namespace jail {
+namespace pito { namespace interceptor { 
+
+PITO_SYSTEM_CALL_TRAIT(execve)
+
+namespace jail {
 
 struct Init {
     Init() {
@@ -61,6 +66,19 @@ struct SystemCall<Tag, LibraryTag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, 
 };
 
 // TODO: make specialisations to match other exec calls
+template <class Ret, class... Args>
+struct SystemCall<system_call::execve, library::c, Ret (Args...)> 
+  : PITO_SYSTEM_CALL_BASE <system_call::execve, library::c, Ret(Args...)> {
+    typedef PITO_SYSTEM_CALL_BASE <system_call::execve, library::c, Ret(Args...)> base_t;
+
+    // to handle variadic c argument lists
+    template <class... OtherArgs>
+    Ret operator()(OtherArgs... args) {
+        std::cout << "jailed call with environment" << std::endl;
+        // TODO: enforce environment
+        return base_t::operator()(args...);
+    }
+};
 
 
 } } }
