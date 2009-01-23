@@ -18,7 +18,10 @@
 #include <fcntl.h>
 
 #include <algorithm>
+
+#ifndef NDEBUG
 #include <iostream>
+#endif
 
 namespace pito { namespace interceptor { 
 
@@ -59,7 +62,9 @@ struct SystemCall<Tag, LibraryTag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, 
     // to handle variadic c argument lists
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
+#ifndef NDEBUG
         std::cout << "jailed call" << std::endl;
+#endif
         // TODO: enforce environment
         return base_t::operator()(args...);
     }
@@ -74,7 +79,9 @@ struct SystemCall<system_call::execve, library::c, Ret (Args...)>
     // to handle variadic c argument lists
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
+#ifndef NDEBUG
         std::cout << "jailed call with environment" << std::endl;
+#endif
         // TODO: enforce environment
         return base_t::operator()(args...);
     }
