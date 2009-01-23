@@ -4,11 +4,15 @@
 #include <pito/interceptor/Library.hpp>
 #include <pito/interceptor/lib/traits.hpp>
 
+#include <rbutil/type/type.hpp>
+
 #include <boost/pool/detail/singleton.hpp>
 #include <dlfcn.h>
 #include <string>
 
 namespace pito { namespace interceptor {
+
+using namespace rb::util;
 
 template <class Tag>
 struct SystemCall;
@@ -19,6 +23,7 @@ struct SystemCallBase;
 template <class Tag, class LibraryTag, class Ret, class... Args>
 struct SystemCallBase<Tag, LibraryTag, Ret (Args...)> {
     typedef Ret (*call_t)(Args..., ...);
+    typedef type::list<Args...>  arg_types;
 
     // to handle variadic c functions, must accept other args
     template <class... OtherArgs>
