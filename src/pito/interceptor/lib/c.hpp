@@ -1,8 +1,6 @@
 #ifndef _PITO_INTERCEPTOR_LIB_C_
 #define _PITO_INTERCEPTOR_LIB_C_
 
-// TODO: handle the jail differently
-#include <pito/interceptor/jail/libc.hpp>
 #include <pito/interceptor/SystemCall.hpp>
 
 #include <sys/types.h>
@@ -15,6 +13,14 @@
 
 #include "config.hpp"
 
+#ifndef PITO_SYSTEM_CALL_BASE
+#define PITO_SYSTEM_CALL_BASE  SystemCallBase
+#endif
+
+#ifndef PITO_JAIL_BASE
+#define PITO_JAIL_BASE PITO_SYSTEM_CALL_BASE
+#endif
+
 namespace pito { namespace interceptor {
 
 using namespace system_call;
@@ -24,21 +30,19 @@ struct Library<library::c> : LibraryHelper {
     Library() : LibraryHelper("libc.so") {}
 };
 
-// super experts can override this!
-#ifndef PITO_SYSTEM_CALL_BASE
-#define PITO_SYSTEM_CALL_BASE  SystemCallBase
-#endif
-
-#define PITO_SYSTEM_CALL(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals ) \
+#define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
     PITO_SYSTEM_CALL_TRAIT(_name) \
     template <> \
     struct SystemCall<_name> \
-      : PITO_SYSTEM_CALL_BASE<_name, library::_library, _retVal _argTypes> {}; \
+      : _base <_name, library::_library, _retVal _argTypes> {}; \
     extern "C" { \
         _retVal _name _argTypeVals { \
             return PITO_SUPER(_name) _argVals; \
         } \
     }
+
+#define PITO_SYSTEM_CALL(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals) \
+    PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, PITO_SYSTEM_CALL_BASE)
 
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
@@ -217,42 +221,18 @@ PITO_SYSTEM_CALL(truncate64, c, int, (const char *, PITO_OFF64_TYPE), \
 ////////////////////////////////////////////////////////////////////////////////
 // jail
 ////////////////////////////////////////////////////////////////////////////////
-// TODO: see previous TODO
-PITO_SYSTEM_CALL_TRAIT(execve)
-template <>
-struct SystemCall<execve>
-  : PITO_SYSTEM_CALL_BASE<execve, library::c, int(const char *, char *const[], char *const[])> {};
-
-extern "C" {
-    int execve(const char *filename, char *const argv[], char *const envp[]) {
-        enforceEnvironment(envp);
-        return PITO_SUPER(execve)(filename, argv, envp);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(execv)
-template <>
-struct SystemCall<execv>
-  : PITO_SYSTEM_CALL_BASE<execv, library::c, int(const char *, char *const[])> {};
-
-extern "C" {
-    int execv(const char *filename, char *const argv[]) {
-        enforceEnvironment();
-        return PITO_SUPER(execv)(filename, argv);
-    }
-}
-
-PITO_SYSTEM_CALL_TRAIT(execvp)
-template <>
-struct SystemCall<execvp>
-  : PITO_SYSTEM_CALL_BASE<execvp, library::c, int(const char *, char *const[])> {};
-
-extern "C" {
-    int execvp(const char *filename, char *const argv[]) {
-        enforceEnvironment();
-        return PITO_SUPER(execvp)(filename, argv);
-    }
-}
+PITO_SYSTEM_CALL_WITH_BASE(execve, c, int, (const char *, char *const[], char *const[]), \
+                           (filename, argv, envp), \
+                           (const char *filename, char *const argv[], char *const envp[]), \
+                           PITO_JAIL_BASE)
+PITO_SYSTEM_CALL_WITH_BASE(execv, c, int, (const char *, char *const[]), \
+                           (filename, argv), \
+                           (const char *filename, char *const argv[]), \
+                           PITO_JAIL_BASE)
+PITO_SYSTEM_CALL_WITH_BASE(execvp, c, int, (const char *, char *const[]), \
+                           (filename, argv), \
+                           (const char *filename, char *const argv[]), \
+                           PITO_JAIL_BASE)
 ////////////////////////////////////////////////////////////////////////////////
 // end jail
 ////////////////////////////////////////////////////////////////////////////////
