@@ -31,6 +31,13 @@ struct Library<library::c> : LibraryHelper {
     Library() : LibraryHelper("libc.so") {}
 };
 
+#define PITO_ARGS(idx) type::at<idx, arg_types>::type arg##idx
+#define PITO_ARGS_1    PITO_ARGS(0)
+#define PITO_ARGS_2    PITO_ARGS(0), PITO_ARGS(1)
+#define PITO_ARGS_3    PITO_ARGS(0), PITO_ARGS(1), PITO_ARGS(2)
+#define PITO_ARGS_4    PITO_ARGS(0), PITO_ARGS(1), PITO_ARGS(2), PITO_ARGS(3)
+#define PITO_ARGS_5    PITO_ARGS(0), PITO_ARGS(1), PITO_ARGS(2), PITO_ARGS(3), PITO_ARGS(4)
+
 #define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
     template <> \
     struct SystemCall<_name> \
@@ -193,18 +200,15 @@ struct SystemCall<openat64>
 
 extern "C" {
     typedef SystemCall<openat64>::arg_types arg_types;
-    int openat64(type::at<0, arg_types>::type dirfd, 
-                 type::at<1, arg_types>::type pathname, 
-                 type::at<2, arg_types>::type flags, 
-                 ...) {
-        if (flags & O_CREAT) {
+    int openat64(PITO_ARGS_3, ...) {
+        if (arg2 & O_CREAT) {
             va_list ap;
-            va_start(ap, flags);
+            va_start(ap, arg2);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(openat64)(dirfd, pathname, flags, mode);
+            return PITO_SUPER(openat64)(arg0, arg1, arg2, mode);
         }
-        else return PITO_SUPER(openat64)(dirfd, pathname, flags);
+        else return PITO_SUPER(openat64)(arg0, arg1, arg2);
     }
 }
 
