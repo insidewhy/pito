@@ -4,7 +4,7 @@
 #include <pito/interceptor/Library.hpp>
 #include <pito/interceptor/lib/traits.hpp>
 
-#include <rbutil/type/type.hpp>
+#include <rbutil/type/list.hpp>
 
 #include <boost/pool/detail/singleton.hpp>
 #include <dlfcn.h>
