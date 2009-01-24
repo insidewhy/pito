@@ -31,12 +31,19 @@ struct Library<library::c> : LibraryHelper {
     Library() : LibraryHelper("libc.so") {}
 };
 
-#define PITO_ARGS(idx) type::at<idx, arg_types>::type arg##idx
-#define PITO_ARGS_1    PITO_ARGS(0)
-#define PITO_ARGS_2    PITO_ARGS(0), PITO_ARGS(1)
-#define PITO_ARGS_3    PITO_ARGS(0), PITO_ARGS(1), PITO_ARGS(2)
-#define PITO_ARGS_4    PITO_ARGS(0), PITO_ARGS(1), PITO_ARGS(2), PITO_ARGS(3)
-#define PITO_ARGS_5    PITO_ARGS(0), PITO_ARGS(1), PITO_ARGS(2), PITO_ARGS(3), PITO_ARGS(4)
+#define PITO_ARG_NAME(idx) arg##idx
+#define PITO_ARG_NAMES_1(idx)   PITO_ARG_NAME(0)
+#define PITO_ARG_NAMES_2(idx)   PITO_ARG_NAME_1, PITO_ARG_NAME(1)
+#define PITO_ARG_NAMES_3(idx)   PITO_ARG_NAME_2, PITO_ARG_NAME(2)
+#define PITO_ARG_NAMES_4(idx)   PITO_ARG_NAME_3, PITO_ARG_NAME(3)
+#define PITO_ARG_NAMES_5(idx)   PITO_ARG_NAME_4, PITO_ARG_NAME(4)
+
+#define PITO_ARG(idx, list) type::at<idx, list>::type PITO_ARG_NAME(idx)
+#define PITO_ARGS_1(list)   PITO_ARG(0, list)
+#define PITO_ARGS_2(list)   PITO_ARGS_1(list), PITO_ARG(1, list)
+#define PITO_ARGS_3(list)   PITO_ARGS_2(list), PITO_ARG(2, list)
+#define PITO_ARGS_4(list)   PITO_ARGS_3(list), PITO_ARG(3, list)
+#define PITO_ARGS_5(list)   PITO_ARGS_4(list), PITO_ARG(4, list)
 
 #define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
     template <> \
@@ -199,8 +206,7 @@ struct SystemCall<openat64>
   : PITO_SYSTEM_CALL_BASE<openat64, library::c, int(int, const char *, int)> {};
 
 extern "C" {
-    typedef SystemCall<openat64>::arg_types arg_types;
-    int openat64(PITO_ARGS_3, ...) {
+    int openat64(PITO_ARGS_3(SystemCall<openat64>::arg_types), ...) {
         if (arg2 & O_CREAT) {
             va_list ap;
             va_start(ap, arg2);
