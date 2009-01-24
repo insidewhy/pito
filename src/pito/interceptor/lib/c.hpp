@@ -1,6 +1,7 @@
 #ifndef _PITO_INTERCEPTOR_LIB_C_
 #define _PITO_INTERCEPTOR_LIB_C_
 
+#include <pito/interceptor/lib/c_traits.hpp>
 #include <pito/interceptor/SystemCall.hpp>
 
 #include <sys/types.h>
@@ -30,7 +31,7 @@ struct Library<library::c> : LibraryHelper {
     Library() : LibraryHelper("libc.so") {}
 };
 
-#define PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
+#define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
     template <> \
     struct SystemCall<_name> \
       : _base <_name, library::_library, _retVal _argTypes> {}; \
@@ -40,16 +41,8 @@ struct Library<library::c> : LibraryHelper {
         } \
     }
 
-#define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base) \
-    PITO_SYSTEM_CALL_TRAIT(_name) \
-    PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, _base)
-
 #define PITO_SYSTEM_CALL(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals) \
     PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, PITO_SYSTEM_CALL_BASE)
-
-#define PITO_SYSTEM_CALL_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals) \
-    PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(_name, _library, _retVal, _argTypes, _argVals, _argTypeVals, PITO_SYSTEM_CALL_BASE)
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
@@ -72,7 +65,6 @@ PITO_SYSTEM_CALL(fchownat, c, int, (int, const char *, uid_t, gid_t, int), \
                  (dirfd, pathname, owner, group, flags), \
                  (int dirfd, const char *pathname, uid_t owner, gid_t group, int flags))
 
-PITO_SYSTEM_CALL_TRAIT(open)
 template <>
 struct SystemCall<open>
   : PITO_SYSTEM_CALL_BASE<open, library::c, int(const char *, int)> {};
@@ -90,7 +82,6 @@ extern "C" {
     }
 }
 
-PITO_SYSTEM_CALL_TRAIT(openat)
 template <>
 struct SystemCall<openat>
   : PITO_SYSTEM_CALL_BASE<openat, library::c, int(int, const char *, int)> {};
@@ -179,7 +170,6 @@ PITO_SYSTEM_CALL(getcwd, c, char *, (char *, size_t), \
                  (buf, size), \
                  (char *buf, size_t size))
 
-PITO_SYSTEM_CALL_TRAIT(open64)
 template <>
 struct SystemCall<open64>
   : PITO_SYSTEM_CALL_BASE<open64, library::c, int(const char *, int)> {};
@@ -197,7 +187,6 @@ extern "C" {
     }
 }
 
-PITO_SYSTEM_CALL_TRAIT(openat64)
 template <>
 struct SystemCall<openat64>
   : PITO_SYSTEM_CALL_BASE<openat64, library::c, int(int, const char *, int)> {};
@@ -232,13 +221,10 @@ PITO_SYSTEM_CALL(truncate64, c, int, (const char *, PITO_OFF64_TYPE), \
 ////////////////////////////////////////////////////////////////////////////////
 // jail
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef PITO_USING_JAIL
-PITO_SYSTEM_CALL_TRAIT(execve)
-#endif
-PITO_SYSTEM_CALL_WITH_BASE_NO_TRAIT(execve, c, int, (const char *, char *const[], char *const[]), \
-                                    (filename, argv, envp), \
-                                    (const char *filename, char *const argv[], char *const envp[]), \
-                                    PITO_JAIL_BASE)
+PITO_SYSTEM_CALL_WITH_BASE(execve, c, int, (const char *, char *const[], char *const[]), \
+                           (filename, argv, envp), \
+                           (const char *filename, char *const argv[], char *const envp[]), \
+                           PITO_JAIL_BASE)
 PITO_SYSTEM_CALL_WITH_BASE(execv, c, int, (const char *, char *const[]), \
                            (filename, argv), \
                            (const char *filename, char *const argv[]), \

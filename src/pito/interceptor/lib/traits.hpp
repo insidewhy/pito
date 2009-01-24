@@ -10,12 +10,10 @@ struct traits;
 
 // TODO: make the library tag a trait
 #define PITO_SYSTEM_CALL_TRAIT(name_) \
-    namespace system_call { \
-        struct name_ {}; \
-        template <> struct traits<name_> { \
-            static char const name[]; \
-        }; \
-        char const traits<name_>::name[] = #name_; \
-    }
+    struct name_ {}; \
+    template <> struct traits<name_> { \
+        static char const name[]; \
+    }; \
+    char const traits<name_>::name[] = #name_;
 
 #endif

@@ -11,6 +11,7 @@
 
 #include <pito/interceptor/SystemCall.hpp>
 
+#include <pito/interceptor/lib/c_traits.hpp>
 #include <pito/interceptor/jail/environment.hpp>
 #include "config.hpp"
 
@@ -23,11 +24,7 @@
 #include <iostream>
 #endif
 
-namespace pito { namespace interceptor { 
-
-PITO_SYSTEM_CALL_TRAIT(execve)
-
-namespace jail {
+namespace pito { namespace interceptor { namespace jail {
 
 struct Init {
     Init() {
