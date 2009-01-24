@@ -60,7 +60,7 @@ struct SystemCall<Tag, LibraryTag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, 
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
 #ifndef NDEBUG
-        std::cout << "jailed call" << std::endl;
+        std::cerr << "jailed call" << std::endl;
 #endif
         // TODO: enforce environment
         return base_t::operator()(args...);
@@ -77,7 +77,7 @@ struct SystemCall<system_call::execve, library::c, Ret (Args...)>
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
 #ifndef NDEBUG
-        std::cout << "jailed call with environment" << std::endl;
+        std::cerr << "jailed call with environment" << std::endl;
 #endif
         // TODO: enforce environment
         return base_t::operator()(args...);

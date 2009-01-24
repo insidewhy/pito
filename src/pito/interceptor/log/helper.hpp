@@ -26,7 +26,7 @@ struct PrintTailArgs<> {
 template <class Arg, class... Args>
 struct PrintTailArgs<Arg, Args...> {
     static void exec(Arg const& arg, Args... args) {
-        std::cout << ", " << arg;
+        std::cerr << ", " << arg;
         PrintTailArgs<Args...>::exec(args...);
     }
 };
@@ -34,7 +34,7 @@ struct PrintTailArgs<Arg, Args...> {
 template <class Arg, class... Args>
 struct PrintArgs<Arg, Args...> {
     static void exec(Arg const& arg, Args... args) {
-        std::cout << arg;
+        std::cerr << arg;
         PrintTailArgs<Args...>::exec(args...);
     }
 };
@@ -49,9 +49,9 @@ struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallBase<Tag, LibraryT
     // to handle variadic c argument lists
     template <class... OtherArgs>
     Ret operator()(OtherArgs... args) {
-        std::cout << "calling " << system_call::traits<Tag>::name << "(";
+        std::cerr << "calling " << system_call::traits<Tag>::name << "(";
         PrintArgs<OtherArgs...>::exec(args...);
-        std::cout << ")" << std::endl;
+        std::cerr << ")" << std::endl;
         return base_t::operator()(args...);
     }
 };
