@@ -6,7 +6,6 @@
 #define PITO_SYSTEM_CALL_BASE  SystemCallBase
 #endif
 
-#define PITO_USING_JAIL
 #define PITO_JAIL_BASE jail::SystemCall
 
 #include <pito/interceptor/SystemCall.hpp>
