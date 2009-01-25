@@ -6,6 +6,7 @@ int main(int argc, char *argv[]) {
 
     printf("*** fork\n");
     if (! fork()) {
+        access("/tmp/cock", R_OK);
         char* args[] = { "/bin/touch", "/tmp/cock", 0 };
         printf("*** execv\n");
         execv("/bin/touch", args);
