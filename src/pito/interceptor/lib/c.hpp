@@ -34,15 +34,15 @@ struct SystemCall<open>
  : PITO_SYSTEM_CALL_BASE<open> {};
 
 extern "C" {
-    int open(const char *pathname, int flags, ...) {
-        if (flags & O_CREAT) {
+    int open(PITO_ARGS(open), ...) {
+        if (arg1 & O_CREAT) {
             va_list ap;
-            va_start(ap, flags);
+            va_start(ap, arg1);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(open)(pathname, flags, mode);
+            return PITO_SUPER(open)(arg0, arg1, mode);
         }
-        else return PITO_SUPER(open)(pathname, flags);
+        else return PITO_SUPER(open)(arg0, arg1);
     }
 }
 
@@ -51,15 +51,15 @@ struct SystemCall<openat>
   : PITO_SYSTEM_CALL_BASE<openat> {};
 
 extern "C" {
-    int openat(int dirfd, const char *pathname, int flags, ...) {
-        if (flags & O_CREAT) {
+    int openat(PITO_ARGS(openat), ...) {
+        if (arg2 & O_CREAT) {
             va_list ap;
-            va_start(ap, flags);
+            va_start(ap, arg2);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(openat)(dirfd, pathname, flags, mode);
+            return PITO_SUPER(openat)(arg0, arg1, arg2, mode);
         }
-        else return PITO_SUPER(openat)(dirfd, pathname, flags);
+        else return PITO_SUPER(openat)(arg0, arg1, arg2);
     }
 }
 
@@ -93,15 +93,15 @@ struct SystemCall<open64>
   : PITO_SYSTEM_CALL_BASE<open64> {};
 
 extern "C" {
-    int open64(const char *pathname, int flags, ...) {
-        if (flags & O_CREAT) {
+    int open64(PITO_ARGS(open64), ...) {
+        if (arg1 & O_CREAT) {
             va_list ap;
-            va_start(ap, flags);
+            va_start(ap, arg1);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(open64)(pathname, flags, mode);
+            return PITO_SUPER(open64)(arg0, arg1, mode);
         }
-        else return PITO_SUPER(open64)(pathname, flags);
+        else return PITO_SUPER(open64)(arg0, arg1);
     }
 }
 
@@ -110,7 +110,7 @@ struct SystemCall<openat64>
   : PITO_SYSTEM_CALL_BASE<openat64> {};
 
 extern "C" {
-    int openat64(RBUTIL_ARGS_3(SystemCall<openat64>::arg_types), ...) {
+    int openat64(PITO_ARGS(openat64), ...) {
         if (arg2 & O_CREAT) {
             va_list ap;
             va_start(ap, arg2);
