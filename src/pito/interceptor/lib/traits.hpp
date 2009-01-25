@@ -9,10 +9,11 @@ struct traits;
 } } }
 
 // TODO: make the library tag a trait
-#define PITO_SYSTEM_CALL_TRAIT(name_) \
+#define PITO_SYSTEM_CALL_TRAIT(name_, lib_) \
     struct name_ {}; \
     template <> struct traits<name_> { \
-        static char const name[]; \
+        static char const       name[]; \
+        typedef library::lib_   library; \
     }; \
     char const traits<name_>::name[] = #name_;
 

@@ -18,11 +18,11 @@ using namespace rb::util;
 template <class Tag>
 struct SystemCall;
 
-template <class Tag, class LibraryTag, class Ret, class... Args>
+template <class Tag, class Ret, class... Args>
 struct SystemCallBase;
 
-template <class Tag, class LibraryTag, class Ret, class... Args>
-struct SystemCallBase<Tag, LibraryTag, Ret (Args...)> {
+template <class Tag, class Ret, class... Args>
+struct SystemCallBase<Tag, Ret (Args...)> {
     typedef Ret (*call_t)(Args..., ...);
     typedef Ret                  return_type;
     typedef type::list<Args...>  arg_types;
@@ -54,17 +54,17 @@ namespace system_call {
 
 #define PITO_SUPER(calltype)   system_call::instance<system_call:: calltype >()
 
-#define PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _signature, _nArgs, _base) \
+#define PITO_SYSTEM_CALL_WITH_BASE(_name, _signature, _nArgs, _base) \
     template <> \
     struct SystemCall<_name> \
-      : _base <_name, library::_library, _signature> {}; \
+      : _base <_name, _signature> {}; \
     extern "C" { \
         SystemCall<_name>::return_type  _name ( RBUTIL_ARGS_##_nArgs(SystemCall<_name>::arg_types) ) { \
             return PITO_SUPER(_name)( RBUTIL_ARG_NAMES_##_nArgs ); \
         } \
     }
 
-#define PITO_SYSTEM_CALL(_name, _library, _signature, _nArgs) \
-    PITO_SYSTEM_CALL_WITH_BASE(_name, _library, _signature, _nArgs, PITO_SYSTEM_CALL_BASE)
+#define PITO_SYSTEM_CALL(_name, _signature, _nArgs) \
+    PITO_SYSTEM_CALL_WITH_BASE(_name, _signature, _nArgs, PITO_SYSTEM_CALL_BASE)
 
 #endif

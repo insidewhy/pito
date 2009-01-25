@@ -39,12 +39,12 @@ struct PrintArgs<Arg, Args...> {
     }
 };
 
-template <class Tag, class LibraryTag, class Ret, class... Args>
+template <class Tag, class Ret, class... Args>
 struct SystemCall;
 
-template <class Tag, class LibraryTag, class Ret, class... Args>
-struct SystemCall<Tag, LibraryTag, Ret (Args...)> : SystemCallBase<Tag, LibraryTag, Ret(Args...)> {
-    typedef SystemCallBase<Tag, LibraryTag, Ret(Args...)> base_t;
+template <class Tag, class Ret, class... Args>
+struct SystemCall<Tag, Ret (Args...)> : SystemCallBase<Tag, Ret(Args...)> {
+    typedef SystemCallBase<Tag, Ret(Args...)> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>

@@ -52,12 +52,12 @@ struct Init {
 
 Init init;
 
-template <class Tag, class LibraryTag, class Ret, class... Args>
+template <class Tag, class Ret, class... Args>
 struct SystemCall;
 
-template <class Tag, class LibraryTag, class Ret, class... Args>
-struct SystemCall<Tag, LibraryTag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, LibraryTag, Ret(Args...)> {
-    typedef PITO_SYSTEM_CALL_BASE <Tag, LibraryTag, Ret(Args...)> base_t;
+template <class Tag, class Ret, class... Args>
+struct SystemCall<Tag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, Ret(Args...)> {
+    typedef PITO_SYSTEM_CALL_BASE <Tag, Ret(Args...)> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>
@@ -72,9 +72,9 @@ struct SystemCall<Tag, LibraryTag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, 
 
 // TODO: make specialisations to match other exec calls
 template <class Ret, class... Args>
-struct SystemCall<system_call::execve, library::c, Ret (Args...)> 
-  : PITO_SYSTEM_CALL_BASE <system_call::execve, library::c, Ret(Args...)> {
-    typedef PITO_SYSTEM_CALL_BASE <system_call::execve, library::c, Ret(Args...)> base_t;
+struct SystemCall<system_call::execve, Ret (Args...)> 
+  : PITO_SYSTEM_CALL_BASE <system_call::execve, Ret(Args...)> {
+    typedef PITO_SYSTEM_CALL_BASE <system_call::execve, Ret(Args...)> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>
