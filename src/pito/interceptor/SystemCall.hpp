@@ -22,7 +22,7 @@ template <class Tag, class Ret, class... Args>
 struct SystemCallBase;
 
 template <class Tag, class Ret, class... Args>
-struct SystemCallBase<Tag, Ret (Args...)> {
+struct SystemCallBase<Tag, Ret (Args...)> : system_call::traits<Tag> {
     typedef Ret (*call_t)(Args..., ...);
     typedef Ret                  return_type;
     typedef type::list<Args...>  arg_types;
