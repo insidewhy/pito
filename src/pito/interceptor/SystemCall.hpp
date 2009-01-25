@@ -48,23 +48,25 @@ namespace system_call {
 } }
 
 #define PITO_SUPER(calltype)   system_call::instance<system_call:: calltype >()
-#define PITO_OH(a) a
 
-#define PITO_SYSTEM_CALL_WITH_BASE_INDIRECT(name_, base_, nArgs_) \
+#define PITO_ARGS_HELPER(name_, nArgs_) RBUTIL_ARGS(SystemCall<name_>::arg_types, nArgs_)
+#define PITO_ARGS(name_) PITO_ARGS_HELPER(name_, PITO_NARGS_##name_)
+
+#define PITO_ARG_NAMES_HELPER(nArgs_) RBUTIL_ARG_NAMES(nArgs_)
+#define PITO_ARG_NAMES(name_) PITO_ARG_NAMES_HELPER(PITO_NARGS_##name_)
+
+#define PITO_SYSTEM_CALL_WITH_BASE(name_, base_) \
     template <> \
     struct SystemCall<name_> \
       : base_ <name_> {}; \
     extern "C" { \
-        SystemCall<name_>::return_type  name_(RBUTIL_ARGS(SystemCall<name_>::arg_types, nArgs_)) { \
-            return PITO_SUPER(name_)(RBUTIL_ARG_NAMES(nArgs_)); \
+        SystemCall<name_>::return_type  name_(PITO_ARGS(name_)) { \
+            return PITO_SUPER(name_)(PITO_ARG_NAMES(name_)); \
         } \
     }
 
-#define PITO_SYSTEM_CALL_WITH_BASE(name_, base_) \
-    PITO_SYSTEM_CALL_WITH_BASE_INDIRECT(name_, base_, PITO_NARGS_##name_)
-
 #define PITO_SYSTEM_CALL(name_) \
-    PITO_SYSTEM_CALL_WITH_BASE_INDIRECT(name_, PITO_SYSTEM_CALL_BASE, PITO_NARGS_##name_)
+    PITO_SYSTEM_CALL_WITH_BASE(name_, PITO_SYSTEM_CALL_BASE)
 
 
 #endif
