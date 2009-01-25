@@ -7,10 +7,6 @@
 
 namespace pito { namespace interceptor { 
 
-namespace library {
-    struct c {};
-}
-
 using boost::details::pool::singleton_default;
 
 struct LibraryHelper {

@@ -3,7 +3,13 @@
 
 #include <pito/interceptor/lib/c_traits.hpp>
 
-namespace pito { namespace interceptor { namespace system_call {
+namespace pito { namespace interceptor {
+
+namespace library {
+    struct c {};
+}
+
+namespace system_call {
 
 PITO_SYSTEM_CALL_TRAIT(chmod)
 PITO_SYSTEM_CALL_TRAIT(fchmod)
