@@ -33,12 +33,12 @@ struct Library<library::c> : LibraryHelper {
 
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
-PITO_SYSTEM_CALL(chmod, c, int, (const char *, mode_t), 2)
-PITO_SYSTEM_CALL(fchmod, c, int, (int, mode_t), 2)
-PITO_SYSTEM_CALL(fchmodat, c, int, (int, const char *, mode_t, int), 4)
-PITO_SYSTEM_CALL(chown, c, int, (const char *, uid_t, gid_t), 3)
-PITO_SYSTEM_CALL(fchown, c, int, (int, uid_t, gid_t), 3)
-PITO_SYSTEM_CALL(fchownat, c, int, (int, const char *, uid_t, gid_t, int), 5)
+PITO_SYSTEM_CALL(chmod, c, int(const char *, mode_t), 2)
+PITO_SYSTEM_CALL(fchmod, c, int(int, mode_t), 2)
+PITO_SYSTEM_CALL(fchmodat, c, int(int, const char *, mode_t, int), 4)
+PITO_SYSTEM_CALL(chown, c, int(const char *, uid_t, gid_t), 3)
+PITO_SYSTEM_CALL(fchown, c, int(int, uid_t, gid_t), 3)
+PITO_SYSTEM_CALL(fchownat, c, int(int, const char *, uid_t, gid_t, int), 5)
 
 template <>
 struct SystemCall<open>
@@ -74,30 +74,30 @@ extern "C" {
     }
 }
 
-PITO_SYSTEM_CALL(creat, c, int, (const char *, mode_t), 2)
-PITO_SYSTEM_CALL(fopen, c, FILE *, (const char *, const char *), 2)
-PITO_SYSTEM_CALL(lchown, c, int, (const char *, uid_t, gid_t), 3)
-PITO_SYSTEM_CALL(link, c, int, (const char *, const char *), 2)
-PITO_SYSTEM_CALL(linkat, c, int, (int, const char *, int, const char *, int), 5)
-PITO_SYSTEM_CALL(mkdir, c, int, (const char *, mode_t), 2)
-PITO_SYSTEM_CALL(mkdirat, c, int, (int, const char *, mode_t), 3)
-PITO_SYSTEM_CALL(opendir, c, DIR *, (const char *), 1)
-PITO_SYSTEM_CALL(mknod, c, int, (const char *, mode_t, dev_t), 3)
-PITO_SYSTEM_CALL(mknodat, c, int, (int, const char *, mode_t, dev_t), 4)
+PITO_SYSTEM_CALL(creat, c, int(const char *, mode_t), 2)
+PITO_SYSTEM_CALL(fopen, c, FILE *(const char *, const char *), 2)
+PITO_SYSTEM_CALL(lchown, c, int(const char *, uid_t, gid_t), 3)
+PITO_SYSTEM_CALL(link, c, int(const char *, const char *), 2)
+PITO_SYSTEM_CALL(linkat, c, int(int, const char *, int, const char *, int), 5)
+PITO_SYSTEM_CALL(mkdir, c, int(const char *, mode_t), 2)
+PITO_SYSTEM_CALL(mkdirat, c, int(int, const char *, mode_t), 3)
+PITO_SYSTEM_CALL(opendir, c, DIR *(const char *), 1)
+PITO_SYSTEM_CALL(mknod, c, int(const char *, mode_t, dev_t), 3)
+PITO_SYSTEM_CALL(mknodat, c, int(int, const char *, mode_t, dev_t), 4)
 // function todo: __xmknod
-PITO_SYSTEM_CALL(mkfifo, c, int, (const char *, mode_t), 2)
-PITO_SYSTEM_CALL(mkfifoat, c, int, (int, const char *, mode_t), 3)
-PITO_SYSTEM_CALL(access, c, int, (const char *, int), 2)
-PITO_SYSTEM_CALL(faccessat, c, int, (int, const char *, int, int), 4)
-PITO_SYSTEM_CALL(rename, c, int, (const char *, const char *), 2)
-PITO_SYSTEM_CALL(renameat, c, int, (int, const char *, int, const char *), 4)
-PITO_SYSTEM_CALL(rmdir, c, int, (const char *), 1)
-PITO_SYSTEM_CALL(symlink, c, int, (const char *, const char *), 2)
-PITO_SYSTEM_CALL(symlinkat, c, int, (const char *, int, const char *), 3)
-PITO_SYSTEM_CALL(truncate, c, int, (const char *, off_t), 2)
-PITO_SYSTEM_CALL(unlink, c, int, (const char *), 1)
-PITO_SYSTEM_CALL(unlinkat, c, int, (int, const char *, int), 3)
-PITO_SYSTEM_CALL(getcwd, c, char *, (char *, size_t), 2)
+PITO_SYSTEM_CALL(mkfifo, c, int(const char *, mode_t), 2)
+PITO_SYSTEM_CALL(mkfifoat, c, int(int, const char *, mode_t), 3)
+PITO_SYSTEM_CALL(access, c, int(const char *, int), 2)
+PITO_SYSTEM_CALL(faccessat, c, int(int, const char *, int, int), 4)
+PITO_SYSTEM_CALL(rename, c, int(const char *, const char *), 2)
+PITO_SYSTEM_CALL(renameat, c, int(int, const char *, int, const char *), 4)
+PITO_SYSTEM_CALL(rmdir, c, int(const char *), 1)
+PITO_SYSTEM_CALL(symlink, c, int(const char *, const char *), 2)
+PITO_SYSTEM_CALL(symlinkat, c, int(const char *, int, const char *), 3)
+PITO_SYSTEM_CALL(truncate, c, int(const char *, off_t), 2)
+PITO_SYSTEM_CALL(unlink, c, int(const char *), 1)
+PITO_SYSTEM_CALL(unlinkat, c, int(int, const char *, int), 3)
+PITO_SYSTEM_CALL(getcwd, c, char *(char *, size_t), 2)
 
 template <>
 struct SystemCall<open64>
@@ -133,26 +133,26 @@ extern "C" {
     }
 }
 
-PITO_SYSTEM_CALL(creat64, c, int, (const char *, mode_t), 2)
-PITO_SYSTEM_CALL(fopen64, c, FILE *, (const char *, const char *), 2)
-PITO_SYSTEM_CALL(truncate64, c, int, (const char *, PITO_OFF64_TYPE), 2)
+PITO_SYSTEM_CALL(creat64, c, int(const char *, mode_t), 2)
+PITO_SYSTEM_CALL(fopen64, c, FILE *(const char *, const char *), 2)
+PITO_SYSTEM_CALL(truncate64, c, int(const char *, PITO_OFF64_TYPE), 2)
 
 ////////////////////////////////////////////////////////////////////////////////
 // jail
 ////////////////////////////////////////////////////////////////////////////////
-PITO_SYSTEM_CALL_WITH_BASE(execve, c, int, (const char *, char *const[], char *const[]), 3, PITO_JAIL_BASE)
-PITO_SYSTEM_CALL_WITH_BASE(execv, c, int, (const char *, char *const[]), 2, PITO_JAIL_BASE)
-PITO_SYSTEM_CALL_WITH_BASE(execvp, c, int, (const char *, char *const[]), 2, PITO_JAIL_BASE)
+PITO_SYSTEM_CALL_WITH_BASE(execve, c, int(const char *, char *const[], char *const[]), 3, PITO_JAIL_BASE)
+PITO_SYSTEM_CALL_WITH_BASE(execv, c, int(const char *, char *const[]), 2, PITO_JAIL_BASE)
+PITO_SYSTEM_CALL_WITH_BASE(execvp, c, int(const char *, char *const[]), 2, PITO_JAIL_BASE)
 ////////////////////////////////////////////////////////////////////////////////
 // end jail
 ////////////////////////////////////////////////////////////////////////////////
 
-PITO_SYSTEM_CALL(utime, c, int, (const char *, const struct utimbuf *), 2)
-PITO_SYSTEM_CALL(utimes, c, int, (const char *, const struct timeval[2]), 2)
-PITO_SYSTEM_CALL(utimensat, c, int, (int, const char *, const struct timespec[2], int), 4)
-PITO_SYSTEM_CALL(futimesat, c, int, (int, const char *, const struct timeval[2]), 3)
-PITO_SYSTEM_CALL(lutimes, c, int, (const char *, const struct timeval[2]), 2)
-PITO_SYSTEM_CALL(getuid, c, int, (void), 0)
+PITO_SYSTEM_CALL(utime, c, int(const char *, const struct utimbuf *), 2)
+PITO_SYSTEM_CALL(utimes, c, int(const char *, const struct timeval[2]), 2)
+PITO_SYSTEM_CALL(utimensat, c, int(int, const char *, const struct timespec[2], int), 4)
+PITO_SYSTEM_CALL(futimesat, c, int(int, const char *, const struct timeval[2]), 3)
+PITO_SYSTEM_CALL(lutimes, c, int(const char *, const struct timeval[2]), 2)
+PITO_SYSTEM_CALL(getuid, c, int(void), 0)
 
 } }
 
