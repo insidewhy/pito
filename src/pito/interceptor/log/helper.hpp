@@ -49,7 +49,7 @@ struct SystemCall : SystemCallBase<Tag> {
     // to handle variadic c argument lists
     template <class... OtherArgs>
     typename base_t::return_type operator()(OtherArgs... args) {
-        std::cerr << "calling " << system_call::traits<Tag>::name << "(";
+        std::cerr << "calling " << base_t::name << "(";
         PrintArgs<OtherArgs...>::exec(args...);
         std::cerr << ")" << std::endl;
         return base_t::operator()(args...);
