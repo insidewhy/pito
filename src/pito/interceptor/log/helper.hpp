@@ -39,16 +39,16 @@ struct PrintArgs<Arg, Args...> {
     }
 };
 
-template <class Tag, class Ret, class... Args>
+template <class Tag>
 struct SystemCall;
 
-template <class Tag, class Ret, class... Args>
-struct SystemCall<Tag, Ret (Args...)> : SystemCallBase<Tag, Ret(Args...)> {
-    typedef SystemCallBase<Tag, Ret(Args...)> base_t;
+template <class Tag>
+struct SystemCall : SystemCallBase<Tag> {
+    typedef SystemCallBase<Tag> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>
-    Ret operator()(OtherArgs... args) {
+    typename base_t::return_type operator()(OtherArgs... args) {
         std::cerr << "calling " << system_call::traits<Tag>::name << "(";
         PrintArgs<OtherArgs...>::exec(args...);
         std::cerr << ")" << std::endl;

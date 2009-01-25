@@ -52,16 +52,16 @@ struct Init {
 
 Init init;
 
-template <class Tag, class Ret, class... Args>
+template <class Tag>
 struct SystemCall;
 
-template <class Tag, class Ret, class... Args>
-struct SystemCall<Tag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, Ret(Args...)> {
-    typedef PITO_SYSTEM_CALL_BASE <Tag, Ret(Args...)> base_t;
+template <class Tag>
+struct SystemCall : PITO_SYSTEM_CALL_BASE <Tag> {
+    typedef PITO_SYSTEM_CALL_BASE <Tag> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>
-    Ret operator()(OtherArgs... args) {
+    typename base_t::return_type operator()(OtherArgs... args) {
 #ifndef NDEBUG
         std::cerr << "jailed call" << std::endl;
 #endif
@@ -71,14 +71,14 @@ struct SystemCall<Tag, Ret (Args...)> : PITO_SYSTEM_CALL_BASE <Tag, Ret(Args...)
 };
 
 // TODO: make specialisations to match other exec calls
-template <class Ret, class... Args>
-struct SystemCall<system_call::execve, Ret (Args...)> 
-  : PITO_SYSTEM_CALL_BASE <system_call::execve, Ret(Args...)> {
-    typedef PITO_SYSTEM_CALL_BASE <system_call::execve, Ret(Args...)> base_t;
+template <>
+struct SystemCall<system_call::execve> 
+  : PITO_SYSTEM_CALL_BASE <system_call::execve> {
+    typedef PITO_SYSTEM_CALL_BASE <system_call::execve> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>
-    Ret operator()(OtherArgs... args) {
+    typename base_t::return_type operator()(OtherArgs... args) {
 #ifndef NDEBUG
         std::cerr << "jailed call with environment" << std::endl;
 #endif
