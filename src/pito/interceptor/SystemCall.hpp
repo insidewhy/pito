@@ -47,7 +47,7 @@ namespace system_call {
 
 } }
 
-#define PITO_SUPER(calltype)   system_call::instance<system_call:: calltype >()
+#define PITO_SUPER(name_)   system_call::instance<system_call::name_>()
 
 #define PITO_ARGS_HELPER(name_, nArgs_) RBUTIL_ARGS(SystemCall<name_>::arg_types, nArgs_)
 #define PITO_ARGS(name_) PITO_ARGS_HELPER(name_, PITO_NARGS_##name_)

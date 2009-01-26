@@ -58,7 +58,7 @@ inline int main(int argc, char *argv[]) {
         jail::preload.append(libraryFileName);
 
         if (access(jail::preload.c_str(), R_OK)) {
-            char const *ldPath = jail::getenv("LD_LIBRARY_PATH");
+            char const *ldPath = jail::getenv(PITO_LD_LIBRARY_PATH);
             if (ldPath) {
                 char const *ldPathEnd = ldPath;
                 while (*(++ldPathEnd) != '\0') {}
@@ -77,7 +77,7 @@ inline int main(int argc, char *argv[]) {
 
                 if (jail::preload.empty()) {
                     std::cerr << "library " << PITO_LIB_DIR  << libraryFileName << " does not exist and " << 
-                                 libraryFileName << " could not be found in $LD_LIBRARY_PATH" << std::endl;
+                                 libraryFileName << " could not be found in $" PITO_LD_LIBRARY_PATH << std::endl;
                     return 1;
                 }
             }
