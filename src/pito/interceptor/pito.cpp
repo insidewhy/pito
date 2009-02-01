@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <iostream>
 
+#define PITO_PROGRAM_VERSION 0.9
+
 namespace pito {
 
 using namespace interceptor;
@@ -15,6 +17,12 @@ using rb::util::conf::value;
 
 bool verbose = false;
 
+void help(cmd_line::options_description const& options) {
+    std::cout << "pito " << PITO_PROGRAM_VERSION << std::endl;
+    std::cout << "usage: pito [arguments] <wrapper library name> <program> [program arguments]" << std::endl;
+    std::cout << options << std::endl;
+}
+
 inline int main(int argc, char *argv[]) {
     {
         using cmd_line::options_description;
@@ -22,15 +30,24 @@ inline int main(int argc, char *argv[]) {
 
         // TODO: make all arguments from second positional and inclusive the 
         //       new argv/argc
-        options_description desc;
-        desc.add_options()
+        options_description options;
+        options.add_options()
             ("v,verbose", verbose, "increase verbosity")
             ("h,help", showHelp, "show help")
             ("l,library-dir", value(jail::preload).default_value(PITO_LIB_DIR), "pito library directory")
             ;
 
+        if (argc < 3) {
+            help(options);
+            if (argc == 2)
+                std::cout << "missing <program> argument" << std::endl;
+            else
+                std::cout << "missing <wrapper library name> and <program> arguments" << std::endl;
+            return 1;
+        }
+
         try {
-            cmd_line::parser(argc, argv, desc)();
+            cmd_line::parser(argc, argv, options)();
         }
         catch (cmd_line::bad_value& e) {
             std::cerr << "bad value reading command line options" << std::endl;
@@ -41,8 +58,8 @@ inline int main(int argc, char *argv[]) {
             showHelp = true;
         }
 
-        if (showHelp || argv[1] == 0) {
-            // std::cout << desc << std::endl;
+        if (showHelp) {
+            help(options);
             return 1;
         }
 
