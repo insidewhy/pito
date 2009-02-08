@@ -42,6 +42,9 @@ struct Init {
             //     begin = colon;
             // } while (colon != end);
         }
+
+        // apple can't handle output in the global construction phase.. check
+        // only verified as working on linux
 #if ! defined(NDEBUG) && ! defined(APPLE)
         std::cerr << "jail init with $" PITO_LD_PRELOAD " (" << preload << ")" << std::endl;
 #endif
