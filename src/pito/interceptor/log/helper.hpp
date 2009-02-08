@@ -8,6 +8,17 @@
 
 namespace pito { namespace interceptor { namespace log {
 
+#ifdef PITO_INTERCEPTOR_LOG_PID
+struct init {
+    init() {
+       pid_ = getpid(); 
+    }
+    pid_t   pid_;
+};
+
+init context;
+#endif
+
 template <class... Args> struct PrintArgs;
 template <class... Args> struct PrintTailArgs;
 
@@ -49,6 +60,9 @@ struct system_call : detail::system_call<Tag> {
     // to handle variadic c argument lists
     template <class... OtherArgs>
     typename base_t::return_type operator()(OtherArgs... args) {
+#ifdef PITO_INTERCEPTOR_LOG_PID
+        std::cerr << context.pid_ << " - ";
+#endif
         std::cerr << "calling " << base_t::name << "(";
         PrintArgs<OtherArgs...>::exec(args...);
         std::cerr << ")" << std::endl;

@@ -24,8 +24,8 @@
 
 namespace pito { namespace interceptor { namespace jail {
 
-struct Init {
-    Init() {
+struct init {
+    init() {
         char const *begin = jail::getenv(PITO_LD_PRELOAD);
         if (begin) {
             preload = begin;
@@ -51,7 +51,7 @@ struct Init {
     }
 };
 
-Init init;
+init context;
 
 template <class Tag>
 struct system_call;
