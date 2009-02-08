@@ -37,14 +37,14 @@ char *getenv(char const *key) {
     return 0;
 }
 
-char * const *enforceEnvironment(char * const *env) {
+char * const *enforce_environment(char * const *env) {
     // TODO: return pointer to enforced environment
     // don't have to care about memory management in this process as it
     // is about to be thrown away
     return env;
 }
 
-void enforceEnvironment() {
+void enforce_environment() {
     // TODO: append to existing LD_PRELOAD 
     //       also consider modifying environ directly with the above call
     setenv(PITO_LD_PRELOAD, preload.c_str(), 1);
