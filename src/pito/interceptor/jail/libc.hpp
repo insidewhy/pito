@@ -11,7 +11,7 @@
 #include <pito/interceptor/system_call.hpp>
 #include <pito/interceptor/lib/c_traits.hpp>
 #include <pito/interceptor/jail/environment.hpp>
-#include "config.hpp"
+#include <pito/config.hpp>
 
 #include <stdarg.h>
 #include <fcntl.h>

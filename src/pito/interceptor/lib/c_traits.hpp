@@ -1,7 +1,7 @@
 #ifndef _PITO_INTERCEPTOR_TRAITS_
 #define _PITO_INTERCEPTOR_TRAITS_
 
-#include "config.hpp"
+#include <pito/config.hpp>
 
 #include <sys/types.h>
 #include <sys/time.h>

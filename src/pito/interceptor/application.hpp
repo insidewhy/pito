@@ -1,7 +1,7 @@
 #ifndef PITO_INTERCEPTOR_APPLICATION_HPP
 #define PITO_INTERCEPTOR_APPLICATION_HPP
 
-#include "config.hpp"
+#include <pito/config.hpp>
 #include <pito/interceptor/jail/environment.hpp>
 
 namespace pito { namespace interceptor {

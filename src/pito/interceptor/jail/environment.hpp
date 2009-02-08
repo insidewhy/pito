@@ -1,7 +1,7 @@
 #ifndef _PITO_INTERCEPTOR_JAIL_ENVIRONMENT_HPP_
 #define _PITO_INTERCEPTOR_JAIL_ENVIRONMENT_HPP_
 
-#include "config.hpp"
+#include <pito/config.hpp>
 
 #include <algorithm>
 #include <string>

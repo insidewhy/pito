@@ -20,13 +20,13 @@ else()
 endif()
 set(PITO_APPLE ${APPLE})
 
-configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_BINARY_DIR}/config.hpp)
+configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_SOURCE_DIR}/config.hpp)
 # end configuration
 ################################################################################
 
-include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/..)
+include_directories(${CMAKE_SOURCE_DIR}/..)
 
 add_subdirectory(interceptor)
 
-add_executable(pito pito.cpp)
+add_executable(pito pito.cpp config.hpp)
 install_targets(/bin pito)

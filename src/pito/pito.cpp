@@ -2,7 +2,7 @@
 #include <pito/interceptor/application.hpp>
 #include <pito/interceptor/jail/environment.hpp>
 
-#include "config.hpp"
+#include <pito/config.hpp>
 
 #include <unistd.h>
 #include <iostream>
