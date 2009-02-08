@@ -23,20 +23,45 @@ void help(cmd_line::options_description const& options) {
     std::cout << options << std::endl;
 }
 
+// search in $LD_LIBRARY_PATH, then installed location
+void searchForLibrary(std::string const& libraryFileName) {
+    char const *ldPath = jail::getenv(PITO_LD_LIBRARY_PATH);
+    if (ldPath) {
+        char const *ldPathEnd = ldPath;
+        while (*(++ldPathEnd) != '\0') {}
+
+        char const *colon = ldPath;
+        do {
+            colon = std::find(colon, ldPathEnd, ':');
+            if (colon != ldPath) {
+                jail::preload.assign(ldPath, colon);
+                jail::preload.append("/").append(libraryFileName);
+                if (! access(jail::preload.c_str(), R_OK)) return;
+                else jail::preload = "";
+            }
+            ldPath = ++colon; 
+        } while (colon < ldPathEnd);
+    }
+
+    jail::preload = PITO_LIB_DIR;
+    jail::preload.append(libraryFileName);
+    if (access(jail::preload.c_str(), R_OK)) jail::preload = "";
+}
+
 inline int main(int argc, char *argv[]) {
     {
         using cmd_line::options_description;
-        bool showHelp = false;
-        bool silent = false;
-
         // TODO: make all arguments from second positional and inclusive the 
         //       new argv/argc
         options_description options;
+
+        bool showHelp = false;
+        bool silent = false;
         options.add_options()
             ("v,verbose", verbose, "increase verbosity")
             ("h,help", showHelp, "show help")
             ("s,silent", silent, "don't say anything")
-            ("l,library-dir", value(jail::preload).default_value(PITO_LIB_DIR), "pito library directory")
+            ("l,library-dir", value(jail::preload), "pito library directory")
             ;
 
         if (argc < 3) {
@@ -67,47 +92,20 @@ inline int main(int argc, char *argv[]) {
             return 1;
         }
 
-        if (jail::preload.empty()) {
-            if (! silent) std::cerr << "please do not provide an empty library directory, leave it blank to use the installed location" << std::endl;
-            return 1;
-        }
-
         std::string libraryFileName = "libpito_";
         libraryFileName.append(argv[1]).append(PITO_SHARED_LIB_FILE_EXTENSION);
 
-        if ('/' != *(jail::preload.end() - 1)) jail::preload.append("/");
-        jail::preload.append(libraryFileName);
+        if (! jail::preload.empty()) {
+            if ('/' != *(jail::preload.end() - 1)) jail::preload.append("/");
+            jail::preload.append(libraryFileName);
+            if (access(jail::preload.c_str(), R_OK)) searchForLibrary(libraryFileName);
+        }
+        else searchForLibrary(libraryFileName);
 
-        if (access(jail::preload.c_str(), R_OK)) {
-            char const *ldPath = jail::getenv(PITO_LD_LIBRARY_PATH);
-            if (ldPath) {
-                char const *ldPathEnd = ldPath;
-                while (*(++ldPathEnd) != '\0') {}
-
-                char const *colon = ldPath;
-                do {
-                    colon = std::find(colon, ldPathEnd, ':');
-                    if (colon != ldPath) {
-                        jail::preload.assign(ldPath, colon);
-                        jail::preload.append("/").append(libraryFileName);
-                        if (! access(jail::preload.c_str(), R_OK)) break;
-                        else jail::preload = "";
-                    }
-                    ldPath = ++colon; 
-                } while (colon < ldPathEnd);
-
-                if (jail::preload.empty()) {
-                    if (! silent) std::cerr << "library " << PITO_LIB_DIR  << 
-                                            libraryFileName << " does not exist and " << 
-                                            libraryFileName << " could not be found in $" PITO_LD_LIBRARY_PATH << 
-                                            std::endl;
-                    return 1;
-                }
-            }
-            else {
-                if (! silent) std::cerr << "library " << jail::preload << " does not exist" << std::endl;
-                return 1;
-            }
+        if (jail::preload.empty()) {
+            if (! silent) std::cerr << "library " << libraryFileName << " could not be found at"
+                                    " install location or in $" PITO_LD_LIBRARY_PATH << std::endl;
+            return 1;
         }
 
         // make the library an absolute path
