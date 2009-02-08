@@ -17,12 +17,6 @@ using rb::util::conf::value;
 
 bool verbose = false;
 
-void help(cmd_line::options_description const& options) {
-    std::cout << "pito " << PITO_PROGRAM_VERSION << std::endl;
-    std::cout << "usage: pito [arguments] <wrapper library name> <program> [program arguments]" << std::endl;
-    std::cout << options << std::endl;
-}
-
 inline int main(int argc, char *argv[]) {
     {
         using cmd_line::options_description;
@@ -34,36 +28,27 @@ inline int main(int argc, char *argv[]) {
         bool silent = false;
         options.add_options()
             ("v,verbose", verbose, "increase verbosity")
-            ("h,help", showHelp, "show help")
+            .help("h,help", "pito " PITO_PROGRAM_VERSION
+                  "\nusage: pito [arguments] <wrapper library name> <program> [program arguments]")
             ("s,silent", silent, "don't say anything")
             ("l,library-dir", value(jail::preload), "pito library directory")
             ;
 
         if (argc < 3) {
             if (! silent) {
-                help(options);
                 if (argc == 2)
-                    std::cout << "missing <program> argument" << std::endl;
+                    std::cout << "missing <program> argument, see --help" << std::endl;
                 else
-                    std::cout << "missing <wrapper library name> and <program> arguments" << std::endl;
+                    std::cout << "missing <wrapper library name> and <program> arguments, see --help" << std::endl;
             }
             return 1;
         }
 
         try {
-            cmd_line::parser(argc, argv, options)();
+            if (silent) cmd_line::parser(argc, argv, options)();
+            else cmd_line::parser(argc, argv, options)(std::cerr);
         }
-        catch (cmd_line::bad_value& e) {
-            if (! silent) std::cerr << "bad value reading command line options" << std::endl;
-            showHelp = true;
-        }
-        catch (cmd_line::expected_argument& e) {
-            if (! silent) std::cerr << "expected command line argument" << std::endl;
-            showHelp = true;
-        }
-
-        if (showHelp) {
-            help(options);
+        catch (cmd_line::invalid_arguments& ) {
             return 1;
         }
 
