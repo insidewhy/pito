@@ -40,8 +40,8 @@ inline int main(int argc, char *argv[]) {
             ;
 
         if (argc < 3) {
-            help(options);
             if (! silent) {
+                help(options);
                 if (argc == 2)
                     std::cout << "missing <program> argument" << std::endl;
                 else
