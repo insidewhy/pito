@@ -65,8 +65,10 @@ struct system_call : detail::system_call<Tag> {
 #endif
         std::cerr << "calling " << base_t::name << "(";
         PrintArgs<OtherArgs...>::exec(args...);
-        std::cerr << ")" << std::endl;
-        return base_t::operator()(args...);
+        std::cerr << ")" << std::flush;
+        typename base_t::return_type ret = base_t::operator()(args...);
+        std::cerr << " - " << ret << std::endl;
+        return ret;
     }
 };
 
