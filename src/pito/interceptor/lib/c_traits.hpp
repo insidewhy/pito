@@ -1,8 +1,6 @@
 #ifndef _PITO_INTERCEPTOR_TRAITS_
 #define _PITO_INTERCEPTOR_TRAITS_
 
-#include <pito/interceptor/lib/c_traits.hpp>
-
 #include "config.hpp"
 
 #include <sys/types.h>
@@ -11,13 +9,13 @@
 
 namespace pito { namespace interceptor {
 
-namespace library {
+namespace library_tag {
     struct c {};
 }
 
 template <>
-struct Library<library::c> : LibraryHelper {
-    Library() : LibraryHelper("libc.so") {}
+struct library<library_tag::c> : detail::library {
+    library() : detail::library("libc.so") {}
 };
 
 namespace system_call {
@@ -114,6 +112,7 @@ PITO_SYSTEM_CALL_TRAIT(lutimes, c, int(const char *, const struct timeval[2]))
 #define PITO_NARGS_getuid 0
 PITO_SYSTEM_CALL_TRAIT(getuid, c, int(void))
 
-} } }
+} 
+} }
 
 #endif

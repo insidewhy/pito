@@ -15,7 +15,7 @@ struct traits;
     struct name_ {}; \
     template <> struct traits<name_> : rb::util::type::function<signature_> { \
         static char const       name[]; \
-        typedef library::lib_   library; \
+        typedef library_tag::lib_   library; \
     }; \
     char const traits<name_>::name[] = #name_;
 

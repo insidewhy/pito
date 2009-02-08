@@ -1,7 +1,7 @@
 #ifndef _PITO_INTERCEPTOR_SYSTEM_CALL_HPP_
 #define _PITO_INTERCEPTOR_SYSTEM_CALL_HPP_
 
-#include <pito/interceptor/Library.hpp>
+#include <pito/interceptor/library.hpp>
 #include <pito/interceptor/lib/traits.hpp>
 
 #include <rbutil/type/list.hpp>
@@ -27,7 +27,7 @@ struct SystemCallBase : system_call::traits<Tag> {
     typename type_base::return_type operator()(OtherArgs... args) {
         if (! call_) {
             // the following might be needed for another architecture
-            // call_ = reinterpret_cast<call_t>(dlsym(library::instance<LibraryTag>().handle(), name_.c_str()));
+            // call_ = reinterpret_cast<call_t>(dlsym(library_instance<LibraryTag>().handle(), name_.c_str()));
             call_ = reinterpret_cast<typename type_base::call_t>(dlsym(RTLD_NEXT, system_call::traits<Tag>::name));
         }
         return call_(args...);
