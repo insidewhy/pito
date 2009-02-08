@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
-
-include(C++0x)
 project(pito)
+include(C++0x)
 
 ################################################################################
 # configuration
@@ -27,6 +26,7 @@ configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_SOURCE_DIR}/config.h
 include_directories(${CMAKE_SOURCE_DIR}/..)
 
 add_subdirectory(interceptor)
+add_subdirectory(test)
 
 add_executable(pito pito.cpp config.hpp)
 install_targets(/bin pito)
