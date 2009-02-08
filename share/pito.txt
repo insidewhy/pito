@@ -1,0 +1,59 @@
+Pito Tutorial
+
+Pito is a c++ library that allows a programmer to easily write shared libraries that intercept calls to functions in other libraries and/or overridde these functions. To demonstrate how easy it is to do this, the following tutorial shows how to build a shared library for logging all function calls (and return values) to the c system library.
+
+* libpito_log, a simple system call log library
+** log/libc.cpp
+
+    #include <log/helper.hpp>
+    // this provides the programmers system_call interceptor class
+
+    #define PITO_SYSTEM_CALL_BASE  log::system_call
+    // the above line sets the c++ class log::system_call from log/helper.hpp 
+    // to be the base class of every system call class
+
+    #include <pito/interceptor/jail/libc.hpp>
+    // the above line is included to jail the process in, calls to exec style
+    // functions are caught to ensure the library remains in LD_PRELOAD
+
+    #include <pito/interceptor/lib/c.hpp>
+    // this includes the definitions of the calls in libc, which will 
+    // be redirected through the log::system_call base
+
+This is it, now all the programmer has to do is write the one class log::system_call in log/helper.hpp to catch all system calls.
+
+** log/helper.hpp
+    // Tag is used for template specialisation to handle different system calls specially
+    namespace log {
+    template <class Tag>
+    struct system_call : detail::system_call<Tag> {
+        typedef detail::system_call<Tag> base_t;
+
+        // to handle variadic c argument lists
+        template <class... OtherArgs>
+        typename base_t::return_type operator()(OtherArgs... args) {
+    #ifdef PITO_INTERCEPTOR_LOG_PID
+            std::cerr << context.pid_ << " - ";
+    #endif
+            std::cerr << "calling " << base_t::name << "(";
+            PrintArgs<OtherArgs...>::exec(args...);
+            std::cerr << ")" << std::flush;
+            typename base_t::return_type ret = base_t::operator()(args...);
+            std::cerr << " - " << ret << std::endl;
+            return ret;
+        }
+    };
+    } // end namespace log
+
+This uses c++0x "variadic template parameters" to handle overriding c system calls with all their varying argument lists. base_t::operator()(args...) can be used to invoke the underlying system call. Here a simple template helper is used for printing all of the arguments in the template parameter pack.
+
+The Tag argument passed to the system call can be used to specialise the interceptor class to behave differently for certain system calls. This is used in the jail to handle exec calls different to enforce the environment.
+
+** jail/libc.hpp
+    template <>
+    struct system_call<system_call_tag::execve> 
+      : detail::system_call<system_call_tag::execve>
+    {
+        // ... special implementation here
+    }
+
