@@ -27,6 +27,7 @@ inline int main(int argc, char *argv[]) {
     {
         using cmd_line::options_description;
         bool showHelp = false;
+        bool silent = false;
 
         // TODO: make all arguments from second positional and inclusive the 
         //       new argv/argc
@@ -34,15 +35,18 @@ inline int main(int argc, char *argv[]) {
         options.add_options()
             ("v,verbose", verbose, "increase verbosity")
             ("h,help", showHelp, "show help")
+            ("s,silent", silent, "don't say anything")
             ("l,library-dir", value(jail::preload).default_value(PITO_LIB_DIR), "pito library directory")
             ;
 
         if (argc < 3) {
             help(options);
-            if (argc == 2)
-                std::cout << "missing <program> argument" << std::endl;
-            else
-                std::cout << "missing <wrapper library name> and <program> arguments" << std::endl;
+            if (! silent) {
+                if (argc == 2)
+                    std::cout << "missing <program> argument" << std::endl;
+                else
+                    std::cout << "missing <wrapper library name> and <program> arguments" << std::endl;
+            }
             return 1;
         }
 
@@ -50,11 +54,11 @@ inline int main(int argc, char *argv[]) {
             cmd_line::parser(argc, argv, options)();
         }
         catch (cmd_line::bad_value& e) {
-            std::cerr << "bad value reading command line options" << std::endl;
+            if (! silent) std::cerr << "bad value reading command line options" << std::endl;
             showHelp = true;
         }
         catch (cmd_line::expected_argument& e) {
-            std::cerr << "expected command line argument" << std::endl;
+            if (! silent) std::cerr << "expected command line argument" << std::endl;
             showHelp = true;
         }
 
@@ -64,7 +68,7 @@ inline int main(int argc, char *argv[]) {
         }
 
         if (jail::preload.empty()) {
-            std::cerr << "please do not provide an empty library directory, leave it blank to use the installed location" << std::endl;
+            if (! silent) std::cerr << "please do not provide an empty library directory, leave it blank to use the installed location" << std::endl;
             return 1;
         }
 
@@ -93,13 +97,15 @@ inline int main(int argc, char *argv[]) {
                 } while (colon < ldPathEnd);
 
                 if (jail::preload.empty()) {
-                    std::cerr << "library " << PITO_LIB_DIR  << libraryFileName << " does not exist and " << 
-                                 libraryFileName << " could not be found in $" PITO_LD_LIBRARY_PATH << std::endl;
+                    if (! silent) std::cerr << "library " << PITO_LIB_DIR  << 
+                                            libraryFileName << " does not exist and " << 
+                                            libraryFileName << " could not be found in $" PITO_LD_LIBRARY_PATH << 
+                                            std::endl;
                     return 1;
                 }
             }
             else {
-                std::cerr << "library " << jail::preload << " does not exist" << std::endl;
+                if (! silent) std::cerr << "library " << jail::preload << " does not exist" << std::endl;
                 return 1;
             }
         }
