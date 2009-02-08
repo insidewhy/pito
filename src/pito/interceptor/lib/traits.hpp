@@ -3,20 +3,21 @@
 
 #include <rbutil/type/function.hpp>
 
-namespace pito { namespace interceptor { namespace system_call {
+namespace pito { namespace interceptor {
 
 template <class Tag>
 struct traits;
 
-} } }
+} }
 
 // TODO: make the library tag a trait
 #define PITO_SYSTEM_CALL_TRAIT(name_, lib_, signature_) \
-    struct name_ {}; \
-    template <> struct traits<name_> : rb::util::type::function<signature_> { \
+    namespace system_call_tag { struct name_ {}; } \
+    template <> struct traits<system_call_tag::name_> : rb::util::type::function<signature_> { \
         static char const       name[]; \
         typedef library_tag::lib_   library; \
     }; \
-    char const traits<name_>::name[] = #name_;
+    char const traits<system_call_tag::name_>::name[] = #name_;
 
 #endif
+

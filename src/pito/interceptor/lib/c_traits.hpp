@@ -18,8 +18,6 @@ struct library<library_tag::c> : detail::library {
     library() : detail::library("libc.so") {}
 };
 
-namespace system_call {
-
 #define PITO_NARGS_chmod 2
 PITO_SYSTEM_CALL_TRAIT(chmod, c, int(const char *, mode_t))
 #define PITO_NARGS_fchmod 2
@@ -112,7 +110,6 @@ PITO_SYSTEM_CALL_TRAIT(lutimes, c, int(const char *, const struct timeval[2]))
 #define PITO_NARGS_getuid 0
 PITO_SYSTEM_CALL_TRAIT(getuid, c, int(void))
 
-} 
 } }
 
 #endif

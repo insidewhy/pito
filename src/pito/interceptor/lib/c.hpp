@@ -2,14 +2,14 @@
 #define _PITO_INTERCEPTOR_LIB_C_
 
 #include <pito/interceptor/lib/c_traits.hpp>
-#include <pito/interceptor/SystemCall.hpp>
+#include <pito/interceptor/system_call.hpp>
 
 #include <stdlib.h>
 #include <stdarg.h>
 #include <fcntl.h>
 
 #ifndef PITO_SYSTEM_CALL_BASE
-#define PITO_SYSTEM_CALL_BASE  SystemCallBase
+#define PITO_SYSTEM_CALL_BASE  detail::system_call
 #endif
 
 #ifndef PITO_JAIL_BASE
@@ -18,7 +18,7 @@
 
 namespace pito { namespace interceptor {
 
-using namespace system_call;
+using namespace system_call_tag;
 
 ////////////////////////////////////////////////////////////////////////////////
 // security intercepts
@@ -30,7 +30,7 @@ PITO_SYSTEM_CALL(fchown)
 PITO_SYSTEM_CALL(fchownat)
 
 template <>
-struct SystemCall<open>
+struct system_call<open>
  : PITO_SYSTEM_CALL_BASE<open> {};
 
 extern "C" {
@@ -47,7 +47,7 @@ extern "C" {
 }
 
 template <>
-struct SystemCall<openat>
+struct system_call<openat>
   : PITO_SYSTEM_CALL_BASE<openat> {};
 
 extern "C" {
@@ -89,7 +89,7 @@ PITO_SYSTEM_CALL(unlinkat)
 PITO_SYSTEM_CALL(getcwd)
 
 template <>
-struct SystemCall<open64>
+struct system_call<open64>
   : PITO_SYSTEM_CALL_BASE<open64> {};
 
 extern "C" {
@@ -106,7 +106,7 @@ extern "C" {
 }
 
 template <>
-struct SystemCall<openat64>
+struct system_call<openat64>
   : PITO_SYSTEM_CALL_BASE<openat64> {};
 
 extern "C" {

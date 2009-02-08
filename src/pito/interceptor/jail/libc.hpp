@@ -3,13 +3,12 @@
 
 // super experts can override this!
 #ifndef PITO_SYSTEM_CALL_BASE
-#define PITO_SYSTEM_CALL_BASE  SystemCallBase
+#define PITO_SYSTEM_CALL_BASE  detail::system_call
 #endif
 
-#define PITO_JAIL_BASE jail::SystemCall
+#define PITO_JAIL_BASE jail::system_call
 
-#include <pito/interceptor/SystemCall.hpp>
-
+#include <pito/interceptor/system_call.hpp>
 #include <pito/interceptor/lib/c_traits.hpp>
 #include <pito/interceptor/jail/environment.hpp>
 #include "config.hpp"
@@ -52,10 +51,10 @@ struct Init {
 Init init;
 
 template <class Tag>
-struct SystemCall;
+struct system_call;
 
 template <class Tag>
-struct SystemCall : PITO_SYSTEM_CALL_BASE <Tag> {
+struct system_call : PITO_SYSTEM_CALL_BASE <Tag> {
     typedef PITO_SYSTEM_CALL_BASE <Tag> base_t;
 
     // to handle variadic c argument lists
@@ -71,9 +70,10 @@ struct SystemCall : PITO_SYSTEM_CALL_BASE <Tag> {
 
 // TODO: make specialisations to match other exec calls
 template <>
-struct SystemCall<system_call::execve> 
-  : PITO_SYSTEM_CALL_BASE <system_call::execve> {
-    typedef PITO_SYSTEM_CALL_BASE <system_call::execve> base_t;
+struct system_call<system_call_tag::execve> 
+  : PITO_SYSTEM_CALL_BASE <system_call_tag::execve> 
+{
+    typedef PITO_SYSTEM_CALL_BASE <system_call_tag::execve> base_t;
 
     // to handle variadic c argument lists
     template <class... OtherArgs>
