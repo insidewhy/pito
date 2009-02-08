@@ -26,7 +26,7 @@ namespace detail {
             } while (colon < ldPathEnd);
         }
 
-        preloadLibrary = PITO_LIB_DIR;
+        preloadLibrary = PITO_LIB_PREFIX;
         preloadLibrary.append(libraryFileName);
         if (access(preloadLibrary.c_str(), R_OK)) preloadLibrary = "";
         else {
@@ -50,8 +50,8 @@ void search_for_preload_library(std::string& libraryFileName, std::string& prelo
 
 // search in $LD_LIBRARY_PATH, then installed location
 void search_for_preload_library(std::string& libraryFileName, std::string& preloadLibrary, std::string const& pathOverride) {
+    libraryFileName.append(PITO_SHARED_LIB_FILE_EXTENSION);
     if (! pathOverride.empty()) {
-        libraryFileName.append(PITO_SHARED_LIB_FILE_EXTENSION);
         if ('/' != *(preloadLibrary.end() - 1)) preloadLibrary.append("/");
         preloadLibrary.append(libraryFileName);
         if (! access(preloadLibrary.c_str(), R_OK)) return;

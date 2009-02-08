@@ -30,4 +30,4 @@ add_subdirectory(interceptor)
 
 add_executable(pito pito.cpp config.hpp)
 install_targets(/bin pito)
-installDirectory(${CMAKE_SOURCE_DIR} ${INCLUDE_DIR} .hpp$)
+installDirectory(${CMAKE_SOURCE_DIR} ${INCLUDE_DIR}/pito .hpp$)

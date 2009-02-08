@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#define PITO_PROGRAM_VERSION 0.9
+#define PITO_PROGRAM_VERSION "0.9.1"
 
 namespace pito {
 
