@@ -19,7 +19,7 @@ namespace detail {
                 if (colon != ldPath) {
                     preloadLibrary.assign(ldPath, colon);
                     preloadLibrary.append("/").append(libraryFileName);
-                    if (! access(preloadLibrary.c_str(), R_OK)) return;
+                    if (! access(preloadLibrary.c_str(), R_OK)) break;
                     else preloadLibrary = "";
                 }
                 ldPath = ++colon; 
@@ -31,12 +31,12 @@ namespace detail {
         if (access(preloadLibrary.c_str(), R_OK)) preloadLibrary = "";
         else {
             // make the library an absolute path
-            if (*jail::preload.begin() != '/') {
+            if (*preloadLibrary.begin() != '/') {
                 char buff_[512];
                 getcwd(buff_, sizeof(buff_));
                 std::string newLibraryPath = buff_;
-                newLibraryPath.append("/").append(jail::preload);
-                jail::preload = newLibraryPath;
+                newLibraryPath.append("/").append(preloadLibrary);
+                preloadLibrary = newLibraryPath;
             }
         }
     }
