@@ -1,9 +1,7 @@
 #include <rbutil/conf/cmd/command_line.hpp>
 #include <pito/interceptor/application.hpp>
-
 #include <pito/config.hpp>
 
-#include <unistd.h>
 #include <iostream>
 
 #define PITO_PROGRAM_VERSION "0.9.1"
@@ -62,8 +60,7 @@ inline int main(int argc, char *argv[]) {
                                     " install location or in $" PITO_LD_LIBRARY_PATH << std::endl;
         } 
         else {
-            if (verbose)
-                std::cerr << "load interceptor library (" << jail::preload << ")" << std::endl;
+            if (verbose) std::cerr << "load interceptor library (" << jail::preload << ")" << std::endl;
             jail::enforce_environment();
             // consider setting argv[2] based on path and use execv
             execvp(argv[2], argv + 2);
