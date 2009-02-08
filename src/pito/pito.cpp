@@ -1,6 +1,5 @@
 #include <rbutil/conf/cmd/command_line.hpp>
 #include <pito/interceptor/application.hpp>
-#include <pito/interceptor/jail/environment.hpp>
 
 #include <pito/config.hpp>
 
@@ -34,19 +33,20 @@ inline int main(int argc, char *argv[]) {
             ("l,library-dir", value(jail::preload), "pito library directory")
             ;
 
-        if (argc < 3) {
-            if (! silent) {
-                if (argc == 2)
-                    std::cout << "missing <program> argument, see --help" << std::endl;
-                else
-                    std::cout << "missing <wrapper library name> and <program> arguments, see --help" << std::endl;
-            }
-            return 1;
-        }
-
         try {
-            if (silent) cmd_line::parser(argc, argv, options)();
-            else cmd_line::parser(argc, argv, options)(std::cerr);
+            int nPositionals = silent ?
+                cmd_line::parser(argc, argv, options)().n_positionals() :
+                cmd_line::parser(argc, argv, options)(std::cerr).n_positionals();
+
+            if (nPositionals < 2) {
+                if (! silent) {
+                    if (1 == nPositionals)
+                        std::cout << "missing <program> argument, see --help" << std::endl;
+                    else
+                        std::cout << "missing <wrapper library name> and <program> arguments, see --help" << std::endl;
+                }
+                return 1;
+            }
         }
         catch (cmd_line::invalid_arguments& ) {
             return 1;
