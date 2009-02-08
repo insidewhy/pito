@@ -1,5 +1,5 @@
 #include <rbutil/conf/cmd/command_line.hpp>
-#include <pito/interceptor/jail/environment.hpp>
+#include <pito/library.hpp>
 
 #include "config.hpp"
 
@@ -10,8 +10,7 @@
 
 namespace pito {
 
-using namespace interceptor;
-
+namespace jail = interceptor::jail;
 namespace cmd_line = rb::util::conf::cmd;
 using rb::util::conf::value;
 
@@ -21,31 +20,6 @@ void help(cmd_line::options_description const& options) {
     std::cout << "pito " << PITO_PROGRAM_VERSION << std::endl;
     std::cout << "usage: pito [arguments] <wrapper library name> <program> [program arguments]" << std::endl;
     std::cout << options << std::endl;
-}
-
-// search in $LD_LIBRARY_PATH, then installed location
-void searchForLibrary(std::string const& libraryFileName) {
-    char const *ldPath = jail::getenv(PITO_LD_LIBRARY_PATH);
-    if (ldPath) {
-        char const *ldPathEnd = ldPath;
-        while (*(++ldPathEnd) != '\0') {}
-
-        char const *colon = ldPath;
-        do {
-            colon = std::find(colon, ldPathEnd, ':');
-            if (colon != ldPath) {
-                jail::preload.assign(ldPath, colon);
-                jail::preload.append("/").append(libraryFileName);
-                if (! access(jail::preload.c_str(), R_OK)) return;
-                else jail::preload = "";
-            }
-            ldPath = ++colon; 
-        } while (colon < ldPathEnd);
-    }
-
-    jail::preload = PITO_LIB_DIR;
-    jail::preload.append(libraryFileName);
-    if (access(jail::preload.c_str(), R_OK)) jail::preload = "";
 }
 
 inline int main(int argc, char *argv[]) {
@@ -93,14 +67,10 @@ inline int main(int argc, char *argv[]) {
         }
 
         std::string libraryFileName = "libpito_";
-        libraryFileName.append(argv[1]).append(PITO_SHARED_LIB_FILE_EXTENSION);
+        libraryFileName.append(argv[1]);
 
-        if (! jail::preload.empty()) {
-            if ('/' != *(jail::preload.end() - 1)) jail::preload.append("/");
-            jail::preload.append(libraryFileName);
-            if (access(jail::preload.c_str(), R_OK)) searchForLibrary(libraryFileName);
-        }
-        else searchForLibrary(libraryFileName);
+        if (! jail::preload.empty()) search_for_preload_library(libraryFileName, jail::preload);
+        else search_for_preload_library(libraryFileName);
 
         if (jail::preload.empty()) {
             if (! silent) std::cerr << "library " << libraryFileName << " could not be found at"
@@ -118,7 +88,7 @@ inline int main(int argc, char *argv[]) {
         }
 
         if (verbose)
-            std::cout << "load interceptor library (" << jail::preload << ")" << std::endl;
+            std::cerr << "load interceptor library (" << jail::preload << ")" << std::endl;
 
         jail::enforce_environment();
 
