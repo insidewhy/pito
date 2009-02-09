@@ -61,8 +61,8 @@ struct system_call : PITO_SYSTEM_CALL_BASE <Tag> {
     typedef PITO_SYSTEM_CALL_BASE <Tag> base_t;
 
     // to handle variadic c argument lists
-    template <class... OtherArgs>
-    typename base_t::return_type operator()(OtherArgs... args) {
+    template <class... Args>
+    typename base_t::return_type operator()(Args... args) {
 #ifndef NDEBUG
         std::cerr << "jailed call" << std::endl;
 #endif
@@ -79,8 +79,8 @@ struct system_call<system_call_tag::execve>
     typedef PITO_SYSTEM_CALL_BASE <system_call_tag::execve> base_t;
 
     // to handle variadic c argument lists
-    template <class... OtherArgs>
-    typename base_t::return_type operator()(OtherArgs... args) {
+    template <class... Args>
+    typename base_t::return_type operator()(Args... args) {
 #ifndef NDEBUG
         std::cerr << "jailed call with environment" << std::endl;
 #endif

@@ -24,8 +24,8 @@ namespace detail {
         typedef traits<Tag>  type_base;
 
         // to handle variadic c functions, must accept other args
-        template <class... OtherArgs>
-        typename type_base::return_type operator()(OtherArgs... args) {
+        template <class... Args>
+        typename type_base::return_type operator()(Args... args) {
             if (! call_) {
                 // the following might be needed for another architecture
                 // call_ = reinterpret_cast<call_t>(dlsym(library_instance<LibraryTag>().handle(), name_.c_str()));
