@@ -1,6 +1,9 @@
-add_executable(break_jail break_jail.c)
+macro(log_test _testName)
+    add_executable(${_testName} ${_testName}.c)
+    add_custom_target(
+        test
+        COMMAND LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/interceptor/log pito log ${CMAKE_CURRENT_BINARY_DIR}/${_testName}
+        DEPENDS ${_testName})
+endmacro()
 
-add_custom_target(
-    test
-    COMMAND LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/interceptor/log pito log ${CMAKE_CURRENT_BINARY_DIR}/break_jail
-    DEPENDS break_jail)
+log_test(break_jail)
