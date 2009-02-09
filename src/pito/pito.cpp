@@ -39,9 +39,10 @@ inline int main(int argc, char *argv[]) {
             if (nPositionals < 2) {
                 if (! silent) {
                     if (1 == nPositionals)
-                        std::cout << "missing <program> argument, see --help" << std::endl;
+                        std::cerr << "missing <program> argument" << std::endl;
                     else
-                        std::cout << "missing <wrapper library name> and <program> arguments, see --help" << std::endl;
+                        std::cerr << "missing <wrapper library name> and <program> arguments" << std::endl;
+                    std::cerr << options << std::endl;
                 }
                 return 1;
             }
