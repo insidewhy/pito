@@ -25,8 +25,8 @@ inline int main(int argc, char *argv[]) {
         bool silent = false;
         options.add_options()
             ("v,verbose", verbose, "increase verbosity")
-            .help("h,help", "pito " PITO_PROGRAM_VERSION
-                  "\nusage: pito [arguments] <wrapper library name> <program> [program arguments]")
+            .help("pito " PITO_PROGRAM_VERSION "\nusage: pito [arguments] "
+                  "<wrapper library name> <program> [program arguments]")
             ("s,silent", silent, "don't say anything")
             ("l,library-dir", value(jail::preload), "pito library directory")
             ;
