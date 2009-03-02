@@ -33,10 +33,14 @@ namespace detail {
             // make the library an absolute path
             if (*preloadLibrary.begin() != '/') {
                 char buff_[512];
-                getcwd(buff_, sizeof(buff_));
-                std::string newLibraryPath = buff_;
-                newLibraryPath.append("/").append(preloadLibrary);
-                preloadLibrary = newLibraryPath;
+                if (! getcwd(buff_, sizeof(buff_))) {
+                    exit(1);
+                }
+                else {
+                    std::string newLibraryPath = buff_;
+                    newLibraryPath.append("/").append(preloadLibrary);
+                    preloadLibrary = newLibraryPath;
+                }
             }
         }
     }
