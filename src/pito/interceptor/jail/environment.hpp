@@ -6,11 +6,13 @@
 #include <algorithm>
 #include <string>
 
-#ifdef PITO_APPLE
-#include <crt_externs.h>
-#define environ (* _NSGetEnviron())
+#if defined(PITO_APPLE)
+#   include <crt_externs.h>
+#   define environ (* _NSGetEnviron())
+#elif defined(PITO_BSD)
+    extern char **environ;
 #else
-#include <unistd.h>
+#   include <unistd.h>
 #endif
 
 namespace pito { namespace interceptor { namespace jail {

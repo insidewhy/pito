@@ -17,7 +17,15 @@ if(OFF64_SIZE)
 else()
     set(OFF64_TYPE off_t)
 endif()
-set(PITO_APPLE ${APPLE})
+
+if(APPLE)
+    set(PITO_APPLE 1)
+else()
+    exec_program(uname ARGS -s OUTPUT_VARIABLE arch_s)
+    if (arch_s MATCHES BSD)
+        set(PITO_BSD 1)
+    endif()
+endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_SOURCE_DIR}/config.hpp)
 # end configuration
