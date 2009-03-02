@@ -23,7 +23,8 @@ configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_SOURCE_DIR}/config.h
 # end configuration
 ################################################################################
 
-include_directories(${CMAKE_SOURCE_DIR}/..)
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/..)
 
 add_subdirectory(interceptor)
 
