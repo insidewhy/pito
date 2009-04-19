@@ -1,6 +1,10 @@
 #ifndef _PITO_CONFIG_HPP_
 #define _PITO_CONFIG_HPP_
 
+/**
+ * @file Configuration details for pito
+ */
+
 #define PITO_PREFIX  "@PREFIX@"
 #define PITO_LIB_PREFIX "@LIB_DIR@/"
 #define PITO_SHARE_PREFIX "@SHARE_DIR@/"

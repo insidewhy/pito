@@ -4,6 +4,14 @@
 
 #include <iostream>
 
+/**
+ * @file This is a utility to run a process (it searches $PATH) with
+ *       a specified library. e.g. pito log ls -l, sets the LD_PRELOAD
+ *       environment up to
+ *          LD_PRELOAD=<pito_library_location from config.hpp>/libpito_log.so
+ *       And runs ls -l
+ */
+
 #define PITO_PROGRAM_VERSION "0.9.1"
 
 namespace pito {
