@@ -1,3 +1,4 @@
 #!/bin/sh
 
-. ../chilon/cmake/configure.sh
+script=`echo {../../,}../chilon/cmake/configure.sh`
+. ${script% *}
