@@ -1,4 +1,4 @@
-#include <rbutil/conf/cmd/command_line.hpp>
+#include <chilon/conf/cmd/command_line.hpp>
 #include <pito/interceptor/application.hpp>
 #include <pito/config.hpp>
 
@@ -17,8 +17,8 @@
 namespace pito {
 
 namespace jail = interceptor::jail;
-namespace cmd_line = rb::util::conf::cmd;
-using rb::util::conf::value;
+namespace cmd_line = chilon::conf::cmd;
+using chilon::conf::value;
 
 bool verbose = false;
 

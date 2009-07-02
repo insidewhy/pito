@@ -1,0 +1,3 @@
+[submodule "src/chilon"]
+	path = src/chilon
+	url = git://chilon.git.sourceforge.net/gitroot/chilon

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../chilon/cmake/modules)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
 project(pito)
 include(C++0x)

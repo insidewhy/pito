@@ -4,8 +4,8 @@
 #include <pito/interceptor/library.hpp>
 #include <pito/interceptor/lib/traits.hpp>
 
-#include <rbutil/type/list.hpp>
-#include <rbutil/type/function.hpp>
+#include <chilon/type/list.hpp>
+#include <chilon/type/function.hpp>
 
 #include <boost/pool/detail/singleton.hpp>
 #include <dlfcn.h>
@@ -13,7 +13,7 @@
 
 namespace pito { namespace interceptor {
 
-using namespace rb::util;
+using namespace chilon;
 
 template <class Tag>
 struct system_call;
@@ -49,10 +49,10 @@ system_call<Tag>& system_call_instance() {
 
 #define PITO_SUPER(name_)   system_call_instance<system_call_tag::name_>()
 
-#define PITO_ARGS_HELPER(name_, nArgs_) RBUTIL_ARGS(system_call<name_>::arg_types, nArgs_)
+#define PITO_ARGS_HELPER(name_, nArgs_) CHILON_ARGS(system_call<name_>::arg_types, nArgs_)
 #define PITO_ARGS(name_) PITO_ARGS_HELPER(name_, PITO_NARGS_##name_)
 
-#define PITO_ARG_NAMES_HELPER(nArgs_) RBUTIL_ARG_NAMES(nArgs_)
+#define PITO_ARG_NAMES_HELPER(nArgs_) CHILON_ARG_NAMES(nArgs_)
 #define PITO_ARG_NAMES(name_) PITO_ARG_NAMES_HELPER(PITO_NARGS_##name_)
 
 #define PITO_SYSTEM_CALL_WITH_BASE(name_, base_) \

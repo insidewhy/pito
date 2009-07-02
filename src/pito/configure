@@ -1,3 +1,3 @@
 #!/bin/sh
 
-. cmake/configure.sh
+. ../chilon/cmake/configure.sh
