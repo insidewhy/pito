@@ -26,7 +26,9 @@ CharIt end(CharIt begin) {
     return begin;
 }
 
-// mac can't use the real getenv in the init
+/**
+ * @brief mac can't use the system getenv in the init phase so this emulates it.
+ */
 char *getenv(char const *key) {
     char const *keyEnd = end(key);
     for (char **envp = environ; *envp != 0; ++envp) {
@@ -39,13 +41,10 @@ char *getenv(char const *key) {
     return 0;
 }
 
-char * const *enforce_environment(char * const *env) {
-    // TODO: return pointer to enforced environment
-    // don't have to care about memory management in this process as it
-    // is about to be thrown away
-    return env;
-}
-
+/**
+ * @brief enforce_environment is used by the jail to ensure the jail cannot be removed from the
+ *        library preload.
+ */
 void enforce_environment() {
     // TODO: append to existing LD_PRELOAD 
     //       also consider modifying environ directly with the above call
@@ -54,6 +53,19 @@ void enforce_environment() {
     setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES", 1);
 #endif
 }
+
+/**
+ * @brief Enforce environment in a string.
+ * @param String representation of environment (e.g. environ).
+ * @return The given environment modified with the enforced library preloads, allocated with new.
+ */
+char * const *enforce_environment(char * const *env) {
+    // TODO: return pointer to enforced environment
+    // don't have to care about memory management in this process as it
+    // is about to be thrown away
+    return env;
+}
+
 
 } } }
 #endif
