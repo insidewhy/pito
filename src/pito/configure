@@ -1,4 +1,4 @@
 #!/bin/sh
 
-script=`echo {../../,}../chilon/cmake/configure.sh`
-. ${script% *}
+(while [ $PWD != / -a ! -d .git ] ; do cd .. ; done ; test -d .git && git submodule update)
+. ../chilon/cmake/configure.sh
