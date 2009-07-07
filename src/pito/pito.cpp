@@ -5,11 +5,14 @@
 #include <iostream>
 
 /**
- * @file This is a utility to run a process (it searches $PATH) with
- *       a specified library. e.g. pito log ls -l, sets the LD_PRELOAD
- *       environment up to
- *          LD_PRELOAD=<pito_library_location from config.hpp>/libpito_log.so
- *       And runs ls -l
+ * @file This is a utility to run a process from the system path with
+ *       a specified preload library. e.g. 
+ *       % pito log ls -R
+ *       This is equivalent to executing the following command:
+ *          LD_PRELOAD=<pito install location>/libpito_log.so ls -R
+ *
+ *       % pito -l/usr/local/mylibdir ls -R
+ *          LD_PRELOAD=/usr/local/mylibdir/libpito_log.so ls -R
  */
 
 #define PITO_PROGRAM_VERSION "0.9.1"
