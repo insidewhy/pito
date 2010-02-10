@@ -11,7 +11,7 @@ namespace pito { namespace interceptor { namespace log {
 #ifdef PITO_INTERCEPTOR_LOG_PID
 struct init {
     init() {
-       pid_ = getpid(); 
+       pid_ = getpid();
     }
     pid_t   pid_;
 };

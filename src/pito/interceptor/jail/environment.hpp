@@ -32,8 +32,8 @@ CharIt end(CharIt begin) {
 char *getenv(char const *key) {
     char const *keyEnd = end(key);
     for (char **envp = environ; *envp != 0; ++envp) {
-        if (std::equal(*envp, *envp + (keyEnd - key), key) && 
-            '=' == (*envp)[keyEnd - key]) 
+        if (std::equal(*envp, *envp + (keyEnd - key), key) &&
+            '=' == (*envp)[keyEnd - key])
         {
             return *envp + (keyEnd - key) + 1;
         }
@@ -46,7 +46,7 @@ char *getenv(char const *key) {
  *        library preload.
  */
 void enforce_environment() {
-    // TODO: append to existing LD_PRELOAD 
+    // TODO: append to existing LD_PRELOAD
     //       also consider modifying environ directly with the above call
     setenv(PITO_LD_PRELOAD, preload.c_str(), 1);
 #ifdef PITO_APPLE
@@ -65,7 +65,6 @@ char * const *enforce_environment(char * const *env) {
     // is about to be thrown away
     return env;
 }
-
 
 } } }
 #endif

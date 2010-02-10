@@ -6,7 +6,7 @@
 
 /**
  * @file This is a utility to run a process from the system path with
- *       a specified preload library. e.g. 
+ *       a specified preload library. e.g.
  *       % pito log ls -R
  *       This is equivalent to executing the following command:
  *          LD_PRELOAD=<pito install location>/libpito_log.so ls -R
@@ -28,7 +28,7 @@ bool verbose = false;
 inline int main(int argc, char *argv[]) {
     {
         using cmd_line::options_description;
-        // TODO: make all arguments from second positional and inclusive the 
+        // TODO: make all arguments from second positional and inclusive the
         //       new argv/argc
         options_description options;
 
@@ -70,7 +70,7 @@ inline int main(int argc, char *argv[]) {
         if (jail::preload.empty()) {
             if (! silent) std::cerr << "library " << libraryFileName << " could not be found at"
                                     " install location or in $" PITO_LD_LIBRARY_PATH << std::endl;
-        } 
+        }
         else {
             if (verbose) std::cerr << "load interceptor library (" << jail::preload << ")" << std::endl;
             jail::enforce_environment();

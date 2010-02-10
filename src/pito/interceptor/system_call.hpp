@@ -27,7 +27,10 @@ namespace detail {
         typename type_base::return_type operator()(Args... args) {
             if (! call_) {
                 // the following might be needed for another architecture
-                // call_ = reinterpret_cast<call_t>(dlsym(library_instance<LibraryTag>().handle(), name_.c_str()));
+                // call_ = reinterpret_cast<call_t>(
+                //  dlsym(
+                //      library_instance<LibraryTag>().handle(),
+                //      name_.c_str()));
                 call_ = reinterpret_cast<typename type_base::call_t>(dlsym(RTLD_NEXT, type_base::name));
             }
             return call_(args...);

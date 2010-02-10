@@ -73,8 +73,8 @@ struct system_call : PITO_SYSTEM_CALL_BASE <Tag> {
 
 // TODO: make specialisations to match other exec calls
 template <>
-struct system_call<system_call_tag::execve> 
-  : PITO_SYSTEM_CALL_BASE <system_call_tag::execve> 
+struct system_call<system_call_tag::execve>
+  : PITO_SYSTEM_CALL_BASE <system_call_tag::execve>
 {
     typedef PITO_SYSTEM_CALL_BASE <system_call_tag::execve> base_t;
 

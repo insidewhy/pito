@@ -26,7 +26,7 @@ void search_for_preload_library(std::string const& libraryFileName, std::string&
                 if (! access(preloadLibrary.c_str(), R_OK)) break;
                 else preloadLibrary = "";
             }
-            ldPath = ++colon; 
+            ldPath = ++colon;
         } while (colon < ldPathEnd);
     }
 
