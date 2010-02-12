@@ -11,7 +11,7 @@
  *       This is equivalent to executing the following command:
  *          LD_PRELOAD=<pito install location>/libpito_log.so ls -R
  *
- *       % pito -l/usr/local/mylibdir ls -R
+ *       % pito -l/usr/local/mylibdir log ls -R
  *          LD_PRELOAD=/usr/local/mylibdir/libpito_log.so ls -R
  */
 
