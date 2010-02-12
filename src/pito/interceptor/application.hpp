@@ -56,7 +56,8 @@ void search_for_preload_library(std::string const& libraryFileName, std::string&
  */
 void search_for_preload_library(std::string& libraryFileName, std::string& preloadLibrary) {
     libraryFileName.append(PITO_SHARED_LIB_FILE_EXTENSION);
-    search_for_preload_library(libraryFileName, preloadLibrary);
+    search_for_preload_library(
+        static_cast<std::string const &>(libraryFileName), preloadLibrary);
 }
 
 /**
@@ -72,7 +73,8 @@ void search_for_preload_library(std::string& libraryFileName, std::string& prelo
         preloadLibrary.append(libraryFileName);
         if (! access(preloadLibrary.c_str(), R_OK)) return;
     }
-    search_for_preload_library(libraryFileName, preloadLibrary);
+    search_for_preload_library(
+        static_cast<std::string const &>(libraryFileName), preloadLibrary);
 }
 
 } }
