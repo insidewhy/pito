@@ -9,6 +9,7 @@ include(C++0x)
 
 ################################################################################
 # configuration
+option(TESTING "test" off)
 set(CONFIG_DIR_SUFFIX pito)
 set(SHARE_DIR_SUFFIX ${CONFIG_DIR_SUFFIX})
 include(Installer)
