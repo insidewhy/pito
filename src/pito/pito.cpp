@@ -42,14 +42,17 @@ inline int main(int argc, char *argv[]) {
             ("l,library-dir", value(jail::preload), "pito library directory")
             ;
 
+        size_t arg_index;
         try {
-            int nPositionals = silent ?
-                cmd_line::parser(argc, argv, options)().n_positionals() :
-                cmd_line::parser(argc, argv, options)(std::cerr).n_positionals();
+            arg_index = silent ?
+                cmd_line::parser(
+                    argc, argv, options).until_positional().index() :
+                cmd_line::parser(
+                    argc, argv, options).until_positional(std::cerr).index();
 
-            if (nPositionals < 2) {
+            if (2 > argc - arg_index) {
                 if (! silent) {
-                    if (1 == nPositionals)
+                    if (1 == argc - arg_index)
                         std::cerr << "missing <program> argument" << std::endl;
                     else
                         std::cerr << "missing <wrapper library name> and <program> arguments" << std::endl;
@@ -63,7 +66,7 @@ inline int main(int argc, char *argv[]) {
         }
 
         std::string libraryFileName = "libpito_";
-        libraryFileName.append(argv[1]);
+        libraryFileName.append(argv[arg_index]);
 
         interceptor::search_for_preload_library(libraryFileName, jail::preload, jail::preload);
 
@@ -75,7 +78,7 @@ inline int main(int argc, char *argv[]) {
             if (verbose) std::cerr << "load interceptor library (" << jail::preload << ")" << std::endl;
             jail::enforce_environment();
             // consider setting argv[2] based on path and use execv
-            execvp(argv[2], argv + 2);
+            execvp(argv[arg_index + 1], argv + arg_index + 1);
         }
         return 1;
     }

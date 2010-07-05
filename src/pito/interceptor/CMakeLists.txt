@@ -1,4 +1,5 @@
-macro(interceptor_lib _name _version)
+macro(interceptor_lib __name _version)
+    set(_name pito_${__name})
     add_library(${_name} SHARED libc.cpp)
 
     # at least for netbsd.. this won't work
@@ -7,6 +8,10 @@ macro(interceptor_lib _name _version)
     endif()
     set_target_properties(${_name} PROPERTIES VERSION ${_version})
     install_targets(/lib ${_name})
+
+    set(_libname lib${_name}.so)
+    exec_program(ln ARGS -sf
+        ${__name}/${_libname} ${CMAKE_CURRENT_BINARY_DIR}/../${_libname})
 endmacro()
 
 add_subdirectory(log)

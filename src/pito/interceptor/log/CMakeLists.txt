@@ -1,1 +1,1 @@
-interceptor_lib(pito_log 0.9.1)
+interceptor_lib(log 0.9.1)

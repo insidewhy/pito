@@ -30,6 +30,7 @@ CharIt end(CharIt begin) {
  * @brief mac can't use the system getenv in the init phase so this emulates it.
  */
 char *getenv(char const *key) {
+#ifdef PITO_APPLE
     char const *keyEnd = end(key);
     for (char **envp = environ; *envp != 0; ++envp) {
         if (std::equal(*envp, *envp + (keyEnd - key), key) &&
@@ -39,6 +40,9 @@ char *getenv(char const *key) {
         }
     }
     return 0;
+#else
+    return ::getenv(key);
+#endif
 }
 
 /**
