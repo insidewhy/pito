@@ -4,7 +4,7 @@
 #include <pito/interceptor/library.hpp>
 #include <pito/interceptor/lib/traits.hpp>
 
-#include <chilon/type/function.hpp>
+#include <chilon/meta/function.hpp>
 
 #include <boost/pool/detail/singleton.hpp>
 #include <dlfcn.h>
