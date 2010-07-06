@@ -73,8 +73,10 @@ system_call<Tag>& system_call_instance() {
     PITO_SYSTEM_CALL_WITH_BASE(name_, PITO_SYSTEM_CALL_BASE)
 
 
-#define PITO_RETURN(name_)   typename detail::system_call<name_>::return_type
-#define PITO_SUPER(name_, args_)   detail::system_call<name_>::operator()(args_)
+#define PITO_RETURN(name_)   \
+    typename detail::system_call<name_>::return_type
 
+#define PITO_SUPER(name_, ...)   \
+    detail::system_call<name_>::operator()(__VA_ARGS__)
 
 #endif
