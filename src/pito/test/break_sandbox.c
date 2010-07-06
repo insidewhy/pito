@@ -42,6 +42,10 @@ int main(int argc, char *argv[]) {
 
     fprintf(stderr, "*** system\n");
     system("/bin/touch /tmp/cock");
+    if (status == 0) {
+        fprintf(stderr, "!!! system touch succeeded :(\n");
+        ret = -1;
+    }
 
     if (! fork()) {
         fprintf(stderr, "*** execl\n");

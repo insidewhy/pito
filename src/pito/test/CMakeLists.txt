@@ -10,4 +10,4 @@ macro(pito_test _testType _testName)
         DEPENDS ${_testName})
 endmacro()
 
-pito_test(log break_fs_jail)
+pito_test(sandbox break_sandbox)

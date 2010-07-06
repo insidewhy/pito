@@ -15,3 +15,4 @@ macro(interceptor_lib __name _version)
 endmacro()
 
 add_subdirectory(log)
+add_subdirectory(sandbox)
