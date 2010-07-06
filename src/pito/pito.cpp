@@ -95,12 +95,13 @@ inline int main(int argc, char *argv[]) {
                               << jail::preload << ")\n";
 
                 typedef int (*init_ptr)(int, int, char *[]);
-                reinterpret_cast<init_ptr>(init)(arg_index + 1, argc, argv);
+                arg_index =
+                    reinterpret_cast<init_ptr>(init)(arg_index, argc, argv);
             }
+            else ++arg_index;
 
             jail::enforce_environment();
-            // consider setting argv[2] based on path and use execv
-            execvp(argv[arg_index + 1], argv + arg_index + 1);
+            execvp(argv[arg_index], argv + arg_index);
         }
         return 1;
     }

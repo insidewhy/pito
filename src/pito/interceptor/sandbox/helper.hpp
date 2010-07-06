@@ -35,6 +35,7 @@ extern "C" {
 
 int sandbox_init(int offset, int argc, char *argv[]) {
     std::cout << "sandbox init" << std::endl;
+    return offset + 1;
 }
 
 }
