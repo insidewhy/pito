@@ -8,7 +8,7 @@ namespace pito { namespace interceptor {
 
 /**
  * @brief This command searches LD_LIBRARY_PATH for a given library name.
- * @param libraryFileName The library to search for (e.g. liblog.so). This is system specific.
+ * @param libraryFileName The library to search for (e.g. libpito_log.so). This is system specific.
  * @param preloadLibrary The located library will be stored in this string.
  */
 void search_for_preload_library(std::string const& libraryFileName, std::string& preloadLibrary) {
@@ -17,15 +17,13 @@ void search_for_preload_library(std::string const& libraryFileName, std::string&
         char const *ldPathEnd = ldPath;
         while (*(++ldPathEnd) != '\0') {}
 
-        char const *colon = ldPath;
+        char const *colon;
         do {
-            colon = std::find(colon, ldPathEnd, ':');
-            if (colon != ldPath) {
-                preloadLibrary.assign(ldPath, colon);
-                preloadLibrary.append("/").append(libraryFileName);
-                if (! access(preloadLibrary.c_str(), R_OK)) break;
-                else preloadLibrary = "";
-            }
+            char const *colon = std::find(ldPath, ldPathEnd, ':');
+            preloadLibrary.assign(ldPath, colon);
+            preloadLibrary.append("/").append(libraryFileName);
+            if (! access(preloadLibrary.c_str(), R_OK)) return;
+            else preloadLibrary = "";
             ldPath = ++colon;
         } while (colon < ldPathEnd);
     }

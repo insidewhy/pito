@@ -4,7 +4,7 @@ macro(pito_test _testType _testName)
     add_custom_command(
         SOURCE test
         TARGET test
-        COMMAND LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/interceptor/${_testType}
+        COMMAND LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/interceptor
                 ${CMAKE_BINARY_DIR}/pito ${_testType}
                 ${CMAKE_CURRENT_BINARY_DIR}/${_testName}
         DEPENDS ${_testName})
