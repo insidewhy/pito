@@ -8,10 +8,10 @@ namespace pito { namespace interceptor {
 
 /**
  * @brief This command searches LD_LIBRARY_PATH for a given library name.
- * @param libraryFileName The library to search for (e.g. libpito_log.so). This is system specific.
+ * @param libPath The library to search for (e.g. libpito_log.so). This is system specific.
  * @param preloadLibrary The located library will be stored in this string.
  */
-void search_for_preload_library(std::string const& libraryFileName, std::string& preloadLibrary) {
+void search_for_preload_library(std::string const& libPath, std::string& preloadLibrary) {
     char const *ldPath = jail::getenv(PITO_LD_LIBRARY_PATH);
     if (ldPath) {
         char const *ldPathEnd = ldPath;
@@ -21,7 +21,7 @@ void search_for_preload_library(std::string const& libraryFileName, std::string&
         do {
             char const *colon = std::find(ldPath, ldPathEnd, ':');
             preloadLibrary.assign(ldPath, colon);
-            preloadLibrary.append("/").append(libraryFileName);
+            preloadLibrary.append("/").append(libPath);
             if (! access(preloadLibrary.c_str(), R_OK)) return;
             else preloadLibrary = "";
             ldPath = ++colon;
@@ -29,7 +29,7 @@ void search_for_preload_library(std::string const& libraryFileName, std::string&
     }
 
     preloadLibrary = PITO_LIB_PREFIX;
-    preloadLibrary.append(libraryFileName);
+    preloadLibrary.append(libPath);
     if (access(preloadLibrary.c_str(), R_OK)) preloadLibrary = "";
     else {
         // make the library an absolute path
@@ -49,30 +49,30 @@ void search_for_preload_library(std::string const& libraryFileName, std::string&
 
 /**
  * @brief This command searches LD_LIBRARY_PATH for a given library name.
- * @param libraryFileName The library to search for. This will be modified to represent the system library name (so if liblog is given it will be replaced with liblog.so on Linux).
+ * @param libPath The library to search for. This will be modified to represent the system library name (so if liblog is given it will be replaced with liblog.so on Linux).
  * @param preloadLibrary The located library will be stored in this string.
  */
-void search_for_preload_library(std::string& libraryFileName, std::string& preloadLibrary) {
-    libraryFileName.append(PITO_SHARED_LIB_FILE_EXTENSION);
+void search_for_preload_library(std::string& libPath, std::string& preloadLibrary) {
+    libPath.append(PITO_SHARED_LIB_FILE_EXTENSION);
     search_for_preload_library(
-        static_cast<std::string const &>(libraryFileName), preloadLibrary);
+        static_cast<std::string const &>(libPath), preloadLibrary);
 }
 
 /**
  * @brief This command searches LD_LIBRARY_PATH for a given library name with a user provided search path override.
- * @param libraryFileName The library to search for (e.g. liblog will search for liblog.so).
+ * @param libPath The library to search for (e.g. liblog will search for liblog.so).
  * @param preloadLibrary The located library will be stored in this string.
  * @param preloadLibrary The override path to search for libraries in.
  */
-void search_for_preload_library(std::string& libraryFileName, std::string& preloadLibrary, std::string const& pathOverride) {
-    libraryFileName.append(PITO_SHARED_LIB_FILE_EXTENSION);
+void search_for_preload_library(std::string& libPath, std::string& preloadLibrary, std::string const& pathOverride) {
+    libPath.append(PITO_SHARED_LIB_FILE_EXTENSION);
     if (! pathOverride.empty()) {
         if ('/' != *(preloadLibrary.end() - 1)) preloadLibrary.append("/");
-        preloadLibrary.append(libraryFileName);
+        preloadLibrary.append(libPath);
         if (! access(preloadLibrary.c_str(), R_OK)) return;
     }
     search_for_preload_library(
-        static_cast<std::string const &>(libraryFileName), preloadLibrary);
+        static_cast<std::string const &>(libPath), preloadLibrary);
 }
 
 } }

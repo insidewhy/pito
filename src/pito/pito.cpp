@@ -65,13 +65,13 @@ inline int main(int argc, char *argv[]) {
             return 1;
         }
 
-        std::string libraryFileName = "libpito_";
-        libraryFileName.append(argv[arg_index]);
+        std::string libPath = "libpito_";
+        libPath.append(argv[arg_index]);
 
-        interceptor::search_for_preload_library(libraryFileName, jail::preload, jail::preload);
+        interceptor::search_for_preload_library(libPath, jail::preload, jail::preload);
 
         if (jail::preload.empty()) {
-            if (! silent) std::cerr << "library " << libraryFileName << " could not be found at"
+            if (! silent) std::cerr << "library " << libPath << " could not be found at"
                                     " install location or in $" PITO_LD_LIBRARY_PATH << std::endl;
         }
         else {
