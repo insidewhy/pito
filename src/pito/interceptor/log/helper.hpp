@@ -59,14 +59,14 @@ struct system_call : detail::system_call<Tag> {
 
     // to handle variadic c argument lists
     template <class... Args>
-    typename base_t::return_type operator()(Args... args) {
+    PITO_RETURN(Tag) operator()(Args... args) {
 #ifdef PITO_INTERCEPTOR_LOG_PID
         std::cerr << context.pid_ << " - ";
 #endif
         std::cerr << "calling " << base_t::name << "(";
         PrintArgs<Args...>::exec(args...);
         std::cerr << ")" << std::flush;
-        typename base_t::return_type ret = base_t::operator()(args...);
+        auto ret = PITO_SUPER(Tag, args...);
         std::cerr << " - " << ret << std::endl;
         return ret;
     }
