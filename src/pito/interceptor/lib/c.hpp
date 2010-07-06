@@ -71,6 +71,7 @@ PITO_SYSTEM_CALL(linkat)
 PITO_SYSTEM_CALL(mkdir)
 PITO_SYSTEM_CALL(mkdirat)
 PITO_SYSTEM_CALL(opendir)
+PITO_SYSTEM_CALL(readdir)
 PITO_SYSTEM_CALL(mknod)
 PITO_SYSTEM_CALL(mknodat)
 // function todo: __xmknod

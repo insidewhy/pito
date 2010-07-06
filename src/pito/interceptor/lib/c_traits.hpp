@@ -50,6 +50,8 @@ PITO_SYSTEM_CALL_TRAIT(mkdir, c, int(const char *, mode_t))
 PITO_SYSTEM_CALL_TRAIT(mkdirat, c, int(int, const char *, mode_t))
 #define PITO_NARGS_opendir 1
 PITO_SYSTEM_CALL_TRAIT(opendir, c, DIR *(const char *))
+#define PITO_NARGS_readdir 1
+PITO_SYSTEM_CALL_TRAIT(readdir, c, struct dirent *(DIR *))
 #define PITO_NARGS_mknod 3
 PITO_SYSTEM_CALL_TRAIT(mknod, c, int(const char *, mode_t, dev_t))
 #define PITO_NARGS_mknodat 4
