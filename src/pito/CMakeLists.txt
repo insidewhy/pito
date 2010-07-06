@@ -45,5 +45,6 @@ if(TESTING)
 endif()
 
 add_executable(pito pito.cpp config.hpp)
+target_link_libraries(pito dl)
 install_targets(/bin pito)
 installDirectory(${CMAKE_SOURCE_DIR}/.. ${HEADER_DIR} .hpp$)

@@ -92,11 +92,7 @@ struct system_call<system_call_tag::execve>
 
 } } }
 
-extern "C" {
-
 using namespace pito::interceptor;
 using namespace pito::interceptor::jail;
-
-}
 
 #endif

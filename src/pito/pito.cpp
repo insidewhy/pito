@@ -2,6 +2,8 @@
 #include <pito/interceptor/application.hpp>
 #include <pito/config.hpp>
 
+#include <dlfcn.h>
+
 #include <iostream>
 
 /**
@@ -75,7 +77,27 @@ inline int main(int argc, char *argv[]) {
                                     " install location or in $" PITO_LD_LIBRARY_PATH << std::endl;
         }
         else {
-            if (verbose) std::cerr << "load interceptor library (" << jail::preload << ")" << std::endl;
+            if (verbose)
+                std::cerr << "load interceptor library ("
+                          << jail::preload << ")\n";
+            // TODO: initialise environment
+            auto lib = dlopen(jail::preload.c_str(), RTLD_LAZY);
+            if (! lib) {
+                std::cerr << "could not dlopen library\n";
+                return 1;
+            }
+
+            auto lib_name = std::string(argv[arg_index]) + "_init";
+            auto init = dlsym(lib, lib_name.c_str());
+            if (init) {
+                if (verbose)
+                    std::cerr << "init interceptor library ("
+                              << jail::preload << ")\n";
+
+                typedef int (*init_ptr)(int, int, char *[]);
+                reinterpret_cast<init_ptr>(init)(arg_index + 1, argc, argv);
+            }
+
             jail::enforce_environment();
             // consider setting argv[2] based on path and use execv
             execvp(argv[arg_index + 1], argv + arg_index + 1);

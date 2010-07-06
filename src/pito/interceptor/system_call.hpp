@@ -72,7 +72,6 @@ system_call<Tag>& system_call_instance() {
 #define PITO_SYSTEM_CALL(name_) \
     PITO_SYSTEM_CALL_WITH_BASE(name_, PITO_SYSTEM_CALL_BASE)
 
-
 #define PITO_RETURN(name_)   \
     typename detail::system_call<name_>::return_type
 
