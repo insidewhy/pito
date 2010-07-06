@@ -34,6 +34,7 @@ inline int main(int argc, char *argv[]) {
         //       new argv/argc
         options_description options;
 
+        std::string preload;
         bool showHelp = false;
         bool silent = false;
         options.add_options()
@@ -41,7 +42,7 @@ inline int main(int argc, char *argv[]) {
             .help("pito " PITO_PROGRAM_VERSION "\nusage: pito [arguments] "
                   "<wrapper library name> <program> [program arguments]")
             ("s,silent", silent, "don't say anything")
-            ("l,library-dir", value(jail::preload), "pito library directory")
+            ("l,library-dir", value(preload), "pito library directory")
             ;
 
         size_t arg_index;
@@ -70,18 +71,23 @@ inline int main(int argc, char *argv[]) {
         std::string libPath = "libpito_";
         libPath.append(argv[arg_index]);
 
-        interceptor::search_for_preload_library(libPath, jail::preload, jail::preload);
+        interceptor::search_for_preload_library(libPath, preload, preload);
 
-        if (jail::preload.empty()) {
-            if (! silent) std::cerr << "library " << libPath << " could not be found at"
-                                    " install location or in $" PITO_LD_LIBRARY_PATH << std::endl;
+        if (preload.empty()) {
+            if (! silent)
+                std::cerr << "library " << libPath
+                          << " could not be found at install location or in $"
+                             PITO_LD_LIBRARY_PATH "\n";
+
         }
         else {
             if (verbose)
-                std::cerr << "load interceptor library ("
-                          << jail::preload << ")\n";
-            // TODO: initialise environment
-            auto lib = dlopen(jail::preload.c_str(), RTLD_LAZY);
+                std::cerr << "load interceptor library (" << preload << ")\n";
+
+            // TODO: lookup absolute library path, set in environment variable
+
+            auto lib = dlopen(preload.c_str(), RTLD_LAZY);
+
             if (! lib) {
                 std::cerr << "could not dlopen library\n";
                 return 1;
@@ -91,8 +97,7 @@ inline int main(int argc, char *argv[]) {
             auto init = dlsym(lib, lib_name.c_str());
             if (init) {
                 if (verbose)
-                    std::cerr << "init interceptor library ("
-                              << jail::preload << ")\n";
+                    std::cerr << "init interceptor library (" << preload << ")\n";
 
                 typedef int (*init_ptr)(int, int, char *[]);
                 arg_index =
@@ -100,6 +105,7 @@ inline int main(int argc, char *argv[]) {
             }
             else ++arg_index;
 
+            jail::preload = preload;
             jail::enforce_environment();
             execvp(argv[arg_index], argv + arg_index);
         }

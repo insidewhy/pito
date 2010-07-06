@@ -20,10 +20,14 @@ void search_for_preload_library(std::string const& libPath, std::string& preload
         char const *colon;
         do {
             char const *colon = std::find(ldPath, ldPathEnd, ':');
-            preloadLibrary.assign(ldPath, colon);
-            preloadLibrary.append("/").append(libPath);
-            if (! access(preloadLibrary.c_str(), R_OK)) return;
-            else preloadLibrary = "";
+            if (colon > ldPath) {
+                preloadLibrary.assign(ldPath, colon);
+                preloadLibrary.append("/").append(libPath);
+                if (! access(preloadLibrary.c_str(), R_OK)) return;
+                else preloadLibrary = "";
+            }
+            else if (colon == ldPathEnd) break;
+
             ldPath = ++colon;
         } while (colon < ldPathEnd);
     }
