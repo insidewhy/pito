@@ -51,7 +51,7 @@ system_call<Tag>& system_call_instance() {
 
 } }
 
-#define PITO_SUPER(name_)   system_call_instance<system_call_tag::name_>()
+#define PITO_CALL(name_)   system_call_instance<system_call_tag::name_>()
 
 #define PITO_ARGS_HELPER(name_, nArgs_) CHILON_ARGS(system_call<name_>::arg_types, nArgs_)
 #define PITO_ARGS(name_) PITO_ARGS_HELPER(name_, PITO_NARGS_##name_)
@@ -65,12 +65,16 @@ system_call<Tag>& system_call_instance() {
       : base_ <system_call_tag::name_> {}; \
     extern "C" { \
         system_call<system_call_tag::name_>::return_type  name_(PITO_ARGS(name_)) { \
-            return PITO_SUPER(name_)(PITO_ARG_NAMES(name_)); \
+            return PITO_CALL(name_)(PITO_ARG_NAMES(name_)); \
         } \
     }
 
 #define PITO_SYSTEM_CALL(name_) \
     PITO_SYSTEM_CALL_WITH_BASE(name_, PITO_SYSTEM_CALL_BASE)
+
+
+#define PITO_RETURN(name_)   typename detail::system_call<name_>::return_type
+#define PITO_SUPER(name_, args_)   detail::system_call<name_>::operator()(args_)
 
 
 #endif

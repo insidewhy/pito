@@ -40,9 +40,9 @@ extern "C" {
             va_start(ap, arg1);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(open)(arg0, arg1, mode);
+            return PITO_CALL(open)(arg0, arg1, mode);
         }
-        else return PITO_SUPER(open)(arg0, arg1);
+        else return PITO_CALL(open)(arg0, arg1);
     }
 }
 
@@ -57,9 +57,9 @@ extern "C" {
             va_start(ap, arg2);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(openat)(arg0, arg1, arg2, mode);
+            return PITO_CALL(openat)(arg0, arg1, arg2, mode);
         }
-        else return PITO_SUPER(openat)(arg0, arg1, arg2);
+        else return PITO_CALL(openat)(arg0, arg1, arg2);
     }
 }
 
@@ -100,9 +100,9 @@ extern "C" {
             va_start(ap, arg1);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(open64)(arg0, arg1, mode);
+            return PITO_CALL(open64)(arg0, arg1, mode);
         }
-        else return PITO_SUPER(open64)(arg0, arg1);
+        else return PITO_CALL(open64)(arg0, arg1);
     }
 }
 
@@ -117,9 +117,9 @@ extern "C" {
             va_start(ap, arg2);
             mode_t mode = va_arg(ap, int);
             va_end(ap);
-            return PITO_SUPER(openat64)(arg0, arg1, arg2, mode);
+            return PITO_CALL(openat64)(arg0, arg1, arg2, mode);
         }
-        else return PITO_SUPER(openat64)(arg0, arg1, arg2);
+        else return PITO_CALL(openat64)(arg0, arg1, arg2);
     }
 }
 
