@@ -4,6 +4,8 @@
 #include <pito/system_call.hpp>
 #include <pito/lib/traits.hpp>
 
+#include <chilon/print.hpp>
+
 #include <iostream>
 
 namespace pito { namespace log {
@@ -19,37 +21,6 @@ struct init {
 init context;
 #endif
 
-template <class... Args> struct PrintArgs;
-template <class... Args> struct PrintTailArgs;
-
-template <>
-struct PrintArgs<> {
-    static void exec() {
-    }
-};
-
-template <>
-struct PrintTailArgs<> {
-    static void exec() {
-    }
-};
-
-template <class Arg, class... Args>
-struct PrintTailArgs<Arg, Args...> {
-    static void exec(Arg const& arg, Args... args) {
-        std::cerr << ", " << arg;
-        PrintTailArgs<Args...>::exec(args...);
-    }
-};
-
-template <class Arg, class... Args>
-struct PrintArgs<Arg, Args...> {
-    static void exec(Arg const& arg, Args... args) {
-        std::cerr << arg;
-        PrintTailArgs<Args...>::exec(args...);
-    }
-};
-
 template <class Tag>
 struct system_call;
 
@@ -61,13 +32,13 @@ struct system_call : detail::system_call<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
 #ifdef PITO_LOG_PID
-        std::cerr << context.pid_ << " - ";
+        chilon::print(std::cerr, context.pid_, " - ");
 #endif
-        std::cerr << "calling " << base_t::name << "(";
-        PrintArgs<Args...>::exec(args...);
+        chilon::print(std::cerr, "calling ", base_t::name, '(');
+        chilon::print_join(std::cerr, ", ", args...);
         std::cerr << ")" << std::flush;
         auto ret = PITO_SUPER(Tag, args...);
-        std::cerr << " - " << ret << std::endl;
+        chilon::println(std::cerr, " - ", ret);
         return ret;
     }
 };
