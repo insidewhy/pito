@@ -1,6 +1,6 @@
-macro(interceptor_lib __name _version)
+macro(interceptor_lib __name _version _sources)
     set(_name pito_${__name})
-    add_library(${_name} SHARED libc.cpp)
+    add_library(${_name} SHARED ${_sources})
 
     # at least for netbsd.. this won't work
     if(NOT PITO_BSD)

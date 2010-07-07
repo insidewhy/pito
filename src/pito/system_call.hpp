@@ -1,16 +1,16 @@
-#ifndef _PITO_INTERCEPTOR_SYSTEM_CALL_HPP_
-#define _PITO_INTERCEPTOR_SYSTEM_CALL_HPP_
+#ifndef PITO_SYSTEM_CALL_HPP
+#define PITO_SYSTEM_CALL_HPP
 
-#include <pito/interceptor/library.hpp>
-#include <pito/interceptor/lib/traits.hpp>
+#include <pito/library.hpp>
+#include <pito/lib/traits.hpp>
 
 #include <chilon/meta/function.hpp>
+#include <chilon/singleton.hpp>
 
-#include <boost/pool/detail/singleton.hpp>
 #include <dlfcn.h>
 #include <string>
 
-namespace pito { namespace interceptor {
+namespace pito {
 
 using namespace chilon;
 
@@ -46,10 +46,10 @@ namespace detail {
 
 template <class Tag>
 system_call<Tag>& system_call_instance() {
-    return singleton_default< system_call<Tag> >::instance();
+    return chilon::singleton< system_call<Tag> >::instance();
 }
 
-} }
+}
 
 #define PITO_CALL(name_)   system_call_instance<system_call_tag::name_>()
 

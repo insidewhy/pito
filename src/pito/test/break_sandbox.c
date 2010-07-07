@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     wait(&status);
     if (status == 0) {
         fprintf(stderr, "!!! fork creat succeeded :(\n");
-        ret = -1;
+        ret = 1;
     }
 
     if (! fork()) {
@@ -37,14 +37,14 @@ int main(int argc, char *argv[]) {
     wait(&status);
     if (status == 0) {
         fprintf(stderr, "!!! execv touch succeeded\n");
-        ret = -1;
+        ret = 1;
     }
 
     fprintf(stderr, "*** system\n");
     system("/bin/touch /tmp/cock");
     if (status == 0) {
         fprintf(stderr, "!!! system touch succeeded :(\n");
-        ret = -1;
+        ret = 1;
     }
 
     if (! fork()) {
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     if (status == 0) {
         fprintf(stderr, "!!! execl touch succeeded :(\n");
-        ret = -1;
+        ret = 1;
     }
 
     return ret;

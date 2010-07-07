@@ -1,5 +1,5 @@
-#ifndef _PITO_INTERCEPTOR_TRAITS_
-#define _PITO_INTERCEPTOR_TRAITS_
+#ifndef PITO_TRAITS
+#define PITO_TRAITS
 
 #include <pito/config.hpp>
 
@@ -7,7 +7,7 @@
 #include <sys/time.h>
 #include <dirent.h>
 
-namespace pito { namespace interceptor {
+namespace pito {
 
 namespace library_tag {
     struct c {};
@@ -112,6 +112,6 @@ PITO_SYSTEM_CALL_TRAIT(lutimes, c, int(const char *, const struct timeval[2]))
 #define PITO_NARGS_getuid 0
 PITO_SYSTEM_CALL_TRAIT(getuid, c, int(void))
 
-} }
+}
 
 #endif

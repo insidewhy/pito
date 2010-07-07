@@ -1,8 +1,8 @@
-#ifndef _PITO_INTERCEPTOR_LIB_C_
-#define _PITO_INTERCEPTOR_LIB_C_
+#ifndef PITO_LIB_C
+#define PITO_LIB_C
 
-#include <pito/interceptor/lib/c_traits.hpp>
-#include <pito/interceptor/system_call.hpp>
+#include <pito/lib/c_traits.hpp>
+#include <pito/system_call.hpp>
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -16,7 +16,7 @@
 #define PITO_JAIL_BASE PITO_SYSTEM_CALL_BASE
 #endif
 
-namespace pito { namespace interceptor {
+namespace pito {
 
 using namespace system_call_tag;
 
@@ -144,6 +144,6 @@ PITO_SYSTEM_CALL(futimesat)
 PITO_SYSTEM_CALL(lutimes)
 PITO_SYSTEM_CALL(getuid)
 
-} }
+}
 
 #endif

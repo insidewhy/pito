@@ -1,14 +1,14 @@
-#ifndef _PITO_INTERCEPTOR_LIB_TRAITS_
-#define _PITO_INTERCEPTOR_LIB_TRAITS_
+#ifndef PITO_LIB_TRAITS_HPP
+#define PITO_LIB_TRAITS_HPP
 
 #include <chilon/meta/function.hpp>
 
-namespace pito { namespace interceptor {
+namespace pito {
 
 template <class Tag>
 struct traits;
 
-} }
+}
 
 // TODO: make the library tag a trait
 #define PITO_SYSTEM_CALL_TRAIT(name_, lib_, signature_) \

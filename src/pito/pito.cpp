@@ -1,5 +1,5 @@
 #include <chilon/conf/cmd/command_line.hpp>
-#include <pito/interceptor/application.hpp>
+#include <pito/application.hpp>
 #include <pito/config.hpp>
 
 #include <dlfcn.h>
@@ -21,7 +21,6 @@
 
 namespace pito {
 
-namespace jail = interceptor::jail;
 namespace cmd_line = chilon::conf::cmd;
 using chilon::conf::value;
 
@@ -40,7 +39,7 @@ inline int main(int argc, char *argv[]) {
         options.add_options()
             ("v,verbose", verbose, "increase verbosity")
             .help("pito " PITO_PROGRAM_VERSION "\nusage: pito [arguments] "
-                  "<wrapper library name> <program> [program arguments]")
+                  "<wrapper library name> [wrapper arguments] <program> [program arguments]")
             ("s,silent", silent, "don't say anything")
             ("l,library-dir", value(preload), "pito library directory")
             ;
@@ -71,7 +70,7 @@ inline int main(int argc, char *argv[]) {
         std::string libPath = "libpito_";
         libPath.append(argv[arg_index]);
 
-        interceptor::search_for_preload_library(libPath, preload, preload);
+        search_for_preload_library(libPath, preload, preload);
 
         if (preload.empty()) {
             if (! silent)
@@ -84,8 +83,9 @@ inline int main(int argc, char *argv[]) {
             if (verbose)
                 std::cerr << "load interceptor library (" << preload << ")\n";
 
-            // TODO: lookup absolute library path, set in environment variable
-
+            // the dlopen will trigger the preload initialisation so set
+            // the environment for it here
+            setenv("LD_PRELOAD", preload.c_str(), 1);
             auto lib = dlopen(preload.c_str(), RTLD_LAZY);
 
             if (! lib) {
@@ -105,8 +105,6 @@ inline int main(int argc, char *argv[]) {
             }
             else ++arg_index;
 
-            jail::preload = preload;
-            jail::enforce_environment();
             execvp(argv[arg_index], argv + arg_index);
         }
         return 1;

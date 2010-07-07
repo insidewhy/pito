@@ -1,13 +1,12 @@
-#ifndef _PITO_INTERCEPTOR_SANDBOX_HELPER_
-#define _PITO_INTERCEPTOR_SANDBOX_HELPER_
+#ifndef PITO_SANDBOX_HELPER_HPP
+#define PITO_SANDBOX_HELPER_HPP
 
-#include <pito/interceptor/system_call.hpp>
-#include <pito/interceptor/lib/traits.hpp>
-#include <pito/interceptor/lib/c_traits.hpp>
+#include <pito/system_call.hpp>
+#include <pito/lib/c_traits.hpp>
 
 #include <iostream>
 
-namespace pito { namespace interceptor { namespace sandbox {
+namespace pito { namespace sandbox {
 
 using namespace system_call_tag;
 
@@ -29,7 +28,7 @@ struct system_call<creat> : detail::system_call<creat> {
     }
 };
 
-} } }
+} }
 
 extern "C" {
 

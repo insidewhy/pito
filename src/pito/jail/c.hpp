@@ -1,5 +1,5 @@
-#ifndef _PITO_INTERCEPTOR_JAIL_LIBC_HPP_
-#define _PITO_INTERCEPTOR_JAIL_LIBC_HPP_
+#ifndef PITO_JAIL_C_HPP
+#define PITO_JAIL_C_HPP
 
 // super experts can override this!
 #ifndef PITO_SYSTEM_CALL_BASE
@@ -8,9 +8,9 @@
 
 #define PITO_JAIL_BASE jail::system_call
 
-#include <pito/interceptor/system_call.hpp>
-#include <pito/interceptor/lib/c_traits.hpp>
-#include <pito/interceptor/jail/environment.hpp>
+#include <pito/system_call.hpp>
+#include <pito/lib/c_traits.hpp>
+#include <pito/jail/environment.hpp>
 #include <pito/config.hpp>
 
 #include <stdarg.h>
@@ -22,7 +22,7 @@
 #include <iostream>
 #endif
 
-namespace pito { namespace interceptor { namespace jail {
+namespace pito { namespace jail {
 
 struct init {
     init() {
@@ -90,9 +90,9 @@ struct system_call<system_call_tag::execve>
 };
 
 
-} } }
+} }
 
-using namespace pito::interceptor;
-using namespace pito::interceptor::jail;
+using namespace pito;
+using namespace pito::jail;
 
 #endif

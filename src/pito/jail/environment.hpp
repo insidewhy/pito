@@ -1,5 +1,5 @@
-#ifndef _PITO_INTERCEPTOR_JAIL_ENVIRONMENT_HPP_
-#define _PITO_INTERCEPTOR_JAIL_ENVIRONMENT_HPP_
+#ifndef PITO_JAIL_ENVIRONMENT_HPP
+#define PITO_JAIL_ENVIRONMENT_HPP
 
 #include <pito/config.hpp>
 
@@ -15,7 +15,7 @@
 #   include <unistd.h>
 #endif
 
-namespace pito { namespace interceptor { namespace jail {
+namespace pito { namespace jail {
 
 // LD_PRELOAD entry
 std::string preload;
@@ -70,5 +70,5 @@ char * const *enforce_environment(char * const *env) {
     return env;
 }
 
-} } }
+} }
 #endif

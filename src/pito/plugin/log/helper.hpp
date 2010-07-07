@@ -1,14 +1,14 @@
-#ifndef _PITO_INTERCEPTOR_LOG_HELPER_
-#define _PITO_INTERCEPTOR_LOG_HELPER_
+#ifndef PITO_LOG_HELPER_HPP
+#define PITO_LOG_HELPER_HPP
 
-#include <pito/interceptor/system_call.hpp>
-#include <pito/interceptor/lib/traits.hpp>
+#include <pito/system_call.hpp>
+#include <pito/lib/traits.hpp>
 
 #include <iostream>
 
-namespace pito { namespace interceptor { namespace log {
+namespace pito { namespace log {
 
-#ifdef PITO_INTERCEPTOR_LOG_PID
+#ifdef PITO_LOG_PID
 struct init {
     init() {
        pid_ = getpid();
@@ -60,7 +60,7 @@ struct system_call : detail::system_call<Tag> {
     // to handle variadic c argument lists
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
-#ifdef PITO_INTERCEPTOR_LOG_PID
+#ifdef PITO_LOG_PID
         std::cerr << context.pid_ << " - ";
 #endif
         std::cerr << "calling " << base_t::name << "(";
@@ -72,6 +72,6 @@ struct system_call : detail::system_call<Tag> {
     }
 };
 
-} } }
+} }
 
 #endif

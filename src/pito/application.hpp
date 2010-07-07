@@ -1,10 +1,10 @@
-#ifndef PITO_INTERCEPTOR_APPLICATION_HPP
-#define PITO_INTERCEPTOR_APPLICATION_HPP
+#ifndef PITO_APPLICATION_HPP
+#define PITO_APPLICATION_HPP
 
 #include <pito/config.hpp>
-#include <pito/interceptor/jail/environment.hpp>
+#include <pito/jail/environment.hpp>
 
-namespace pito { namespace interceptor {
+namespace pito {
 
 /**
  * @brief This command searches LD_LIBRARY_PATH for a given library name.
@@ -79,6 +79,6 @@ void search_for_preload_library(std::string& libPath, std::string& preloadLibrar
         static_cast<std::string const &>(libPath), preloadLibrary);
 }
 
-} }
+}
 
 #endif

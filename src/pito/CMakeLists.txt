@@ -38,7 +38,7 @@ configure_file(${CMAKE_SOURCE_DIR}/config.hpp.cmake ${CMAKE_SOURCE_DIR}/config.h
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/..)
 
-add_subdirectory(interceptor)
+add_subdirectory(plugin)
 
 if(TESTING)
     add_subdirectory(test)

@@ -1,12 +1,10 @@
-#ifndef _PITO_INTERCEPTOR_LIBRARY_HPP_
-#define _PITO_INTERCEPTOR_LIBRARY_HPP_
+#ifndef PITO_LIBRARY_HPP
+#define PITO_LIBRARY_HPP
 
-#include <boost/pool/detail/singleton.hpp>
+#include <chilon/singleton.hpp>
 #include <dlfcn.h>
 
-namespace pito { namespace interceptor {
-
-using boost::details::pool::singleton_default;
+namespace pito {
 
 namespace detail {
     struct library {
@@ -31,9 +29,9 @@ struct library;
 
 template <class Tag>
 library<Tag>& library_instance() {
-    return singleton_default< library<Tag> >::instance();
+    return chilon::singleton< library<Tag> >::instance();
 }
 
-} }
+}
 
 #endif
