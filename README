@@ -1,0 +1,6 @@
+To install:
+
+cd src/pito
+./configure
+make
+make install
