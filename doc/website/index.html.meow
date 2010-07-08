@@ -1,6 +1,6 @@
 !html
 head {
-    %title chilon
+    %title pito
     link(rel=stylesheet, type=text/css, href="css/global.css")
 }
 
@@ -28,6 +28,14 @@ head {
     2112 - calling readdir(0x24a1d30) - 0x24a1da0
     2112 - calling readdir(0x24a1d30) - 0
     baby  kitten
+
+    james@turbstick chilon % pito -h
+    pito 0.9.1
+    usage: pito [arguments] <wrapper library name> [wrapper arguments] <program> [program arguments]
+     -v [ --verbose ]       increase verbosity
+     -h [ --help ]          display help
+     -s [ --silent ]        don't say anything
+     -l [ --library-dir ]   pito library directory
 EOF
 
 %h2 The log plugin:
@@ -70,15 +78,20 @@ template <class Tag>
 struct system_call : detail::system_call<Tag> {
     typedef detail::system_call<Tag> base_t;
 
-    // to handle variadic c argument lists
+    // To handle variadic c argument lists use C++0x variadic template
+    // parameters.
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
+        // chilon::print is a nice interface to c++ iostreams, print_join
+        // joins the arguments with the first argument.
 #ifdef PITO_LOG_PID
         chilon::print(std::cerr, context.pid_, " - ");
 #endif
         chilon::print(std::cerr, "calling ", base_t::name, "(");
         chilon::print_join(std::cerr, ", ", args...);
         std::cerr << ") - " << std::flush;
+        // PITO_SUPER calls the underlying system call, C++0x auto is used
+        // so that the type of ret is inferred by the compiler.
         auto ret = PITO_SUPER(Tag, args...);
         chilon::println(std::cerr, ret);
         return ret;
