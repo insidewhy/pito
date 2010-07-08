@@ -1,3 +1,5 @@
+#include <pito/config.hpp>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -5,6 +7,7 @@
 
 int main(int argc, char *argv[]) {
     fprintf(stderr, "*************** filesystem jail break test ***************\n");
+    unsetenv(PITO_LD_PRELOAD);
 
     int ret = 0;
     if (-1 != open("/tmp/pito-open", O_RDWR | O_CREAT, S_IWUSR)) {

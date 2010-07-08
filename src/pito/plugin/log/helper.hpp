@@ -34,11 +34,11 @@ struct system_call : detail::system_call<Tag> {
 #ifdef PITO_LOG_PID
         chilon::print(std::cerr, context.pid_, " - ");
 #endif
-        chilon::print(std::cerr, "calling ", base_t::name, '(');
+        chilon::print(std::cerr, "calling ", base_t::name, "(");
         chilon::print_join(std::cerr, ", ", args...);
-        std::cerr << ")" << std::flush;
+        std::cerr << ") - " << std::flush;
         auto ret = PITO_SUPER(Tag, args...);
-        chilon::println(std::cerr, " - ", ret);
+        chilon::println(std::cerr, ret);
         return ret;
     }
 };

@@ -29,12 +29,9 @@ bool verbose = false;
 inline int main(int argc, char *argv[]) {
     {
         using cmd_line::options_description;
-        // TODO: make all arguments from second positional and inclusive the
-        //       new argv/argc
         options_description options;
 
         std::string preload;
-        bool showHelp = false;
         bool silent = false;
         options.add_options()
             ("v,verbose", verbose, "increase verbosity")
@@ -44,7 +41,7 @@ inline int main(int argc, char *argv[]) {
             ("l,library-dir", value(preload), "pito library directory")
             ;
 
-        size_t arg_index;
+        int arg_index;
         try {
             arg_index = silent ?
                 cmd_line::parser(
@@ -86,6 +83,8 @@ inline int main(int argc, char *argv[]) {
             // the dlopen will trigger the preload initialisation so set
             // the environment for it here
             setenv("LD_PRELOAD", preload.c_str(), 1);
+
+            // TODO: make preload absolute
             auto lib = dlopen(preload.c_str(), RTLD_LAZY);
 
             if (! lib) {
@@ -105,7 +104,12 @@ inline int main(int argc, char *argv[]) {
             }
             else ++arg_index;
 
-            execvp(argv[arg_index], argv + arg_index);
+            if (arg_index < argc) {
+                if (-1 == arg_index)
+                    std::cerr << "invalid plugin arguments\n";
+                else
+                    execvp(argv[arg_index], argv + arg_index);
+            }
         }
         return 1;
     }

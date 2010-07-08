@@ -2,7 +2,7 @@
 #define PITO_APPLICATION_HPP
 
 #include <pito/config.hpp>
-#include <pito/jail/environment.hpp>
+#include <pito/environment.hpp>
 
 namespace pito {
 
@@ -12,7 +12,7 @@ namespace pito {
  * @param preloadLibrary The located library will be stored in this string.
  */
 void search_for_preload_library(std::string const& libPath, std::string& preloadLibrary) {
-    char const *ldPath = jail::getenv(PITO_LD_LIBRARY_PATH);
+    char const *ldPath = getenv(PITO_LD_LIBRARY_PATH);
     if (ldPath) {
         char const *ldPathEnd = ldPath;
         while (*(++ldPathEnd) != '\0') {}

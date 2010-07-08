@@ -1,19 +1,10 @@
 #ifndef PITO_JAIL_ENVIRONMENT_HPP
 #define PITO_JAIL_ENVIRONMENT_HPP
 
-#include <pito/config.hpp>
+#include <pito/environment.hpp>
 
 #include <algorithm>
 #include <string>
-
-#if defined(PITO_APPLE)
-#   include <crt_externs.h>
-#   define environ (* _NSGetEnviron())
-#elif defined(PITO_BSD)
-    extern char **environ;
-#else
-#   include <unistd.h>
-#endif
 
 namespace pito { namespace jail {
 
@@ -24,25 +15,6 @@ template <class CharIt>
 CharIt end(CharIt begin) {
     while (*begin != '\0') ++begin;
     return begin;
-}
-
-/**
- * @brief mac can't use the system getenv in the init phase so this emulates it.
- */
-char *getenv(char const *key) {
-#ifdef PITO_APPLE
-    char const *keyEnd = end(key);
-    for (char **envp = environ; *envp != 0; ++envp) {
-        if (std::equal(*envp, *envp + (keyEnd - key), key) &&
-            '=' == (*envp)[keyEnd - key])
-        {
-            return *envp + (keyEnd - key) + 1;
-        }
-    }
-    return 0;
-#else
-    return ::getenv(key);
-#endif
 }
 
 /**

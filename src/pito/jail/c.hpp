@@ -26,7 +26,7 @@ namespace pito { namespace jail {
 
 struct init {
     init() {
-        char const *begin = jail::getenv(PITO_LD_PRELOAD);
+        char const *begin = getenv(PITO_LD_PRELOAD);
         if (begin) {
             preload = begin;
             // TODO: find the library properly like this
