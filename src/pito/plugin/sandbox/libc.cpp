@@ -3,6 +3,8 @@
 #include <pito/jail/c.hpp>
 #include <pito/lib/c.hpp>
 
+#include <pito/plugin/init.hpp>
+
 #include <chilon/conf/cmd/command_line.hpp>
 
 namespace cmd_line = chilon::conf::cmd;
@@ -14,22 +16,20 @@ int sandbox_init(int offset, int argc, char *argv[]) {
     using cmd_line::options_description;
     options_description options;
 
+    // TODO: add some environment setters
     options.add_options()
-        .help("pito sandbox arguments")
-        ;
+        .help("pito sandbox arguments");
 
-    std::cout << "sandbox init " << offset << std::endl;
-#if 1
     try {
         offset = cmd_line::parser(
             argc, argv, options, offset + 1).until_positional(std::cerr).index();
     }
     catch (cmd_line::invalid_arguments& ) {
-        offset = -1;
+        offset = plugin::ERROR;
     }
-#else
-    ++offset;
-#endif
+    catch (cmd_line::help_request& ) {
+        offset = plugin::HELP;
+    }
 
     return offset;
 }

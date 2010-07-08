@@ -1,6 +1,7 @@
 #include <chilon/conf/cmd/command_line.hpp>
 #include <pito/application.hpp>
 #include <pito/config.hpp>
+#include <pito/plugin/init.hpp>
 
 #include <dlfcn.h>
 
@@ -63,6 +64,9 @@ inline int main(int argc, char *argv[]) {
         catch (cmd_line::invalid_arguments& ) {
             return 1;
         }
+        catch (cmd_line::help_request& ) {
+            return 1;
+        }
 
         std::string libPath = "libpito_";
         libPath.append(argv[arg_index]);
@@ -105,8 +109,10 @@ inline int main(int argc, char *argv[]) {
             else ++arg_index;
 
             if (arg_index < argc) {
-                if (-1 == arg_index)
-                    std::cerr << "invalid plugin arguments\n";
+                if (arg_index < 0) {
+                    if (plugin::HELP != arg_index)
+                        std::cerr << "invalid plugin arguments\n";
+                }
                 else
                     execvp(argv[arg_index], argv + arg_index);
             }
