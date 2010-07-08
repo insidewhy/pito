@@ -40,7 +40,7 @@ EOF
 
 %h2 The log plugin:
 
-%h3 System call interceptor source file &ldquo;plugin/log/helper.hpp&rdquo;:
+%h3 "plugin/log/helper.hpp - print system calls names, arguments and return values."
 
 %code(source=cpp) <<EOF
 #ifndef PITO_LOG_HELPER_HPP
