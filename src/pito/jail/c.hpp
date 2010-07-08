@@ -16,7 +16,7 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
-#include <algorithm>
+#include <unordered_map>
 
 #ifndef NDEBUG
 #include <iostream>
@@ -26,29 +26,30 @@ namespace pito { namespace jail {
 
 struct init {
     init() {
-        char const *begin = getenv(PITO_LD_PRELOAD);
-        if (begin) {
-            preload = begin;
-            // TODO: find the library properly like this
-            // char const *end = begin;
-            // while (*(++end) != '\0') {}
-
-            // char const *colon = begin;
-            // do {
-            //     colon = std::find(colon + 1, end, ':');
-            //     // std::cout << "got preload entry (" << begin << ")" << std::endl;
-            //     // TODO: test if range(begin,colon) matches libpito_[a-z]+.so
-
-            //     begin = colon;
-            // } while (colon != end);
-        }
+        preload_ = getenv(PITO_LD_PRELOAD);
 
         // apple can't handle output in the global construction phase.. check
         // only verified as working on linux
 #if ! defined(NDEBUG) && ! defined(APPLE)
-        std::cerr << "jail init with $" PITO_LD_PRELOAD " (" << preload << ")" << std::endl;
+        std::cerr << "jail init with $" PITO_LD_PRELOAD " ("
+                  << preload_ << ")\n";
 #endif
+
+        char const key[] = "PITO_";
+        for (char **envp = environ; *envp != 0; ++envp) {
+            if (std::equal(*envp, *envp + sizeof(key) - 1, key)) {
+                auto equal = *envp + sizeof(key) - 1;
+                while ('=' != *equal) {
+                    if ('\0' == *(++equal)) break;
+                }
+
+                environment_[ std::string(*envp, equal) ] = std::string(equal + 1);
+            }
+        }
     }
+
+    std::unordered_map<std::string, std::string> environment_;
+    std::string                                  preload_;
 };
 
 init context;

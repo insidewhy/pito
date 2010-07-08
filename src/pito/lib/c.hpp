@@ -133,6 +133,7 @@ PITO_SYSTEM_CALL(truncate64)
 PITO_SYSTEM_CALL_WITH_BASE(execve, PITO_JAIL_BASE)
 PITO_SYSTEM_CALL_WITH_BASE(execv, PITO_JAIL_BASE)
 PITO_SYSTEM_CALL_WITH_BASE(execvp, PITO_JAIL_BASE)
+PITO_SYSTEM_CALL_WITH_BASE(system, PITO_JAIL_BASE)
 ////////////////////////////////////////////////////////////////////////////////
 // end jail
 ////////////////////////////////////////////////////////////////////////////////

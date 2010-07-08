@@ -30,10 +30,4 @@ struct system_call<creat> : detail::system_call<creat> {
 
 } }
 
-extern "C" {
-
-int sandbox_init(int offset, int argc, char *argv[]);
-
-}
-
 #endif
