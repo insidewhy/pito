@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     unsetenv(PITO_LD_PRELOAD);
 
     check_status2("open succeeded",
-        open("open", O_RDWR | O_CREAT, S_IWUSR));
+        open("open", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR));
 
     check_status2("creat succeeded",
         creat("creat", S_IWUSR));
