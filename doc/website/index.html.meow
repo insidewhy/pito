@@ -36,6 +36,14 @@ head {
      -h [ --help ]          display help
      -s [ --silent ]        don't say anything
      -l [ --library-dir ]   pito library directory
+
+    james@turbstick pito % pito sandbox -h
+    pito sandbox arguments
+     -b [ --blacklist ]   disallow writes to this directory
+     -w [ --whitelist ]   allow writes to this directory
+     -p [ --pretend ]     pretend to allow writes to this directory
+     -v [ --verbose ]     inrease verbosity
+     -h [ --help ]        display help
 EOF
 
 %h2 The log plugin:

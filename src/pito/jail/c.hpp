@@ -16,43 +16,11 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
-#include <unordered_map>
-
 #ifndef NDEBUG
 #include <iostream>
 #endif
 
 namespace pito { namespace jail {
-
-struct init {
-    init() {
-        preload_ = getenv(PITO_LD_PRELOAD);
-
-        // apple can't handle output in the global construction phase.. check
-        // only verified as working on linux
-#if ! defined(NDEBUG) && ! defined(APPLE)
-        std::cerr << "jail init with $" PITO_LD_PRELOAD " ("
-                  << preload_ << ")\n";
-#endif
-
-        char const key[] = "PITO_";
-        for (char **envp = environ; *envp != 0; ++envp) {
-            if (std::equal(*envp, *envp + sizeof(key) - 1, key)) {
-                auto equal = *envp + sizeof(key) - 1;
-                while ('=' != *equal) {
-                    if ('\0' == *(++equal)) break;
-                }
-
-                environment_[ std::string(*envp, equal) ] = std::string(equal + 1);
-            }
-        }
-    }
-
-    std::unordered_map<std::string, std::string> environment_;
-    std::string                                  preload_;
-};
-
-init context;
 
 template <class Tag>
 struct system_call;
@@ -67,7 +35,7 @@ struct system_call : PITO_SYSTEM_CALL_BASE <Tag> {
 #ifndef NDEBUG
         std::cerr << "jailed call" << std::endl;
 #endif
-        // TODO: enforce environment
+        enforce_environment();
         return base_t::operator()(args...);
     }
 };
@@ -80,13 +48,12 @@ struct system_call<system_call_tag::execve>
     typedef PITO_SYSTEM_CALL_BASE <system_call_tag::execve> base_t;
 
     // to handle variadic c argument lists
-    template <class... Args>
-    typename base_t::return_type operator()(Args... args) {
+    typename base_t::return_type
+    operator()(char const *path, char * const argv[], char * const envp[]) {
 #ifndef NDEBUG
         std::cerr << "jailed call with environment" << std::endl;
 #endif
-        // TODO: enforce environment
-        return base_t::operator()(args...);
+        return base_t::operator()(path, argv, enforce_environment(envp));
     }
 };
 

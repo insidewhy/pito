@@ -8,8 +8,36 @@
 
 namespace pito { namespace jail {
 
-// LD_PRELOAD entry
-std::string preload;
+struct init {
+    init() {
+        auto& preload =
+            environment_[PITO_LD_PRELOAD] = getenv(PITO_LD_PRELOAD);
+
+        // apple can't handle output in the global construction phase.. check
+        // only verified as working on linux
+#if ! defined(NDEBUG) && ! defined(APPLE)
+        std::cerr << "jail init with $" PITO_LD_PRELOAD " ("
+                  << preload << ")\n";
+#endif
+
+        char const key[] = "PITO_";
+        for (char **envp = environ; *envp != 0; ++envp) {
+            if (std::equal(*envp, *envp + sizeof(key) - 1, key)) {
+                auto equal = *envp + sizeof(key) - 1;
+                while ('=' != *equal) {
+                    if ('\0' == *(++equal)) break;
+                }
+
+                environment_[ std::string(*envp, equal) ] = std::string(equal + 1);
+            }
+        }
+    }
+
+    environment_map  environment_;
+};
+
+init context;
+
 
 template <class CharIt>
 CharIt end(CharIt begin) {
@@ -22,11 +50,13 @@ CharIt end(CharIt begin) {
  *        library preload.
  */
 void enforce_environment() {
-    // TODO: append to existing LD_PRELOAD
-    //       also consider modifying environ directly with the above call
-    setenv(PITO_LD_PRELOAD, preload.c_str(), 1);
+    for (auto it = context.environment_.begin();
+         it != context.environment_.end(); ++it)
+    {
+        setenv(it->first.c_str(), it->second.c_str());
+    }
 #ifdef PITO_APPLE
-    setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES", 1);
+    setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES");
 #endif
 }
 
@@ -35,11 +65,8 @@ void enforce_environment() {
  * @param String representation of environment (e.g. environ).
  * @return The given environment modified with the enforced library preloads, allocated with new.
  */
-char * const *enforce_environment(char * const *env) {
-    // TODO: return pointer to enforced environment
-    // don't have to care about memory management in this process as it
-    // is about to be thrown away
-    return env;
+char * const * enforce_environment(char * const envp[]) {
+    return envp;
 }
 
 } }
