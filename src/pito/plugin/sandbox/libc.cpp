@@ -81,10 +81,10 @@ int sandbox_init(int offset, int argc, char *argv[]) {
     else
        process_directory_entries(pretendlist, cwd);
 
-    setenv("PITO_SANDBOX_DEFAULT", defaultlist);
-    setenv_join("PITO_SANDBOX_WHITELIST", whitelist);
-    setenv_join("PITO_SANDBOX_BLACKLIST", blacklist);
-    setenv_join("PITO_SANDBOX_PRETENDLIST", pretendlist);
+    setenv(PITO_SANDBOX_DEFAULT, defaultlist);
+    setenv_join(PITO_SANDBOX_WHITELIST, whitelist);
+    setenv_join(PITO_SANDBOX_BLACKLIST, blacklist);
+    setenv_join(PITO_SANDBOX_PRETENDLIST, pretendlist);
 
     if (verbose) {
         chilon::println("default: ", defaultlist);

@@ -14,10 +14,8 @@ struct traits;
 #define PITO_SYSTEM_CALL_TRAIT(name_, lib_, signature_) \
     namespace system_call_tag { struct name_ {}; } \
     template <> struct traits<system_call_tag::name_> : chilon::meta::function<signature_> { \
-        static char const       name[]; \
+        static char const *name() { return #name_; } \
         typedef library_tag::lib_   library; \
-    }; \
-    char const traits<system_call_tag::name_>::name[] = #name_;
+    };
 
 #endif
-

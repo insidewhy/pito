@@ -33,7 +33,7 @@ namespace detail {
                 //         name_.c_str()));
                 call_ =
                     reinterpret_cast<typename type_base::call_t>(
-                        dlsym(RTLD_NEXT, type_base::name));
+                        dlsym(RTLD_NEXT, type_base::name()));
             }
             return call_(args...);
         }

@@ -4,9 +4,18 @@
 #include <pito/system_call.hpp>
 #include <pito/lib/c_traits.hpp>
 
-#include <iostream>
+#define PITO_SANDBOX_DEFAULT        "PITO_SANDBOX_DEFAULT"
+#define PITO_SANDBOX_WHITELIST      "PITO_SANDBOX_WHITELIST"
+#define PITO_SANDBOX_BLACKLIST      "PITO_SANDBOX_BLACKLIST"
+#define PITO_SANDBOX_PRETENDLIST    "PITO_SANDBOX_PRETENDLIST"
 
 namespace pito { namespace sandbox {
+
+struct init {
+    init();
+};
+
+extern init context;
 
 using namespace system_call_tag;
 
