@@ -20,16 +20,22 @@ extern "C" {
 
 // returns true if / was in this vector, else false
 bool process_directory_entries(
-    std::vector<char const *>&                   v,
+    std::vector<std::string>&                    v,
     chilon::filesystem::current_directory const& cwd)
 {
     bool ret = false;
     for (auto it = v.begin(); it != v.end(); ) {
-        if (! std::strcmp(*it, "/")) {
-            it = v.erase(it);
-            ret = true;
+        if ((*it)[0] == '/') {
+            if (1 == it->size()) {
+                it = v.erase(it);
+                ret = true;
+            }
+            else ++it;
         }
         else {
+            std::string newPath = cwd.path();
+            newPath.append("/").append(*it);
+            *it = newPath;
             ++it;
         }
     }
@@ -41,9 +47,9 @@ int sandbox_init(int offset, int argc, char *argv[]) {
     bool verbose = false;
     options_description options;
 
-    std::vector<char const *> blacklist;
-    std::vector<char const *> whitelist;
-    std::vector<char const *> pretendlist;
+    std::vector<std::string> blacklist;
+    std::vector<std::string> whitelist;
+    std::vector<std::string> pretendlist;
 
     chilon::filesystem::current_directory cwd;
 
