@@ -5,7 +5,6 @@
 
 #include <chilon/print.hpp>
 
-
 #if defined(PITO_APPLE)
 #   include <crt_externs.h>
 #   define environ (* _NSGetEnviron())
@@ -47,6 +46,13 @@ void setenv(char const *key, char const *val, int override = 1) {
 }
 
 void setenv(environment_map const& map) {
+    for (auto it = map.begin(); it != map.end(); ++it)
+        setenv(it->first.c_str(), it->second.c_str());
+}
+
+char * const *setenv(environment_map const& map, char * const envp[]) {
+    // TODO:
+    return envp;
 }
 
 template <class T>

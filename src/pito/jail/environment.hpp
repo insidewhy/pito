@@ -50,14 +50,10 @@ CharIt end(CharIt begin) {
  *        library preload.
  */
 void enforce_environment() {
-    for (auto it = context.environment_.begin();
-         it != context.environment_.end(); ++it)
-    {
-        setenv(it->first.c_str(), it->second.c_str());
-    }
 #ifdef PITO_APPLE
     setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES");
 #endif
+    setenv(context.environment_);
 }
 
 /**
@@ -66,7 +62,10 @@ void enforce_environment() {
  * @return The given environment modified with the enforced library preloads, allocated with new.
  */
 char * const * enforce_environment(char * const envp[]) {
-    return envp;
+#ifdef PITO_APPLE
+    context.environment_["DYLD_FORCE_FLAT_NAMESPACE"] = "YES";
+#endif
+    return setenv(context.environment_, envp);
 }
 
 } }
