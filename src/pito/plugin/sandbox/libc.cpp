@@ -7,6 +7,7 @@
 #include <pito/plugin/init.hpp>
 
 #include <chilon/conf/cmd/command_line.hpp>
+#include <chilon/filesystem/current_directory.hpp>
 #include <chilon/print.hpp>
 
 #include <vector>
@@ -17,14 +18,22 @@ using chilon::conf::value;
 
 extern "C" {
 
-bool remove_root_entry(std::vector<char const *>& v) {
-    for (auto it = v.begin(); it != v.end(); ++it) {
+// returns true if / was in this vector, else false
+bool process_directory_entries(
+    std::vector<char const *>&                   v,
+    chilon::filesystem::current_directory const& cwd)
+{
+    bool ret = false;
+    for (auto it = v.begin(); it != v.end(); ) {
         if (! std::strcmp(*it, "/")) {
-            v.erase(it);
-            return true;
+            it = v.erase(it);
+            ret = true;
+        }
+        else {
+            ++it;
         }
     }
-    return false;
+    return ret;
 }
 
 int sandbox_init(int offset, int argc, char *argv[]) {
@@ -35,6 +44,8 @@ int sandbox_init(int offset, int argc, char *argv[]) {
     std::vector<char const *> blacklist;
     std::vector<char const *> whitelist;
     std::vector<char const *> pretendlist;
+
+    chilon::filesystem::current_directory cwd;
 
     options.add_options()
         ("b,blacklist", value(blacklist), "disallow writes to this directory")
@@ -57,12 +68,12 @@ int sandbox_init(int offset, int argc, char *argv[]) {
     // P for pretend
     char const *defaultlist = "P";
 
-    if (remove_root_entry(whitelist))
+    if (process_directory_entries(whitelist, cwd))
         defaultlist = "W";
-    else if (remove_root_entry(blacklist))
+    else if (process_directory_entries(blacklist, cwd))
         defaultlist = "B";
     else
-       remove_root_entry(pretendlist);
+       process_directory_entries(pretendlist, cwd);
 
     setenv("PITO_SANDBOX_DEFAULT", defaultlist);
     setenv_join("PITO_SANDBOX_WHITELIST", whitelist);
