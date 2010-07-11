@@ -34,45 +34,47 @@ int sandbox_init(int offset, int argc, char *argv[]) {
 
     typedef std::set<std::string, entry_size_lessthan> paths_t;
 
+    struct context {
+        paths_t paths_;
+        current_directory cwd_;
+        char const *default_;
+
+        context(char const * const default__) : default_(default__) {}
+    };
+
     struct argument_reader : chilon::conf::custom_value {
         void operator()(char const * str) const {
             if (*str == '\0') return;
 
             std::string r(prefix_);
             if (*str != '/') {
-                r.append(cwd_.path());
+                r.append(context_.cwd_.path());
                 r.append("/");
             }
             else if (*(str + 1) == '\0') {
-                default_ = prefix_;
+                context_.default_ = prefix_;
                 return;
             }
 
             r.append(str);
-            paths_.insert(r);
+            context_.paths_.insert(r);
         }
 
-        argument_reader(
-            paths_t& paths, char const * prefix,
-            char const *& default__, current_directory const& cwd)
-          : paths_(paths), prefix_(prefix), default_(default__), cwd_(cwd) {}
+        argument_reader(char const * const prefix, context& ctxt)
+          : prefix_(prefix), context_(ctxt) {};
 
-        paths_t&                 paths_;
-        char const  *            prefix_;
-        char const *&            default_;
-        current_directory const& cwd_;
+        char const * prefix_;
+        context&     context_;
     };
 
     using cmd_line::options_description;
     bool verbose = false;
     options_description options;
-    char const *default_ = "P";
 
-    current_directory cwd;
-    paths_t paths;
-    argument_reader blacklist(paths, "B", default_, cwd);
-    argument_reader whitelist(paths, "W", default_, cwd);
-    argument_reader pretendlist(paths, "P", default_, cwd);
+    context ctxt("P");
+    argument_reader blacklist("B", ctxt);
+    argument_reader whitelist("W", ctxt);
+    argument_reader pretendlist("P", ctxt);
 
     options.add_options()
         ("b,blacklist", blacklist, "disallow writes to this directory")
@@ -98,8 +100,8 @@ int sandbox_init(int offset, int argc, char *argv[]) {
     std::stringstream stream;
 
     if (verbose) {
-        std::cout << "default: " << default_ << std::endl;
-        for (auto it = paths.begin(); it != paths.end(); ++it) {
+        std::cout << "default: " << ctxt.default_ << std::endl;
+        for (auto it = ctxt.paths_.begin(); it != ctxt.paths_.end(); ++it) {
             if (*it->begin() == 'B')
                 std::cout << "black list: ";
             else if (*it->begin() == 'W')
@@ -111,8 +113,8 @@ int sandbox_init(int offset, int argc, char *argv[]) {
         }
     }
 
-    setenv(PITO_SANDBOX_DEFAULT, default_);
-    setenv_join(PITO_SANDBOX_PATHS, paths);
+    setenv(PITO_SANDBOX_DEFAULT, ctxt.default_);
+    setenv_join(PITO_SANDBOX_PATHS, ctxt.paths_);
 
     return offset;
 }
