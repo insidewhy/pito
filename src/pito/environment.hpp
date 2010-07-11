@@ -57,8 +57,19 @@ static char * const *setenv(environment_map const& map, char * const envp[]) {
 
 template <class T>
 static void setenv_join(char const            *key,
-                 std::vector<T> const&  values,
-                 char const            *join = "\n")
+                        std::vector<T> const&  values,
+                        char const            *join = "\n")
+{
+    if (values.empty()) return;
+    std::stringstream str;
+    chilon::print_join(str, join, values);
+    setenv(key, str.str().c_str());
+}
+
+template <class T, class U, class V>
+static void setenv_join(char const               *key,
+                        std::set<T, U, V> const&  values,
+                        char const               *join = "\n")
 {
     if (values.empty()) return;
     std::stringstream str;

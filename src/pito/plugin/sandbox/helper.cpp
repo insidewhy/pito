@@ -16,11 +16,7 @@ init::init() {
     {
         if (it->first == PITO_SANDBOX_DEFAULT) {
         }
-        else if (it->first == PITO_SANDBOX_WHITELIST) {
-        }
-        else if (it->first == PITO_SANDBOX_BLACKLIST) {
-        }
-        else if (it->first == PITO_SANDBOX_PRETENDLIST) {
+        else if (it->first == PITO_SANDBOX_PATHS) {
         }
     }
 }
