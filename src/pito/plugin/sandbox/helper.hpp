@@ -4,6 +4,8 @@
 #include <pito/system_call.hpp>
 #include <pito/lib/c_traits.hpp>
 
+#include <chilon/singleton.hpp>
+
 #define PITO_SANDBOX_DEFAULT        "PITO_SANDBOX_DEFAULT"
 #define PITO_SANDBOX_WHITELIST      "PITO_SANDBOX_WHITELIST"
 #define PITO_SANDBOX_BLACKLIST      "PITO_SANDBOX_BLACKLIST"
@@ -15,7 +17,7 @@ struct init {
     init();
 };
 
-extern init context;
+extern init& context;
 
 using namespace system_call_tag;
 

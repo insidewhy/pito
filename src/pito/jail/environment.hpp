@@ -3,6 +3,8 @@
 
 #include <pito/environment.hpp>
 
+#include <chilon/singleton.hpp>
+
 #include <algorithm>
 #include <string>
 
@@ -12,13 +14,6 @@ struct init {
     init() {
         auto& preload =
             environment_[PITO_LD_PRELOAD] = getenv(PITO_LD_PRELOAD);
-
-        // apple can't handle output in the global construction phase.. check
-        // only verified as working on linux
-#if ! defined(NDEBUG) && ! defined(APPLE)
-        std::cerr << "jail init with $" PITO_LD_PRELOAD " ("
-                  << preload << ")\n";
-#endif
 
         char const key[] = "PITO_";
         for (char **envp = environ; *envp != 0; ++envp) {
@@ -36,20 +31,13 @@ struct init {
     environment_map  environment_;
 };
 
-init context;
-
-
-template <class CharIt>
-CharIt end(CharIt begin) {
-    while (*begin != '\0') ++begin;
-    return begin;
-}
+extern init& context;
 
 /**
  * @brief enforce_environment is used by the jail to ensure the jail cannot be removed from the
  *        library preload.
  */
-void enforce_environment() {
+static void enforce_environment() {
 #ifdef PITO_APPLE
     setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES");
 #endif
@@ -61,7 +49,7 @@ void enforce_environment() {
  * @param String representation of environment (e.g. environ).
  * @return The given environment modified with the enforced library preloads, allocated with new.
  */
-char * const * enforce_environment(char * const envp[]) {
+static char * const * enforce_environment(char * const envp[]) {
 #ifdef PITO_APPLE
     context.environment_["DYLD_FORCE_FLAT_NAMESPACE"] = "YES";
 #endif

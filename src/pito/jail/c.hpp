@@ -22,6 +22,8 @@
 
 namespace pito { namespace jail {
 
+init& context = chilon::singleton<init>::instance();
+
 template <class Tag>
 struct system_call;
 
@@ -32,9 +34,6 @@ struct system_call : PITO_SYSTEM_CALL_BASE <Tag> {
     // to handle variadic c argument lists
     template <class... Args>
     typename base_t::return_type operator()(Args... args) {
-#ifndef NDEBUG
-        std::cerr << "jailed call" << std::endl;
-#endif
         enforce_environment();
         return base_t::operator()(args...);
     }
@@ -50,9 +49,6 @@ struct system_call<system_call_tag::execve>
     // to handle variadic c argument lists
     typename base_t::return_type
     operator()(char const *path, char * const argv[], char * const envp[]) {
-#ifndef NDEBUG
-        std::cerr << "jailed call with environment" << std::endl;
-#endif
         return base_t::operator()(path, argv, enforce_environment(envp));
     }
 };

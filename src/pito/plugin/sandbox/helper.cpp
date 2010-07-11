@@ -1,16 +1,28 @@
 #include <pito/plugin/sandbox/helper.hpp>
+#include <pito/jail/environment.hpp>
 
 #include <chilon/print.hpp>
+#include <chilon/iterator_range.hpp>
 
 namespace pito { namespace sandbox {
 
-init context;
+init& context = chilon::singleton<init>::instance();
 
 init::init() {
-    char const *default_action = getenv(PITO_SANDBOX_DEFAULT);
-    char const *whitelist      = getenv(PITO_SANDBOX_WHITELIST);
-    char const *blacklist      = getenv(PITO_SANDBOX_BLACKLIST);
-    char const *pretendlist    = getenv(PITO_SANDBOX_PRETENDLIST);
+    auto& jail_context = chilon::singleton<jail::init>::instance();
+
+    for (auto it = jail_context.environment_.begin();
+         it != jail_context.environment_.end(); ++it)
+    {
+        if (it->first == PITO_SANDBOX_DEFAULT) {
+        }
+        else if (it->first == PITO_SANDBOX_WHITELIST) {
+        }
+        else if (it->first == PITO_SANDBOX_BLACKLIST) {
+        }
+        else if (it->first == PITO_SANDBOX_PRETENDLIST) {
+        }
+    }
 }
 
 } }
