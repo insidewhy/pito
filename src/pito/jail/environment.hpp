@@ -12,8 +12,7 @@ namespace pito { namespace jail {
 
 struct context {
     context() {
-        auto& preload =
-            environment_[PITO_LD_PRELOAD] = getenv(PITO_LD_PRELOAD);
+        environment_[PITO_LD_PRELOAD] = getenv(PITO_LD_PRELOAD);
 
         char const key[] = "PITO_";
         for (char **envp = environ; *envp != 0; ++envp) {
