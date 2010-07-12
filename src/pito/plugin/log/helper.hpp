@@ -11,14 +11,14 @@
 namespace pito { namespace log {
 
 #ifdef PITO_LOG_PID
-struct init {
-    init() {
+struct context {
+    context() {
        pid_ = getpid();
     }
     pid_t   pid_;
 };
 
-init context;
+context ctxt;
 #endif
 
 template <class Tag>
@@ -32,7 +32,7 @@ struct system_call : detail::system_call<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
 #ifdef PITO_LOG_PID
-        chilon::print(std::cerr, context.pid_, " - ");
+        chilon::print(std::cerr, ctxt.pid_, " - ");
 #endif
         chilon::print(std::cerr, "calling ", base_t::name(), "(");
         chilon::print_join(std::cerr, ", ", args...);

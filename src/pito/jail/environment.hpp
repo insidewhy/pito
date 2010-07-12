@@ -10,8 +10,8 @@
 
 namespace pito { namespace jail {
 
-struct init {
-    init() {
+struct context {
+    context() {
         auto& preload =
             environment_[PITO_LD_PRELOAD] = getenv(PITO_LD_PRELOAD);
 
@@ -31,7 +31,7 @@ struct init {
     environment_map  environment_;
 };
 
-extern init& context;
+extern context& ctxt;
 
 /**
  * @brief enforce_environment is used by the jail to ensure the jail cannot be removed from the
@@ -41,7 +41,7 @@ static void enforce_environment() {
 #ifdef PITO_APPLE
     setenv("DYLD_FORCE_FLAT_NAMESPACE", "YES");
 #endif
-    setenv(context.environment_);
+    setenv(ctxt.environment_);
 }
 
 /**
@@ -51,9 +51,9 @@ static void enforce_environment() {
  */
 static char * const * enforce_environment(char * const envp[]) {
 #ifdef PITO_APPLE
-    context.environment_["DYLD_FORCE_FLAT_NAMESPACE"] = "YES";
+    ctxt.environment_["DYLD_FORCE_FLAT_NAMESPACE"] = "YES";
 #endif
-    return setenv(context.environment_, envp);
+    return setenv(ctxt.environment_, envp);
 }
 
 } }

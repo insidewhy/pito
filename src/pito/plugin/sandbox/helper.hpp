@@ -11,11 +11,11 @@
 
 namespace pito { namespace sandbox {
 
-struct init {
-    init();
+struct context {
+    context();
 };
 
-extern init& context;
+extern context& ctxt;
 
 using namespace system_call_tag;
 

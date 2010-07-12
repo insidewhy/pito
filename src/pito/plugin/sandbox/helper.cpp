@@ -6,13 +6,13 @@
 
 namespace pito { namespace sandbox {
 
-init& context = chilon::singleton<init>::instance();
+context& ctxt = chilon::singleton<context>::instance();
 
-init::init() {
-    auto& jail_context = chilon::singleton<jail::init>::instance();
+context::context() {
+    auto& jail_ctxt = chilon::singleton<jail::context>::instance();
 
-    for (auto it = jail_context.environment_.begin();
-         it != jail_context.environment_.end(); ++it)
+    for (auto it = jail_ctxt.environment_.begin();
+         it != jail_ctxt.environment_.end(); ++it)
     {
         if (it->first == PITO_SANDBOX_DEFAULT) {
         }

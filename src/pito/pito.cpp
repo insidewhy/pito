@@ -1,7 +1,7 @@
 #include <chilon/conf/cmd/command_line.hpp>
 #include <pito/application.hpp>
 #include <pito/config.hpp>
-#include <pito/plugin/init.hpp>
+#include <pito/plugin/context.hpp>
 
 #include <dlfcn.h>
 

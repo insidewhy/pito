@@ -4,7 +4,7 @@
 #include <pito/lib/c.hpp>
 
 #include <pito/environment.hpp>
-#include <pito/plugin/init.hpp>
+#include <pito/plugin/context.hpp>
 
 #include <chilon/conf/cmd/command_line.hpp>
 #include <chilon/filesystem/current_directory.hpp>

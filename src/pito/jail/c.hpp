@@ -22,7 +22,7 @@
 
 namespace pito { namespace jail {
 
-init& context = chilon::singleton<init>::instance();
+context& ctxt = chilon::singleton<context>::instance();
 
 template <class Tag>
 struct system_call;
