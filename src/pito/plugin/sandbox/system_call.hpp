@@ -60,26 +60,10 @@ struct system_call<fchownat> : detail::system_call<fchownat> {
 };
 
 template <>
-struct system_call<open> : detail::system_call<open> {
-    PITO_RETURN(open) operator()(const char *path, int flag) {
-        return system(path, flag);
-    }
-
-    PITO_RETURN(open) operator()(const char *path, int flag, int mode) {
-        return system(path, flag, mode);
-    }
-};
+struct system_call<open> : sandbox_call_open<open> {};
 
 template <>
-struct system_call<open64> : detail::system_call<open64> {
-    PITO_RETURN(open64) operator()(const char *path, int flag) {
-        return system(path, flag);
-    }
-
-    PITO_RETURN(open64) operator()(const char *path, int flag, int mode) {
-        return system(path, flag, mode);
-    }
-};
+struct system_call<open64> : sandbox_call_open<open64> {};
 
 template <>
 struct system_call<openat> : detail::system_call<openat> {
