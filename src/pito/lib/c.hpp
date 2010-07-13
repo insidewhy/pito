@@ -47,49 +47,6 @@ extern "C" {
 }
 
 template <>
-struct system_call<openat>
-  : PITO_SYSTEM_CALL_BASE<openat> {};
-
-extern "C" {
-    int openat(PITO_ARGS(openat), ...) {
-        if (arg2 & O_CREAT) {
-            va_list ap;
-            va_start(ap, arg2);
-            mode_t mode = va_arg(ap, int);
-            va_end(ap);
-            return PITO_CALL(openat)(arg0, arg1, arg2, mode);
-        }
-        else return PITO_CALL(openat)(arg0, arg1, arg2);
-    }
-}
-
-PITO_SYSTEM_CALL(creat)
-PITO_SYSTEM_CALL(fopen)
-PITO_SYSTEM_CALL(lchown)
-PITO_SYSTEM_CALL(link)
-PITO_SYSTEM_CALL(linkat)
-PITO_SYSTEM_CALL(mkdir)
-PITO_SYSTEM_CALL(mkdirat)
-PITO_SYSTEM_CALL(opendir)
-PITO_SYSTEM_CALL(readdir)
-PITO_SYSTEM_CALL(mknod)
-PITO_SYSTEM_CALL(mknodat)
-// function todo: __xmknod
-PITO_SYSTEM_CALL(mkfifo)
-PITO_SYSTEM_CALL(mkfifoat)
-PITO_SYSTEM_CALL(access)
-PITO_SYSTEM_CALL(faccessat)
-PITO_SYSTEM_CALL(rename)
-PITO_SYSTEM_CALL(renameat)
-PITO_SYSTEM_CALL(rmdir)
-PITO_SYSTEM_CALL(symlink)
-PITO_SYSTEM_CALL(symlinkat)
-PITO_SYSTEM_CALL(truncate)
-PITO_SYSTEM_CALL(unlink)
-PITO_SYSTEM_CALL(unlinkat)
-PITO_SYSTEM_CALL(getcwd)
-
-template <>
 struct system_call<open64>
   : PITO_SYSTEM_CALL_BASE<open64> {};
 
@@ -103,6 +60,23 @@ extern "C" {
             return PITO_CALL(open64)(arg0, arg1, mode);
         }
         else return PITO_CALL(open64)(arg0, arg1);
+    }
+}
+
+template <>
+struct system_call<openat>
+  : PITO_SYSTEM_CALL_BASE<openat> {};
+
+extern "C" {
+    int openat(PITO_ARGS(openat), ...) {
+        if (arg2 & O_CREAT) {
+            va_list ap;
+            va_start(ap, arg2);
+            mode_t mode = va_arg(ap, int);
+            va_end(ap);
+            return PITO_CALL(openat)(arg0, arg1, arg2, mode);
+        }
+        else return PITO_CALL(openat)(arg0, arg1, arg2);
     }
 }
 
@@ -123,9 +97,34 @@ extern "C" {
     }
 }
 
+PITO_SYSTEM_CALL(creat)
 PITO_SYSTEM_CALL(creat64)
+PITO_SYSTEM_CALL(fopen)
 PITO_SYSTEM_CALL(fopen64)
+PITO_SYSTEM_CALL(lchown)
+PITO_SYSTEM_CALL(link)
+PITO_SYSTEM_CALL(linkat)
+PITO_SYSTEM_CALL(mkdir)
+PITO_SYSTEM_CALL(mkdirat)
+PITO_SYSTEM_CALL(opendir)
+PITO_SYSTEM_CALL(readdir)
+PITO_SYSTEM_CALL(mknod)
+PITO_SYSTEM_CALL(mknodat)
+// function todo: __xmknod
+PITO_SYSTEM_CALL(mkfifo)
+PITO_SYSTEM_CALL(mkfifoat)
+PITO_SYSTEM_CALL(access)
+PITO_SYSTEM_CALL(faccessat)
+PITO_SYSTEM_CALL(rename)
+PITO_SYSTEM_CALL(renameat)
+PITO_SYSTEM_CALL(rmdir)
+PITO_SYSTEM_CALL(symlink)
+PITO_SYSTEM_CALL(symlinkat)
+PITO_SYSTEM_CALL(truncate)
 PITO_SYSTEM_CALL(truncate64)
+PITO_SYSTEM_CALL(unlink)
+PITO_SYSTEM_CALL(unlinkat)
+PITO_SYSTEM_CALL(getcwd)
 
 ////////////////////////////////////////////////////////////////////////////////
 // jail
