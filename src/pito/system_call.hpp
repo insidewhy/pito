@@ -38,8 +38,10 @@ namespace detail {
             return call_(args...);
         }
 
-        system_call<Tag>& system()       { return *this; }
-        system_call<Tag>& system() const { return *this; }
+        template <class... Args>
+        inline typename type_base::return_type system(Args... args) {
+            return (*this)(args...);
+        }
 
         system_call() : call_(0) {}
       private:

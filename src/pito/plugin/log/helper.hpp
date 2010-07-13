@@ -37,7 +37,7 @@ struct system_call : detail::system_call<Tag> {
         chilon::print(std::cerr, "calling ", base_t::name(), "(");
         chilon::print_join(std::cerr, ", ", args...);
         std::cerr << ") - " << std::flush;
-        auto ret = this->system()(args...);
+        auto ret = this->system(args...);
         chilon::println(std::cerr, ret);
         return ret;
     }

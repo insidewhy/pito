@@ -32,7 +32,7 @@ template <class Tag>
 struct sandbox_call : detail::system_call<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
-        return this->system()(args...);
+        return this->system(args...);
     }
 };
 
