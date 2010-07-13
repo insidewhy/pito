@@ -38,6 +38,9 @@ namespace detail {
             return call_(args...);
         }
 
+        system_call<Tag>& system()       { return *this; }
+        system_call<Tag>& system() const { return *this; }
+
         system_call() : call_(0) {}
       private:
         typename type_base::call_t call_;
@@ -74,8 +77,5 @@ system_call<Tag>& system_call_instance() {
 
 #define PITO_RETURN(name_)   \
     typename detail::system_call<name_>::return_type
-
-#define PITO_SUPER(name_, ...)   \
-    detail::system_call<name_>::operator()(__VA_ARGS__)
 
 #endif
