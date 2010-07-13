@@ -5,6 +5,7 @@
 #include <pito/lib/c_traits.hpp>
 
 #include <chilon/iterator_range.hpp>
+#include <chilon/print.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -32,7 +33,7 @@ struct context {
 extern context& ctxt;
 
 template <class Tag>
-struct sandbox_call : detail::system_call<Tag> {
+struct sandbox_call : system_call_real<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
         return this->system(args...);
@@ -40,16 +41,23 @@ struct sandbox_call : detail::system_call<Tag> {
 };
 
 template <class Tag>
-struct sandbox_call_open : detail::system_call<Tag> {
+struct sandbox_call_open : system_call_real<Tag> {
+
+    template <class P>
+    int check_status(P const& path, int const status) const {
+        return status;
+    }
 
     template <class... ModeArg>
     PITO_RETURN(Tag) operator()(const char *path, int flag, ModeArg... mode) {
         if (0 == *path)
-            return this->system(path, flag);
+            return this->system(path, flag, mode...);
         else if (*path == '/') {
+            return this->system(path, flag, mode...);
         }
         else {
-            // convert to absolute path
+            // TODO: convert to absolute path
+            return this->system(path, flag, mode...);
         }
     }
 };

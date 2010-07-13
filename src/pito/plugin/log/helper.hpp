@@ -25,8 +25,8 @@ template <class Tag>
 struct system_call;
 
 template <class Tag>
-struct system_call : detail::system_call<Tag> {
-    typedef detail::system_call<Tag> base_t;
+struct system_call : system_call_real<Tag> {
+    typedef system_call_real<Tag> base_t;
 
     // to handle variadic c argument lists
     template <class... Args>

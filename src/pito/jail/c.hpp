@@ -3,7 +3,7 @@
 
 // super experts can override this!
 #ifndef PITO_SYSTEM_CALL_BASE
-#define PITO_SYSTEM_CALL_BASE  detail::system_call
+#define PITO_SYSTEM_CALL_BASE  system_call_real
 #endif
 
 #define PITO_JAIL_BASE jail::system_call

@@ -10,7 +10,7 @@ template <class Tag>
 struct system_call;
 
 template <class Tag>
-struct system_call : detail::system_call<Tag> {
+struct system_call : system_call_real<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
         return this->system(args...);
@@ -18,42 +18,42 @@ struct system_call : detail::system_call<Tag> {
 };
 
 template <>
-struct system_call<chmod> : detail::system_call<chmod> {
+struct system_call<chmod> : sandbox_call<chmod> {
     PITO_RETURN(chmod) operator()(const char *path, mode_t mode) {
         return system(path, mode);
     }
 };
 
 template <>
-struct system_call<fchmod> : detail::system_call<fchmod> {
+struct system_call<fchmod> : sandbox_call<fchmod> {
     PITO_RETURN(fchmod) operator()(int fd, mode_t mode) {
         return system(fd, mode);
     }
 };
 
 template <>
-struct system_call<fchmodat> : detail::system_call<fchmodat> {
+struct system_call<fchmodat> : sandbox_call<fchmodat> {
     PITO_RETURN(fchmodat) operator()(int arg1, const char *arg2, mode_t arg3, int arg4) {
         return system(arg1, arg2, arg3, arg4);
     }
 };
 
 template <>
-struct system_call<chown> : detail::system_call<chown> {
+struct system_call<chown> : sandbox_call<chown> {
     PITO_RETURN(chown) operator()(const char *path, uid_t uid, gid_t gid) {
         return system(path, uid, gid);
     }
 };
 
 template <>
-struct system_call<fchown> : detail::system_call<fchown> {
+struct system_call<fchown> : sandbox_call<fchown> {
     PITO_RETURN(fchown) operator()(int fd, uid_t uid, gid_t gid) {
         return system(fd, uid, gid);
     }
 };
 
 template <>
-struct system_call<fchownat> : detail::system_call<fchownat> {
+struct system_call<fchownat> : sandbox_call<fchownat> {
     PITO_RETURN(fchownat) operator()(int fd, const char *path, uid_t uid, gid_t gid, int flags) {
         return system(fd, path, uid, gid, flags);
     }
@@ -66,7 +66,7 @@ template <>
 struct system_call<open64> : sandbox_call_open<open64> {};
 
 template <>
-struct system_call<openat> : detail::system_call<openat> {
+struct system_call<openat> : sandbox_call<openat> {
     PITO_RETURN(openat) operator()(int fd, const char *path, int flags) {
         return system(fd, path, flags);
     }
@@ -77,7 +77,7 @@ struct system_call<openat> : detail::system_call<openat> {
 };
 
 template <>
-struct system_call<openat64> : detail::system_call<openat64> {
+struct system_call<openat64> : sandbox_call<openat64> {
     PITO_RETURN(openat64) operator()(int fd, const char *path, int flags) {
         return system(fd, path, flags);
     }
@@ -88,49 +88,49 @@ struct system_call<openat64> : detail::system_call<openat64> {
 };
 
 template <>
-struct system_call<creat> : detail::system_call<creat> {
+struct system_call<creat> : sandbox_call<creat> {
     PITO_RETURN(creat) operator()(const char *path, mode_t mode) {
         return system(path, mode);
     }
 };
 
 template <>
-struct system_call<creat64> : detail::system_call<creat64> {
+struct system_call<creat64> : sandbox_call<creat64> {
     PITO_RETURN(creat) operator()(const char *path, mode_t mode) {
         return system(path, mode);
     }
 };
 
 template <>
-struct system_call<fopen> : detail::system_call<fopen> {
+struct system_call<fopen> : sandbox_call<fopen> {
     PITO_RETURN(fopen) operator()(const char *path, const char *mode) {
         return system(path, mode);
     }
 };
 
 template <>
-struct system_call<fopen64> : detail::system_call<fopen64> {
+struct system_call<fopen64> : sandbox_call<fopen64> {
     PITO_RETURN(fopen64) operator()(const char *path, const char *mode) {
         return system(path, mode);
     }
 };
 
 template <>
-struct system_call<lchown> : detail::system_call<lchown> {
+struct system_call<lchown> : sandbox_call<lchown> {
     PITO_RETURN(lchown) operator()(const char *path, uid_t uid, gid_t gid) {
         return system(path, uid, gid);
     }
 };
 
 template <>
-struct system_call<link> : detail::system_call<link> {
+struct system_call<link> : sandbox_call<link> {
     PITO_RETURN(link) operator()(const char *oldpath, const char *newpath) {
         return system(oldpath, newpath);
     }
 };
 
 template <>
-struct system_call<linkat> : detail::system_call<linkat> {
+struct system_call<linkat> : sandbox_call<linkat> {
     PITO_RETURN(linkat) operator()(int olddirfd,
                                    const char *oldpath,
                                    int newdirfd,
@@ -142,70 +142,70 @@ struct system_call<linkat> : detail::system_call<linkat> {
 };
 
 template <>
-struct system_call<mkdir> : detail::system_call<mkdir> {
+struct system_call<mkdir> : sandbox_call<mkdir> {
     PITO_RETURN(mkdir) operator()(const char *path, mode_t mode) {
         return system(path, mode);
     }
 };
 
 template <>
-struct system_call<mkdirat> : detail::system_call<mkdirat> {
+struct system_call<mkdirat> : sandbox_call<mkdirat> {
     PITO_RETURN(mkdirat) operator()(int fd, const char *path, mode_t mode) {
         return system(fd, path, mode);
     }
 };
 
 template <>
-struct system_call<opendir> : detail::system_call<opendir> {
+struct system_call<opendir> : sandbox_call<opendir> {
     PITO_RETURN(opendir) operator()(const char *path) {
         return system(path);
     }
 };
 
 template <>
-struct system_call<readdir> : detail::system_call<readdir> {
+struct system_call<readdir> : sandbox_call<readdir> {
     PITO_RETURN(readdir) operator()(DIR *dir) {
         return system(dir);
     }
 };
 
 template <>
-struct system_call<mknod> : detail::system_call<mknod> {
+struct system_call<mknod> : sandbox_call<mknod> {
     PITO_RETURN(mknod) operator()(const char *path, mode_t mode, dev_t dev) {
         return system(path, mode, dev);
     }
 };
 
 template <>
-struct system_call<mknodat> : detail::system_call<mknodat> {
+struct system_call<mknodat> : sandbox_call<mknodat> {
     PITO_RETURN(mknodat) operator()(int fd, const char *path, mode_t mode, dev_t dev) {
         return system(fd, path, mode, dev);
     }
 };
 
 template <>
-struct system_call<mkfifo> : detail::system_call<mkfifo> {
+struct system_call<mkfifo> : sandbox_call<mkfifo> {
     PITO_RETURN(mkfifo) operator()(const char *path, mode_t mode) {
         return system(path, mode);
     }
 };
 
 template <>
-struct system_call<mkfifoat> : detail::system_call<mkfifoat> {
+struct system_call<mkfifoat> : sandbox_call<mkfifoat> {
     PITO_RETURN(mkfifoat) operator()(int fd, const char *path, mode_t mode) {
         return system(fd, path, mode);
     }
 };
 
 template <>
-struct system_call<access> : detail::system_call<access> {
+struct system_call<access> : sandbox_call<access> {
     PITO_RETURN(access) operator()(const char *path, int amode) {
         return system(path, amode);
     }
 };
 
 template <>
-struct system_call<faccessat> : detail::system_call<faccessat> {
+struct system_call<faccessat> : sandbox_call<faccessat> {
     PITO_RETURN(faccessat) operator()(int fd, const char *path,
                                       int mode, int flags)
     {
@@ -214,14 +214,14 @@ struct system_call<faccessat> : detail::system_call<faccessat> {
 };
 
 template <>
-struct system_call<rename> : detail::system_call<rename> {
+struct system_call<rename> : sandbox_call<rename> {
     PITO_RETURN(rename) operator()(const char *oldpath, const char *newpath) {
         return system(oldpath, newpath);
     }
 };
 
 template <>
-struct system_call<renameat> : detail::system_call<renameat> {
+struct system_call<renameat> : sandbox_call<renameat> {
     PITO_RETURN(renameat) operator()(int olddirfd, const char *oldpath,
                                      int newdirfd, const char *newpath) {
         return system(olddirfd, oldpath, newdirfd, newpath);
@@ -229,21 +229,21 @@ struct system_call<renameat> : detail::system_call<renameat> {
 };
 
 template <>
-struct system_call<rmdir> : detail::system_call<rmdir> {
+struct system_call<rmdir> : sandbox_call<rmdir> {
     PITO_RETURN(rmdir) operator()(const char *path) {
         return system(path);
     }
 };
 
 template <>
-struct system_call<symlink> : detail::system_call<symlink> {
+struct system_call<symlink> : sandbox_call<symlink> {
     PITO_RETURN(symlink) operator()(const char *entry, const char *path) {
         return system(entry, path);
     }
 };
 
 template <>
-struct system_call<symlinkat> : detail::system_call<symlinkat> {
+struct system_call<symlinkat> : sandbox_call<symlinkat> {
     PITO_RETURN(symlinkat) operator()(const char *oldpath,
                                       int newdirfd, const char *newpath) {
         return system(oldpath, newdirfd, newpath);
@@ -251,14 +251,14 @@ struct system_call<symlinkat> : detail::system_call<symlinkat> {
 };
 
 template <>
-struct system_call<truncate> : detail::system_call<truncate> {
+struct system_call<truncate> : sandbox_call<truncate> {
     PITO_RETURN(truncate) operator()(const char *path, off_t length) {
         return system(path, length);
     }
 };
 
 template <>
-struct system_call<truncate64> : detail::system_call<truncate64> {
+struct system_call<truncate64> : sandbox_call<truncate64> {
     PITO_RETURN(truncate64) operator()(const char *path, PITO_OFF64_TYPE length) {
         return system(path, length);
     }
@@ -266,35 +266,35 @@ struct system_call<truncate64> : detail::system_call<truncate64> {
 
 
 template <>
-struct system_call<unlink> : detail::system_call<unlink> {
+struct system_call<unlink> : sandbox_call<unlink> {
     PITO_RETURN(unlink) operator()(const char *path) {
         return system(path);
     }
 };
 
 template <>
-struct system_call<unlinkat> : detail::system_call<unlinkat> {
+struct system_call<unlinkat> : sandbox_call<unlinkat> {
     PITO_RETURN(unlinkat) operator()(int fd, const char *path, int flags) {
         return system(fd, path, flags);
     }
 };
 
 template <>
-struct system_call<utime> : detail::system_call<utime> {
+struct system_call<utime> : sandbox_call<utime> {
     PITO_RETURN(utime) operator()(const char *path, const struct utimbuf *time) {
         return system(path, time);
     }
 };
 
 template <>
-struct system_call<utimes> : detail::system_call<utimes> {
+struct system_call<utimes> : sandbox_call<utimes> {
     PITO_RETURN(utimes) operator()(const char *path, const struct timeval times[2]) {
         return system(path, times);
     }
 };
 
 template <>
-struct system_call<utimensat> : detail::system_call<utimensat> {
+struct system_call<utimensat> : sandbox_call<utimensat> {
     PITO_RETURN(utimensat) operator()(
         int fd, const char *path, const struct timespec time[2], int flags)
     {
@@ -303,7 +303,7 @@ struct system_call<utimensat> : detail::system_call<utimensat> {
 };
 
 template <>
-struct system_call<futimesat> : detail::system_call<futimesat> {
+struct system_call<futimesat> : sandbox_call<futimesat> {
     PITO_RETURN(futimesat) operator()(
         int fd, const char *path, const struct timeval time[2])
     {
@@ -312,7 +312,7 @@ struct system_call<futimesat> : detail::system_call<futimesat> {
 };
 
 template <>
-struct system_call<lutimes> : detail::system_call<lutimes> {
+struct system_call<lutimes> : sandbox_call<lutimes> {
     PITO_RETURN(lutimes) operator()(const char *path, const struct timeval time[2]) {
         return system(path, time);
     }

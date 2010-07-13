@@ -17,37 +17,35 @@ using namespace chilon;
 template <class Tag>
 struct system_call;
 
-namespace detail {
-    template <class Tag>
-    struct system_call : traits<Tag> {
-        typedef traits<Tag>  type_base;
+template <class Tag>
+struct system_call_real : traits<Tag> {
+    typedef traits<Tag>  type_base;
 
-        // to handle variadic c functions, must accept other args
-        template <class... Args>
-        typename type_base::return_type operator()(Args... args) {
-            if (! call_) {
-                // the following might be needed for another architecture
-                // call_ = reinterpret_cast<call_t>(
-                //     dlsym(
-                //         library_instance<LibraryTag>().handle(),
-                //         name_.c_str()));
-                call_ =
-                    reinterpret_cast<typename type_base::call_t>(
-                        dlsym(RTLD_NEXT, type_base::name()));
-            }
-            return call_(args...);
+    // to handle variadic c functions, must accept other args
+    template <class... Args>
+    typename type_base::return_type operator()(Args... args) {
+        if (! call_) {
+            // the following might be needed for another architecture
+            // call_ = reinterpret_cast<call_t>(
+            //     dlsym(
+            //         library_instance<LibraryTag>().handle(),
+            //         name_.c_str()));
+            call_ =
+                reinterpret_cast<typename type_base::call_t>(
+                    dlsym(RTLD_NEXT, type_base::name()));
         }
+        return call_(args...);
+    }
 
-        template <class... Args>
-        inline typename type_base::return_type system(Args... args) {
-            return (*this)(args...);
-        }
+    template <class... Args>
+    inline typename type_base::return_type system(Args... args) {
+        return (*this)(args...);
+    }
 
-        system_call() : call_(0) {}
-      private:
-        typename type_base::call_t call_;
-    };
-}
+    system_call_real() : call_(0) {}
+  private:
+    typename type_base::call_t call_;
+};
 
 template <class Tag>
 system_call<Tag>& system_call_instance() {
@@ -78,6 +76,6 @@ system_call<Tag>& system_call_instance() {
     PITO_SYSTEM_CALL_WITH_BASE(name_, PITO_SYSTEM_CALL_BASE)
 
 #define PITO_RETURN(name_)   \
-    typename detail::system_call<name_>::return_type
+    typename system_call_real<name_>::return_type
 
 #endif

@@ -9,7 +9,7 @@
 #include <fcntl.h>
 
 #ifndef PITO_SYSTEM_CALL_BASE
-#define PITO_SYSTEM_CALL_BASE  detail::system_call
+#define PITO_SYSTEM_CALL_BASE  system_call_real
 #endif
 
 #ifndef PITO_JAIL_BASE
