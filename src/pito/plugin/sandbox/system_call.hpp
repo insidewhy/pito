@@ -64,18 +64,10 @@ struct system_call<openat64> : system_call_real<openat64> {
 };
 
 template <>
-struct system_call<creat> : system_call_real<creat> {
-    PITO_RETURN(creat) operator()(const char *path, mode_t mode) {
-        return system(path, mode);
-    }
-};
+struct system_call<creat> : sandbox_call_open<creat, false> {};
 
 template <>
-struct system_call<creat64> : system_call_real<creat64> {
-    PITO_RETURN(creat) operator()(const char *path, mode_t mode) {
-        return system(path, mode);
-    }
-};
+struct system_call<creat64> : sandbox_call_open<creat64, false> {};
 
 template <>
 struct system_call<fopen> : system_call_real<fopen> {
@@ -92,11 +84,7 @@ struct system_call<fopen64> : system_call_real<fopen64> {
 };
 
 template <>
-struct system_call<lchown> : system_call_real<lchown> {
-    PITO_RETURN(lchown) operator()(const char *path, uid_t uid, gid_t gid) {
-        return system(path, uid, gid);
-    }
-};
+struct system_call<lchown> : sandbox_call<lchown, 0, true> {};
 
 template <>
 struct system_call<link> : sandbox_call<link, 1> {};
@@ -152,7 +140,6 @@ struct system_call<truncate> : sandbox_call<truncate> {};
 template <>
 struct system_call<truncate64> : sandbox_call<truncate64> {};
 
-
 template <>
 struct system_call<unlink> : sandbox_call<unlink> {};
 
@@ -172,11 +159,7 @@ template <>
 struct system_call<futimesat> : sandbox_fd_call<futimesat, 0, 1> {};
 
 template <>
-struct system_call<lutimes> : system_call_real<lutimes> {
-    PITO_RETURN(lutimes) operator()(const char *path, const struct timeval time[2]) {
-        return system(path, time);
-    }
-};
+struct system_call<lutimes> : sandbox_call<lutimes, 0, true> {};
 
 } }
 

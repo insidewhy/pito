@@ -34,7 +34,7 @@ struct context {
 extern context& ctxt;
 
 // would make idx = 0 a parameter of test_path, but gcc 4.5 can't handle it
-template <class Tag, int idx = 0>
+template <class Tag, int idx = 0, bool IsLink = false>
 struct sandbox_call : system_call_real<Tag> {
 
     typedef PITO_RETURN(Tag) return_type;
@@ -86,7 +86,7 @@ struct sandbox_fd_call : system_call_real<Tag> {
     }
 };
 
-template <class Tag>
+template <class Tag, bool TestWrite = true>
 struct sandbox_call_open : sandbox_call<Tag> {
 
     template <class P>
@@ -94,18 +94,18 @@ struct sandbox_call_open : sandbox_call<Tag> {
         return status;
     }
 
-    template <class... ModeArg>
-    PITO_RETURN(Tag) operator()(const char *path, int flag, ModeArg... mode) {
-        if (flag & O_RDONLY) {
+    template <class Arg2, class... ModeArg>
+    PITO_RETURN(Tag) operator()(const char *path, Arg2 arg2, ModeArg... mode) {
+        if (TestWrite && arg2 & O_RDONLY) {
             if (1 == sizeof...(mode)) {
                 // if the file doesn't exist it could be created so this
-                // is a write operation
+                // is a write operation.. for now fall through and block
             }
-            else return this->system(path, flag, mode...);
+            else return this->system(path, arg2, mode...);
         }
 
         std::unique_ptr<char> realpath;
-        int ret = sandbox_call<Tag>::test_path(path, flag, mode...);
+        int ret = sandbox_call<Tag>::test_path(path, arg2, mode...);
         if (-1 != ret) ctxt.fd_map[ret] = realpath.get();
         return ret;
     }
