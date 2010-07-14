@@ -23,10 +23,10 @@ context::context() : mode(WRITE_MODE_PRETEND) {
         if (it->first == PITO_SANDBOX_DEFAULT) {
             switch (*(it->second.begin())) {
                 case 'W':
-                    mode == WRITE_MODE_WHITELIST;
+                    mode = WRITE_MODE_WHITELIST;
                     break;
                 case 'B':
-                    mode == WRITE_MODE_BLACKLIST;
+                    mode = WRITE_MODE_BLACKLIST;
                     break;
             }
         }

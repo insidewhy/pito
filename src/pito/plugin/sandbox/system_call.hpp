@@ -18,39 +18,19 @@ struct system_call : system_call_real<Tag> {
 };
 
 template <>
-struct system_call<chmod> : sandbox_call<chmod> {
-    PITO_RETURN(chmod) operator()(const char *path, mode_t mode) {
-        return system(path, mode);
-    }
-};
+struct system_call<chmod> : sandbox_call<chmod> {};
 
 template <>
-struct system_call<fchmod> : sandbox_call<fchmod> {
-    PITO_RETURN(fchmod) operator()(int fd, mode_t mode) {
-        return system(fd, mode);
-    }
-};
+struct system_call<fchmod> : sandbox_fd_call<fchmod> {};
 
 template <>
-struct system_call<fchmodat> : sandbox_call<fchmodat> {
-    PITO_RETURN(fchmodat) operator()(int arg1, const char *arg2, mode_t arg3, int arg4) {
-        return system(arg1, arg2, arg3, arg4);
-    }
-};
+struct system_call<fchmodat> : sandbox_fd_call<fchmodat, 0, 1> {};
 
 template <>
-struct system_call<chown> : sandbox_call<chown> {
-    PITO_RETURN(chown) operator()(const char *path, uid_t uid, gid_t gid) {
-        return system(path, uid, gid);
-    }
-};
+struct system_call<chown> : sandbox_call<chown> {};
 
 template <>
-struct system_call<fchown> : sandbox_call<fchown> {
-    PITO_RETURN(fchown) operator()(int fd, uid_t uid, gid_t gid) {
-        return system(fd, uid, gid);
-    }
-};
+struct system_call<fchown> : sandbox_fd_call<fchown> {};
 
 template <>
 struct system_call<fchownat> : sandbox_call<fchownat> {
