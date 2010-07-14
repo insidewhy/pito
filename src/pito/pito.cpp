@@ -38,7 +38,7 @@ inline int main(int argc, char *argv[]) {
             ("v,verbose", verbose, "increase verbosity")
             .help("pito " PITO_PROGRAM_VERSION "\nusage: pito [arguments] "
                   "<wrapper library name> [wrapper arguments] <program> [program arguments]")
-            ("s,silent", silent, "don't say anything")
+            ("s,silent", silent, "remain silent")
             ("l,library-dir", value(preload), "pito library directory")
             ;
 

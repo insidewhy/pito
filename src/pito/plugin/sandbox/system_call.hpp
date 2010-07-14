@@ -64,10 +64,10 @@ struct system_call<openat64> : system_call_real<openat64> {
 };
 
 template <>
-struct system_call<creat> : sandbox_call_open<creat, false> {};
+struct system_call<creat> : sandbox_call_open<creat, true> {};
 
 template <>
-struct system_call<creat64> : sandbox_call_open<creat64, false> {};
+struct system_call<creat64> : sandbox_call_open<creat64, true> {};
 
 template <>
 struct system_call<fopen> : system_call_real<fopen> {

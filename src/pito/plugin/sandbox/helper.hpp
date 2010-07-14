@@ -6,11 +6,11 @@
 
 #include <chilon/iterator_range.hpp>
 #include <chilon/print.hpp>
+#include <chilon/argument.hpp>
+#include <chilon/realpath.hpp>
 
 #include <vector>
 #include <unordered_map>
-
-#include <fcntl.h>
 
 #define PITO_SANDBOX_DEFAULT  "PITO_SANDBOX_DEFAULT"
 #define PITO_SANDBOX_PATHS    "PITO_SANDBOX_PATHS"
@@ -34,22 +34,39 @@ struct context {
 extern context& ctxt;
 
 // would make idx = 0 a parameter of test_path, but gcc 4.5 can't handle it
-template <class Tag, int idx = 0, bool IsLink = false>
+template <class Tag, int idx = 0, bool FileMustExist = false>
 struct sandbox_call : system_call_real<Tag> {
 
     typedef PITO_RETURN(Tag) return_type;
 
   protected:
-    template <class... Args>
-    return_type test_path(std::unique_ptr<char>& realpath,
-                          Args...                args)
-    {
+    // executes the system call depending on the path argument
+    template <bool FileMustExist_, class... Args>
+    return_type test_path(chilon::realpath_type& realpath, Args... args) {
+        auto path_arg = chilon::argument<idx>(args...);
+        if (FileMustExist_ ?
+                ! ::realpath(path_arg, realpath) :
+                ! chilon::realpath(path_arg, realpath))
+        {
+            chilon::println(chilon::color::red,
+                this->name(), ": error resolving path ", path_arg);
+            return -1;
+        }
+
+        // TODO: filter realpath here
+
         return this->system(args...);
+    }
+
+    // test path, with default FileMustExist option
+    template <class... Args>
+    return_type test_path(chilon::realpath_type& realpath, Args... args) {
+        return test_path<FileMustExist>(realpath, args...);
     }
 
     template <class... Args>
     return_type test_path(Args... args) {
-        std::unique_ptr<char> realpath;
+        chilon::realpath_type realpath;
         return test_path(realpath, args...);
     }
 
@@ -62,51 +79,39 @@ struct sandbox_call : system_call_real<Tag> {
 
 template <class Tag, int fdIndex = 0, int pathIndex = -1>
 struct sandbox_fd_call : system_call_real<Tag> {
+    // TODO:
 
     typedef PITO_RETURN(Tag) return_type;
 
-  protected:
-    template <class... Args>
-    return_type test_path(std::unique_ptr<char>& realpath,
-                          Args...                args)
-    {
-        return this->system(args...);
-    }
-
-    template <class... Args>
-    return_type test_path(Args... args) {
-        std::unique_ptr<char> realpath;
-        return test_path(realpath, args...);
-    }
-
-  public:
     template <class... Args>
     return_type operator()(Args... args) {
-        return test_path(args...);
+        return this->system(args...);
     }
 };
 
-template <class Tag, bool TestWrite = true>
+// if CreateFile is false, it can still possibly create the file depending
+// on the arguments
+template <class Tag, bool CreateFile = false>
 struct sandbox_call_open : sandbox_call<Tag> {
 
-    template <class P>
-    int check_status(P const& path, int const status) const {
-        return status;
-    }
+    typedef sandbox_call<Tag> base;
 
     template <class Arg2, class... ModeArg>
     PITO_RETURN(Tag) operator()(const char *path, Arg2 arg2, ModeArg... mode) {
-        if (TestWrite && arg2 & O_RDONLY) {
-            if (1 == sizeof...(mode)) {
-                // if the file doesn't exist it could be created so this
-                // is a write operation.. for now fall through and block
-            }
-            else return this->system(path, arg2, mode...);
+        if (! CreateFile && arg2 & O_RDONLY) {
+            // no O_CREAT if there is no mode
+            if (! sizeof...(mode))
+                return this->system(path, arg2, mode...);
         }
 
-        std::unique_ptr<char> realpath;
-        int ret = sandbox_call<Tag>::test_path(path, arg2, mode...);
-        if (-1 != ret) ctxt.fd_map[ret] = realpath.get();
+        char realpath[PATH_MAX];
+        auto const ret = CreateFile || sizeof...(mode) ?
+            base::test_path(realpath, path, arg2) :
+            base::template test_path<true>(realpath, path, arg2, mode...);
+
+        // chilon::println(chilon::color::red, this->name(), ": ", realpath, " = ", ret);
+
+        if (-1 != ret) ctxt.fd_map[ret] = realpath;
         return ret;
     }
 };

@@ -18,25 +18,29 @@ struct context {
     pid_t   pid_;
 };
 
+// Object created in source file, ensures context constructor gets run
+// as library is opened.
 context ctxt;
 #endif
 
-template <class Tag>
-struct system_call;
-
+// This is the system call handler, certain tags can be handled
+// specially using template parameter specialisation on the tag
 template <class Tag>
 struct system_call : system_call_real<Tag> {
-    typedef system_call_real<Tag> base_t;
 
-    // to handle variadic c argument lists
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
 #ifdef PITO_LOG_PID
         chilon::print(std::cerr, ctxt.pid_, " - ");
 #endif
-        chilon::print(std::cerr, "calling ", base_t::name(), "(");
+        // name() inherited from system_call_real, contains name of
+        // system call as cstring. this-> is necessary due to call
+        // through template base.
+        chilon::print(std::cerr, "calling ", this->name(), "(");
         chilon::print_join(std::cerr, ", ", args...);
         std::cerr << ") - " << std::flush;
+
+        // Call the real system call.
         auto ret = this->system(args...);
         chilon::println(std::cerr, ret);
         return ret;

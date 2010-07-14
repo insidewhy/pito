@@ -29,12 +29,11 @@ head {
     2112 - calling readdir(0x24a1d30) - 0
     baby  kitten
 
-    james@turbstick chilon % pito -h
     pito 0.9.1
     usage: pito [arguments] <wrapper library name> [wrapper arguments] <program> [program arguments]
      -v [ --verbose ]       increase verbosity
      -h [ --help ]          display help
-     -s [ --silent ]        don't say anything
+     -s [ --silent ]        remain silent
      -l [ --library-dir ]   pito library directory
 
     james@turbstick pito % pito sandbox -h
@@ -42,7 +41,7 @@ head {
      -b [ --blacklist ]   disallow writes to this directory
      -w [ --whitelist ]   allow writes to this directory
      -p [ --pretend ]     pretend to allow writes to this directory
-     -v [ --verbose ]     inrease verbosity
+     -v [ --verbose ]     increase verbosity
      -h [ --help ]        display help
 EOF
 
@@ -50,81 +49,9 @@ EOF
 
 %h3 "plugin/log/helper.hpp - print system calls names, arguments and return values."
 
-%code(source=cpp) <<EOF
-#ifndef PITO_LOG_HELPER_HPP
-#define PITO_LOG_HELPER_HPP
+%code(file=../../src/pito/plugin/log/helper.hpp)
 
-#include <pito/system_call.hpp>
-#include <pito/lib/traits.hpp>
+%h3 "plugin/log/libc.cpp - redirect system calls to helper.cpp objects:"
 
-#include <chilon/print.hpp>
-
-#include <iostream>
-
-namespace pito { namespace log {
-
-// Global constructor for this class will initialise the PID when the
-// library is opened.
-#ifdef PITO_LOG_PID
-struct init {
-    init() {
-       pid_ = getpid();
-    }
-    pid_t   pid_;
-};
-
-init context;
-#endif
-
-template <class Tag>
-struct system_call;
-
-// All system calls will be directed through this class. Template
-// specialisation on the system call tag can be used to treat certain
-// system calls differently.
-template <class Tag>
-struct system_call : detail::system_call<Tag> {
-    typedef detail::system_call<Tag> base_t;
-
-    // To handle variadic c argument lists use C++0x variadic template
-    // parameters.
-    template <class... Args>
-    PITO_RETURN(Tag) operator()(Args... args) {
-        // chilon::print is a nice interface to c++ iostreams, print_join
-        // joins the arguments with the first argument.
-#ifdef PITO_LOG_PID
-        chilon::print(std::cerr, context.pid_, " - ");
-#endif
-        chilon::print(std::cerr, "calling ", base_t::name, "(");
-        chilon::print_join(std::cerr, ", ", args...);
-        std::cerr << ") - " << std::flush;
-        // PITO_SUPER calls the underlying system call, C++0x auto is used
-        // so that the type of ret is inferred by the compiler.
-        auto ret = PITO_SUPER(Tag, args...);
-        chilon::println(std::cerr, ret);
-        return ret;
-    }
-};
-
-} }
-
-#endif
-EOF
-
-%h3 "plugin/log/source.cpp - redirect system calls to helper.cpp objects:"
-
-%code(source=cpp) <<EOF
-    // This macro is used by the pito includes.
-    #define PITO_SYSTEM_CALL_BASE  log::system_call
-    #define PITO_LOG_PID
-    #include <pito/plugin/log/helper.hpp>
-
-    // Including jail ensures processes can't break out of the environment
-    // by using setenv and execv/command functions
-    #include <pito/jail/c.hpp>
-
-    // This file hooks all c library forwards together based on the
-    //
-    #include <pito/lib/c.hpp>
-EOF
+%code(file=../../src/pito/plugin/log/libc.cpp)
 

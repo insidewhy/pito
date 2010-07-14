@@ -80,7 +80,7 @@ int sandbox_init(int offset, int argc, char *argv[]) {
         ("b,blacklist", blacklist, "disallow writes to this directory")
         ("w,whitelist", whitelist, "allow writes to this directory")
         ("p,pretend", pretendlist, "pretend to allow writes to this directory")
-        ("v,verbose", value(verbose), "inrease verbosity")
+        ("v,verbose", value(verbose), "increase verbosity")
         .help("pito sandbox arguments");
 
     try {
