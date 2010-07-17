@@ -14,7 +14,7 @@ namespace parser = chilon::parser;
 
 context& ctxt = chilon::singleton<context>::instance();
 
-context::context() : mode(WRITE_MODE_PRETEND) {
+context::context() : default_mode(WRITE_MODE_BLACKLIST) {
     auto& jail_ctxt = chilon::singleton<jail::context>::instance();
 
     for (auto it = jail_ctxt.environment_.begin();
@@ -23,10 +23,13 @@ context::context() : mode(WRITE_MODE_PRETEND) {
         if (it->first == PITO_SANDBOX_DEFAULT) {
             switch (*(it->second.begin())) {
                 case 'W':
-                    mode = WRITE_MODE_WHITELIST;
+                    default_mode = WRITE_MODE_WHITELIST;
                     break;
                 case 'B':
-                    mode = WRITE_MODE_BLACKLIST;
+                    default_mode = WRITE_MODE_BLACKLIST;
+                    break;
+                case 'P':
+                    default_mode = WRITE_MODE_PRETEND;
                     break;
             }
         }

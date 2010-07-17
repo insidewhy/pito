@@ -19,6 +19,8 @@
 
 namespace pito { namespace sandbox {
 
+namespace color = chilon::color;
+
 typedef char write_mode;
 
 write_mode const WRITE_MODE_UNKNOWN   = 'U';
@@ -30,7 +32,7 @@ struct context {
     context();
 
     std::vector<range> paths;
-    write_mode         mode;
+    write_mode         default_mode;
     std::unordered_map<int, std::string>  fd_map;
 };
 
@@ -51,12 +53,19 @@ struct sandbox_call : system_call_real<Tag> {
                 ! ::realpath(path_arg, realpath) :
                 ! chilon::realpath(path_arg, realpath))
         {
-            chilon::println(chilon::color::red,
+            chilon::println(color::red,
                 this->name(), ": error resolving path ", path_arg);
             return WRITE_MODE_UNKNOWN;
         }
 
         // TODO: get appropriate mode here
+        for (auto it = ctxt.paths.begin(); it != ctxt.paths.end(); ++it) {
+            if (std::equal(it->begin() + 1, it->end(), realpath)) {
+                char const last = realpath[it->size() - 1];
+                if ('/' == last || '\0' == last)
+                    return it->front();
+            }
+        }
 
         return WRITE_MODE_BLACKLIST;
     }
@@ -130,13 +139,13 @@ struct sandbox_call_open : sandbox_call<Tag> {
 
             case WRITE_MODE_BLACKLIST:
                 errno = EACCES;
-                chilon::println(chilon::color::red,
+                chilon::println(color::red,
                     this->name(), ": ", realpath, " DENIED");
 
                 return -1;
 
             case WRITE_MODE_PRETEND:
-                chilon::println(chilon::color::red,
+                chilon::println(color::red,
                     this->name(), ": ", realpath, " PRETEND");
 
                 auto ret = this->system("/dev/null", oflag, mode...);
