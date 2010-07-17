@@ -33,7 +33,6 @@ struct context {
 
     std::vector<range> paths;
     write_mode         default_mode;
-    std::unordered_map<int, std::string>  fd_map;
 };
 
 extern context& ctxt;
@@ -132,9 +131,7 @@ struct sandbox_call_open : sandbox_call<Tag> {
 
         switch (write_type) {
             case WRITE_MODE_WHITELIST: {
-                auto ret = this->system(path, oflag, mode...);
-                if (-1 != ret) ctxt.fd_map[ret] = realpath;
-                return ret;
+                return this->system(path, oflag, mode...);
             }
 
             case WRITE_MODE_BLACKLIST:
@@ -148,9 +145,7 @@ struct sandbox_call_open : sandbox_call<Tag> {
                 chilon::println(color::red,
                     this->name(), ": ", realpath, " PRETEND");
 
-                auto ret = this->system("/dev/null", oflag, mode...);
-                ctxt.fd_map[ret] = realpath;
-                return ret;
+                return this->system("/dev/null", oflag, mode...);
         }
 
         assert(false);
