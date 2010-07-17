@@ -12,6 +12,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include <sys/stat.h>
+
 #define PITO_SANDBOX_DEFAULT  "PITO_SANDBOX_DEFAULT"
 #define PITO_SANDBOX_PATHS    "PITO_SANDBOX_PATHS"
 
@@ -19,6 +21,7 @@ namespace pito { namespace sandbox {
 
 typedef char write_mode;
 
+write_mode const WRITE_MODE_UNKNOWN   = 'U';
 write_mode const WRITE_MODE_PRETEND   = 'P';
 write_mode const WRITE_MODE_WHITELIST = 'W';
 write_mode const WRITE_MODE_BLACKLIST = 'B';
@@ -42,7 +45,7 @@ struct sandbox_call : system_call_real<Tag> {
   protected:
     // executes the system call depending on the path argument
     template <bool FileMustExist_, class... Args>
-    return_type test_path(chilon::realpath_type& realpath, Args... args) {
+    write_mode path_type(chilon::realpath_type& realpath, Args... args) {
         auto path_arg = chilon::argument<idx>(args...);
         if (FileMustExist_ ?
                 ! ::realpath(path_arg, realpath) :
@@ -50,24 +53,33 @@ struct sandbox_call : system_call_real<Tag> {
         {
             chilon::println(chilon::color::red,
                 this->name(), ": error resolving path ", path_arg);
-            return -1;
+            return WRITE_MODE_UNKNOWN;
         }
 
-        // TODO: filter realpath here
+        // TODO: get appropriate mode here
 
-        return this->system(args...);
+        return WRITE_MODE_BLACKLIST;
     }
 
     // test path, with default FileMustExist option
     template <class... Args>
-    return_type test_path(chilon::realpath_type& realpath, Args... args) {
-        return test_path<FileMustExist>(realpath, args...);
+    return_type path_type(chilon::realpath_type& realpath, Args... args) {
+        return path_type<FileMustExist>(realpath, args...);
     }
 
     template <class... Args>
     return_type test_path(Args... args) {
         chilon::realpath_type realpath;
-        return test_path(realpath, args...);
+        write_mode const write_type = path_type(realpath, args...);
+        switch (write_type) {
+            case WRITE_MODE_WHITELIST:
+                return this->system(args...);
+            case WRITE_MODE_BLACKLIST:
+                errno = EACCES;
+                return -1;
+            case WRITE_MODE_PRETEND:
+                return 0;
+        }
     }
 
   public:
@@ -97,22 +109,42 @@ struct sandbox_call_open : sandbox_call<Tag> {
     typedef sandbox_call<Tag> base;
 
     template <class Arg2, class... ModeArg>
-    PITO_RETURN(Tag) operator()(const char *path, Arg2 arg2, ModeArg... mode) {
-        if (! CreateFile && arg2 & O_RDONLY) {
+    PITO_RETURN(Tag) operator()(const char *path, Arg2 oflag, ModeArg... mode) {
+        if (! CreateFile && oflag & O_RDONLY) {
             // no O_CREAT if there is no mode
             if (! sizeof...(mode))
-                return this->system(path, arg2, mode...);
+                return this->system(path, oflag, mode...);
         }
 
         char realpath[PATH_MAX];
-        auto const ret = CreateFile || sizeof...(mode) ?
-            base::test_path(realpath, path, arg2) :
-            base::template test_path<true>(realpath, path, arg2, mode...);
+        auto const write_type = CreateFile || sizeof...(mode) ?
+            base::path_type(realpath, path, oflag) :
+            base::template path_type<true>(realpath, path, oflag, mode...);
 
-        // chilon::println(chilon::color::red, this->name(), ": ", realpath, " = ", ret);
+        switch (write_type) {
+            case WRITE_MODE_WHITELIST: {
+                auto ret = this->system(path, oflag, mode...);
+                if (-1 != ret) ctxt.fd_map[ret] = realpath;
+                return ret;
+            }
 
-        if (-1 != ret) ctxt.fd_map[ret] = realpath;
-        return ret;
+            case WRITE_MODE_BLACKLIST:
+                errno = EACCES;
+                chilon::println(chilon::color::red,
+                    this->name(), ": ", realpath, " DENIED");
+
+                return -1;
+
+            case WRITE_MODE_PRETEND:
+                chilon::println(chilon::color::red,
+                    this->name(), ": ", realpath, " PRETEND");
+
+                auto ret = this->system("/dev/null", oflag, mode...);
+                ctxt.fd_map[ret] = realpath;
+                return ret;
+        }
+
+        assert(false);
     }
 };
 
