@@ -58,12 +58,10 @@ struct sandbox_call : system_call_real<Tag> {
             return WRITE_MODE_UNKNOWN;
         }
 
-        // TODO: get appropriate mode here
         for (auto it = ctxt.paths.begin(); it != ctxt.paths.end(); ++it) {
             if (std::equal(it->begin() + 1, it->end(), realpath)) {
                 char const last = realpath[it->size() - 1];
-                if ('/' == last || '\0' == last)
-                    return it->front();
+                if ('/' == last || '\0' == last) return it->front();
             }
         }
 
@@ -100,12 +98,13 @@ struct sandbox_call : system_call_real<Tag> {
 
 template <class Tag, int fdIndex = 0, int pathIndex = -1>
 struct sandbox_fd_call : system_call_real<Tag> {
-    // TODO:
+    // todo:
 
     typedef PITO_RETURN(Tag) return_type;
 
     template <class... Args>
     return_type operator()(Args... args) {
+        // todo: remember to check for AT_FDCWD
         return this->system(args...);
     }
 };
@@ -119,7 +118,8 @@ struct sandbox_call_open : sandbox_call<Tag> {
 
     template <class Arg2, class... ModeArg>
     PITO_RETURN(Tag) operator()(const char *path, Arg2 oflag, ModeArg... mode) {
-        if (! CreateFile && oflag & O_RDONLY) {
+        // can't test & with O_RDONLY because O_RDONLY can be 0
+        if (! CreateFile && ! (oflag & (O_WRONLY | O_RDWR))) {
             // no O_CREAT if there is no mode
             if (! sizeof...(mode))
                 return this->system(path, oflag, mode...);
