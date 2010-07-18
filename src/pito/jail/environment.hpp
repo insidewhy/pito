@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <string>
+#include <cstring>
 
 namespace pito { namespace jail {
 
@@ -49,10 +50,47 @@ static void enforce_environment() {
  * @return The given environment modified with the enforced library preloads, allocated with new.
  */
 static char * const * enforce_environment(char * const envp[]) {
+    int newSize = ctxt.environment_.size();
 #ifdef PITO_APPLE
     ctxt.environment_["DYLD_FORCE_FLAT_NAMESPACE"] = "YES";
+    ++newSize;
 #endif
-    return setenv(ctxt.environment_, envp);
+
+    char const key[] = "PITO_";
+    for (auto ptr = envp; *ptr != 0; ++ptr) {
+        if (! std::equal(*ptr, *ptr + sizeof(key) - 1, key)) {
+            ++newSize;
+        }
+    }
+
+    // don't care about memory, about to throw this process away
+    auto new_env = static_cast<char **>(calloc(newSize, sizeof(char *)));
+
+    auto env_it = new_env;
+    for (auto it = ctxt.environment_.begin();
+         it != ctxt.environment_.end(); ++it)
+    {
+        auto const key_size = it->first.size();
+        auto entry = static_cast<char *>(
+            calloc(key_size + it->second.size() + 2, sizeof(char)));
+        std::strncpy(entry, it->first.c_str(), key_size);
+        entry[key_size] = '=';
+        std::strcpy(entry + key_size + 1, it->second.c_str());
+
+        *env_it = entry;
+        ++env_it;
+    }
+
+    for (auto ptr = envp; *ptr != 0; ++ptr) {
+        if (! std::equal(*ptr, *ptr + sizeof(key) - 1, key)) {
+            *env_it = *ptr;
+            ++env_it;
+        }
+    }
+
+    *env_it = 0;
+
+    return new_env;
 }
 
 } }
