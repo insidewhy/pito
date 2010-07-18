@@ -42,7 +42,7 @@ struct context {
 
 extern context& ctxt;
 
-// would make idx = 0 a parameter of test_path, but gcc 4.5 can't handle it
+// would make idx = 0 a parameter of run, but gcc 4.5 can't handle it
 template <class Tag, int idx = 0, bool FileMustExist = false>
 struct sandbox_call : system_call_real<Tag> {
 
@@ -88,7 +88,7 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     template <bool FileMustExist_, class... Args>
-    return_type test_path(Args... args) {
+    return_type run(Args... args) {
         chilon::realpath_type realpath;
         auto const write_type =
             path_type<FileMustExist_>(realpath, args...);
@@ -113,14 +113,14 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     template <class... Args>
-    return_type test_path(Args... args) {
-        return test_path<FileMustExist>(args...);
+    return_type run(Args... args) {
+        return run<FileMustExist>(args...);
     }
 
   public:
     template <class... Args>
     return_type operator()(Args... args) {
-        return test_path(args...);
+        return run(args...);
     }
 };
 
@@ -156,19 +156,19 @@ struct sandbox_call_open : sandbox_call<Tag> {
             ! (oflag & (O_WRONLY | O_RDWR)))
                 return this->system(path, oflag, mode...);
 
-        return this->template test_path<
+        return this->template run<
             ! CreateFile && ! sizeof...(mode)>(path, oflag, mode...);
     }
 };
 
 template <class Tag>
-struct sandbox_call_fopen : sandbox_call<Tag> {
+struct sandbox_call_fopen : sandbox_call_open<Tag> {
     typedef PITO_RETURN(Tag)  return_type;
 
     return_type blacklist() { return 0; }
 
     template <class Path, class... Args>
-    return_type pretend(Path, Args... args) const {
+    return_type pretend(Path, Args... args) {
         return this->system("/dev/null", args...);
     }
 
@@ -177,8 +177,17 @@ struct sandbox_call_fopen : sandbox_call<Tag> {
                            const char *mode,
                            Stream...   stream)
     {
-        // TODO: check mode for write
-        return this->system(path, mode, stream...);
+        if (! *mode)
+            return this->system(path, mode, stream...);
+
+        if ('r' == *mode) {
+            if ('+' == *(mode + 1))
+                return this->template run<true>(path, mode, stream...);
+            else
+                return this->system(path, mode, stream...);
+        }
+        else
+            return this->run(path, mode, stream...);
     }
 };
 
