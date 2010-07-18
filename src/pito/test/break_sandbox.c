@@ -66,7 +66,8 @@ int main(int argc, char *argv[]) {
     printf("*** execl\n");
     if (! fork()) {
         unsetenv(PITO_LD_PRELOAD);
-        execl("/bin/touch", "/bin/touch", "execl-touch", 0);
+        execl("/bin/touch", "/bin/touch", "execl-touch1", "execl-touch2",
+                (char *)0);
         return 0;
     }
     wait_for_return("execl touch succeeded");

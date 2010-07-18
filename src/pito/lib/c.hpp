@@ -8,6 +8,8 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
+#include <string.h>
+
 #ifndef PITO_SYSTEM_CALL_BASE
 #define PITO_SYSTEM_CALL_BASE  system_call_real
 #endif
@@ -133,6 +135,43 @@ PITO_SYSTEM_CALL(getcwd)
 PITO_SYSTEM_CALL_WITH_BASE(execve, PITO_JAIL_BASE)
 PITO_SYSTEM_CALL_WITH_BASE(execv, PITO_JAIL_BASE)
 PITO_SYSTEM_CALL_WITH_BASE(execvp, PITO_JAIL_BASE)
+
+template <>
+struct system_call<execl>
+  : PITO_SYSTEM_CALL_BASE<execl> {};
+
+extern "C" {
+    int execl(PITO_ARGS(execl), ...) {
+        if (! arg0 || ! arg1) return -1;
+
+        int new_size = 12;
+        int current_idx = 1;
+        auto argv = static_cast<char **>(calloc(new_size, sizeof(char *)));
+        argv[0] = arg1;
+
+        va_list ap;
+        va_start(ap, arg1);
+
+        char const * current_arg = va_arg(ap, char const *);
+
+        while (current_arg) {
+            argv[current_idx] = strdup(current_arg);
+
+            if (++current_idx >= new_size) {
+                new_size += 12;
+                argv = static_cast<char **>(
+                    realloc(argv, new_size * sizeof(char *)));
+            }
+            current_arg = va_arg(ap, char const *);
+        }
+
+        va_end(ap);
+        argv[current_idx] = 0;
+
+        return PITO_CALL(execv)(arg0, argv);
+    }
+}
+
 PITO_SYSTEM_CALL_WITH_BASE(system, PITO_JAIL_BASE)
 ////////////////////////////////////////////////////////////////////////////////
 // end jail

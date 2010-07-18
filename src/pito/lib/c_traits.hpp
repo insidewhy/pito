@@ -101,6 +101,12 @@ PITO_SYSTEM_CALL_TRAIT(execve, c, int(const char *, char *const[], char *const[]
 PITO_SYSTEM_CALL_TRAIT(execv, c, int(const char *, char *const[]))
 #define PITO_NARGS_execvp 2
 PITO_SYSTEM_CALL_TRAIT(execvp, c, int(const char *, char *const[]))
+#define PITO_NARGS_execl 2
+PITO_SYSTEM_CALL_TRAIT(execl, c, int(const char *, char *arg))
+#define PITO_NARGS_execlp 2
+PITO_SYSTEM_CALL_TRAIT(execlp, c, int(const char *, char *arg))
+#define PITO_NARGS_execle 2
+PITO_SYSTEM_CALL_TRAIT(execle, c, int(const char *, char *arg))
 #define PITO_NARGS_system 1
 PITO_SYSTEM_CALL_TRAIT(system, c, int(const char *))
 #define PITO_NARGS_utime 2
