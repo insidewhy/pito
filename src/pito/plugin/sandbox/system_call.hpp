@@ -67,18 +67,13 @@ template <>
 struct system_call<creat64> : sandbox_call_open<creat64, true> {};
 
 template <>
-struct system_call<fopen> : system_call_real<fopen> {
-    PITO_RETURN(fopen) operator()(const char *path, const char *mode) {
-        return system(path, mode);
-    }
-};
+struct system_call<fopen> : sandbox_call_fopen<fopen> {};
 
 template <>
-struct system_call<fopen64> : system_call_real<fopen64> {
-    PITO_RETURN(fopen64) operator()(const char *path, const char *mode) {
-        return system(path, mode);
-    }
-};
+struct system_call<fopen64> : sandbox_call_fopen<fopen64> {};
+
+template <>
+struct system_call<freopen> : sandbox_call_fopen<freopen> {};
 
 template <>
 struct system_call<lchown> : sandbox_call<lchown, 0, true> {};

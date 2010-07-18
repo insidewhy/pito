@@ -46,6 +46,8 @@ PITO_SYSTEM_CALL_TRAIT(creat64, c, int(const char *, mode_t))
 PITO_SYSTEM_CALL_TRAIT(fopen, c, FILE *(const char *, const char *))
 #define PITO_NARGS_fopen64 2
 PITO_SYSTEM_CALL_TRAIT(fopen64, c, FILE *(const char *, const char *))
+#define PITO_NARGS_freopen 3
+PITO_SYSTEM_CALL_TRAIT(freopen, c, FILE *(const char *path, const char *mode, FILE *stream))
 #define PITO_NARGS_lchown 3
 PITO_SYSTEM_CALL_TRAIT(lchown, c, int(const char *, uid_t, gid_t))
 #define PITO_NARGS_link 2

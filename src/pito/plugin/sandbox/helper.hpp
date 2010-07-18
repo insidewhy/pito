@@ -8,6 +8,8 @@
 #include <chilon/print.hpp>
 #include <chilon/argument.hpp>
 #include <chilon/realpath.hpp>
+#include <chilon/meta/same.hpp>
+#include <chilon/meta/conditional.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -54,6 +56,8 @@ struct sandbox_call : system_call_real<Tag> {
     template <class... Args>
     return_type pretend(Args... args) const { return 0; }
 
+    return_type blacklist() { return -1; }
+
     // executes the system call depending on the path argument
     template <bool FileMustExist_, class... Args>
     write_mode path_type(chilon::realpath_type& realpath, Args... args) {
@@ -98,7 +102,7 @@ struct sandbox_call : system_call_real<Tag> {
                 chilon::println(color::red,
                     this->name(), ": ", realpath, " DENIED");
 
-                return -1;
+                return this->mixin().blacklist();
 
             case WRITE_MODE_PRETEND:
                 chilon::println(color::red,
@@ -137,16 +141,16 @@ struct sandbox_fd_call : system_call_real<Tag> {
 // on the arguments
 template <class Tag, bool CreateFile = false>
 struct sandbox_call_open : sandbox_call<Tag> {
-
     typedef sandbox_call<Tag> base;
+    typedef PITO_RETURN(Tag)  return_type;
 
     template <class Path, class... Args>
-    PITO_RETURN(Tag) pretend(Path path, Args... args) {
+    return_type pretend(Path, Args... args) {
         return this->system("/dev/null", args...);
     }
 
     template <class Arg2, class... ModeArg>
-    PITO_RETURN(Tag) operator()(const char *path, Arg2 oflag, ModeArg... mode) {
+    return_type operator()(const char *path, Arg2 oflag, ModeArg... mode) {
         // can't test & with O_RDONLY because O_RDONLY can be 0
         if (! CreateFile && ! sizeof...(mode) &&
             ! (oflag & (O_WRONLY | O_RDWR)))
@@ -154,6 +158,27 @@ struct sandbox_call_open : sandbox_call<Tag> {
 
         return this->template test_path<
             ! CreateFile && ! sizeof...(mode)>(path, oflag, mode...);
+    }
+};
+
+template <class Tag>
+struct sandbox_call_fopen : sandbox_call<Tag> {
+    typedef PITO_RETURN(Tag)  return_type;
+
+    return_type blacklist() { return 0; }
+
+    template <class Path, class... Args>
+    return_type pretend(Path, Args... args) const {
+        return this->system("/dev/null", args...);
+    }
+
+    template <class... Stream>
+    return_type operator()(const char *path,
+                           const char *mode,
+                           Stream...   stream)
+    {
+        // TODO: check mode for write
+        return this->system(path, mode, stream...);
     }
 };
 
