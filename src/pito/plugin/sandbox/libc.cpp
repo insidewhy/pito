@@ -9,6 +9,7 @@
 #include <chilon/conf/cmd/command_line.hpp>
 #include <chilon/filesystem/current_directory.hpp>
 #include <chilon/print.hpp>
+#include <chilon/realpath.hpp>
 
 #include <set>
 #include <sstream>
@@ -36,7 +37,6 @@ int sandbox_init(int offset, int argc, char *argv[]) {
 
     struct context {
         paths_t paths_;
-        current_directory cwd_;
         char const *default_;
 
         context(char const * const default__) : default_(default__) {}
@@ -46,18 +46,20 @@ int sandbox_init(int offset, int argc, char *argv[]) {
         void operator()(char const * str) const {
             if (*str == '\0') return;
 
-            std::string r(prefix_);
-            if (*str != '/') {
-                r.append(context_.cwd_.path());
-                r.append("/");
-            }
-            else if (*(str + 1) == '\0') {
-                context_.default_ = prefix_;
+            chilon::realpath_type realpath;
+            if (! chilon::realpath(str, realpath)) {
+                std::cerr << "can not access path: " << str << std::endl;
                 return;
             }
 
-            r.append(str);
-            context_.paths_.insert(r);
+            if ('/' == *realpath && '\0' == *(realpath + 1))
+                context_.default_ = prefix_;
+            else {
+                std::string r(prefix_);
+                r.append(realpath);
+                context_.paths_.insert(r);
+            }
+
         }
 
         argument_reader(char const * const prefix, context& ctxt)

@@ -64,12 +64,12 @@ struct sandbox_call : system_call_real<Tag> {
             }
         }
 
-        return WRITE_MODE_BLACKLIST;
+        return ctxt.default_mode;
     }
 
     // test path, with default FileMustExist option
     template <class... Args>
-    return_type path_type(chilon::realpath_type& realpath, Args... args) {
+    write_mode path_type(chilon::realpath_type& realpath, Args... args) {
         return path_type<FileMustExist>(realpath, args...);
     }
 
@@ -129,10 +129,10 @@ struct sandbox_call_open : sandbox_call<Tag> {
             base::path_type(realpath, path, oflag) :
             base::template path_type<true>(realpath, path, oflag, mode...);
 
+        std::cout << "mode is " << write_type << std::endl;
         switch (write_type) {
-            case WRITE_MODE_WHITELIST: {
+            case WRITE_MODE_WHITELIST:
                 return this->system(path, oflag, mode...);
-            }
 
             case WRITE_MODE_BLACKLIST:
                 errno = EACCES;
