@@ -19,6 +19,9 @@
 
 namespace pito { namespace sandbox {
 
+template <class Tag>
+struct system_call;
+
 namespace color = chilon::color;
 
 typedef char write_mode;
@@ -44,6 +47,13 @@ struct sandbox_call : system_call_real<Tag> {
     typedef PITO_RETURN(Tag) return_type;
 
   protected:
+    system_call<Tag>& mixin() {
+        return static_cast< system_call<Tag> & >(*this);
+    }
+
+    template <class... Args>
+    return_type pretend(Args... args) const { return 0; }
+
     // executes the system call depending on the path argument
     template <bool FileMustExist_, class... Args>
     write_mode path_type(chilon::realpath_type& realpath, Args... args) {
@@ -73,19 +83,34 @@ struct sandbox_call : system_call_real<Tag> {
         return path_type<FileMustExist>(realpath, args...);
     }
 
-    template <class... Args>
+    template <bool FileMustExist_, class... Args>
     return_type test_path(Args... args) {
         chilon::realpath_type realpath;
-        write_mode const write_type = path_type(realpath, args...);
+        auto const write_type =
+            path_type<FileMustExist_>(realpath, args...);
+
         switch (write_type) {
             case WRITE_MODE_WHITELIST:
                 return this->system(args...);
+
             case WRITE_MODE_BLACKLIST:
                 errno = EACCES;
+                chilon::println(color::red,
+                    this->name(), ": ", realpath, " DENIED");
+
                 return -1;
+
             case WRITE_MODE_PRETEND:
-                return 0;
+                chilon::println(color::red,
+                    this->name(), ": ", realpath, " PRETEND");
+
+                return this->mixin().pretend(args...);
         }
+    }
+
+    template <class... Args>
+    return_type test_path(Args... args) {
+        return test_path<FileMustExist>(args...);
     }
 
   public:
@@ -115,40 +140,20 @@ struct sandbox_call_open : sandbox_call<Tag> {
 
     typedef sandbox_call<Tag> base;
 
+    template <class Path, class... Args>
+    PITO_RETURN(Tag) pretend(Path path, Args... args) {
+        return this->system("/dev/null", args...);
+    }
+
     template <class Arg2, class... ModeArg>
     PITO_RETURN(Tag) operator()(const char *path, Arg2 oflag, ModeArg... mode) {
         // can't test & with O_RDONLY because O_RDONLY can be 0
-        if (! CreateFile && ! (oflag & (O_WRONLY | O_RDWR))) {
-            // no O_CREAT if there is no mode
-            if (! sizeof...(mode))
-                return this->system(path, oflag, mode...);
-        }
-
-        char realpath[PATH_MAX];
-        auto const write_type = CreateFile || sizeof...(mode) ?
-            base::path_type(realpath, path, oflag) :
-            base::template path_type<true>(realpath, path, oflag, mode...);
-
-        std::cout << "mode is " << write_type << std::endl;
-        switch (write_type) {
-            case WRITE_MODE_WHITELIST:
+        if (! CreateFile && ! sizeof...(mode) &&
+            ! (oflag & (O_WRONLY | O_RDWR)))
                 return this->system(path, oflag, mode...);
 
-            case WRITE_MODE_BLACKLIST:
-                errno = EACCES;
-                chilon::println(color::red,
-                    this->name(), ": ", realpath, " DENIED");
-
-                return -1;
-
-            case WRITE_MODE_PRETEND:
-                chilon::println(color::red,
-                    this->name(), ": ", realpath, " PRETEND");
-
-                return this->system("/dev/null", oflag, mode...);
-        }
-
-        assert(false);
+        return this->template test_path<
+            ! CreateFile && ! sizeof...(mode)>(path, oflag, mode...);
     }
 };
 

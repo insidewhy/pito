@@ -7,9 +7,6 @@ namespace pito { namespace sandbox {
 using namespace system_call_tag;
 
 template <class Tag>
-struct system_call;
-
-template <class Tag>
 struct system_call : system_call_real<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
