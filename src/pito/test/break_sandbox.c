@@ -34,10 +34,10 @@ int main(int argc, char *argv[]) {
     printf("*************** filesystem jail break test ***************\n");
     unsetenv(PITO_LD_PRELOAD);
 
-    check_status2("open succeeded",
+    check_status2("open",
         open("open", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR));
 
-    check_status2("creat succeeded",
+    check_status2("creat",
         creat("creat", S_IWUSR));
 
     printf("*** execv\n");
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         execv("/bin/touch", args);
         return 0;
     }
-    wait_for_return("execv touch succeeded");
+    wait_for_return("execv touch");
 
     printf("*** execve\n");
     if (! fork()) {
@@ -56,11 +56,11 @@ int main(int argc, char *argv[]) {
         execve("/bin/touch", args, spartan_env);
         return 0;
     }
-    wait_for_return("execve touch succeeded");
+    wait_for_return("execve touch");
 
     printf("*** system\n");
     unsetenv(PITO_LD_PRELOAD);
-    check_status("system touch succeeded",
+    check_status("system touch",
         system("/bin/touch system-touch"));
 
     printf("*** execl\n");
@@ -70,9 +70,14 @@ int main(int argc, char *argv[]) {
                 (char *)0);
         return 0;
     }
-    wait_for_return("execl touch succeeded");
+    wait_for_return("execl touch");
 
-    symlink("execl-wiz", "symlink");
+    printf("*** symlink\n");
+    symlink("existing", "symlink");
+
+    printf("*** fchmod\n");
+    int existing_fd = open("existing", O_RDONLY);
+    check_status("fchmod", fchmod(existing_fd, S_IRWXU));
 
     return ret;
 }

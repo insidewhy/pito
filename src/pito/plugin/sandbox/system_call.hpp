@@ -21,7 +21,7 @@ template <>
 struct system_call<fchmod> : sandbox_fd_call<fchmod> {};
 
 template <>
-struct system_call<fchmodat> : sandbox_fd_call<fchmodat, 0, 1> {};
+struct system_call<fchmodat> : sandbox_call<fchmodat, dir_fd<0>> {};
 
 template <>
 struct system_call<chown> : sandbox_call<chown> {};
@@ -30,7 +30,7 @@ template <>
 struct system_call<fchown> : sandbox_fd_call<fchown> {};
 
 template <>
-struct system_call<fchownat> : sandbox_fd_call<fchownat, 0, 1> {};
+struct system_call<fchownat> : sandbox_call<fchownat, dir_fd<0>> {};
 
 template <>
 struct system_call<open> : sandbox_call_open<open> {};
@@ -84,25 +84,25 @@ template <>
 struct system_call<link> : sandbox_call<link, path_index<1>> {};
 
 template <>
-struct system_call<linkat> : sandbox_fd_call<linkat, 2, 3> {};
+struct system_call<linkat> : sandbox_call<linkat, dir_fd<2>> {};
 
 template <>
 struct system_call<mkdir> : sandbox_call<mkdir> {};
 
 template <>
-struct system_call<mkdirat> : sandbox_fd_call<mkdirat, 0, 1> {};
+struct system_call<mkdirat> : sandbox_call<mkdirat, dir_fd<0>> {};
 
 template <>
 struct system_call<mknod> : sandbox_call<mknod> {};
 
 template <>
-struct system_call<mknodat> : sandbox_fd_call<mknodat, 0, 1> {};
+struct system_call<mknodat> : sandbox_call<mknodat, dir_fd<0>> {};
 
 template <>
 struct system_call<mkfifo> : sandbox_call<mkfifo> {};
 
 template <>
-struct system_call<mkfifoat> : sandbox_fd_call<mkfifoat, 0, 1> {};
+struct system_call<mkfifoat> : sandbox_call<mkfifoat, dir_fd<0>> {};
 
 template <>
 struct system_call<rename> : system_call_real<rename> {
@@ -126,7 +126,7 @@ template <>
 struct system_call<symlink> : sandbox_call<symlink, path_index<1>> {};
 
 template <>
-struct system_call<symlinkat> : sandbox_fd_call<symlinkat, 1, 2> {};
+struct system_call<symlinkat> : sandbox_call<symlinkat, dir_fd<1>> {};
 
 template <>
 struct system_call<truncate> : sandbox_call<truncate> {};
@@ -138,7 +138,7 @@ template <>
 struct system_call<unlink> : sandbox_call<unlink> {};
 
 template <>
-struct system_call<unlinkat> : sandbox_fd_call<unlinkat, 0, 1> {};
+struct system_call<unlinkat> : sandbox_call<unlinkat, dir_fd<0>> {};
 
 template <>
 struct system_call<utime> : sandbox_call<utime> {};
@@ -147,10 +147,10 @@ template <>
 struct system_call<utimes> : sandbox_call<utimes> {};
 
 template <>
-struct system_call<utimensat> : sandbox_fd_call<utimensat, 0, 1> {};
+struct system_call<utimensat> : sandbox_call<utimensat, dir_fd<0>> {};
 
 template <>
-struct system_call<futimesat> : sandbox_fd_call<futimesat, 0, 1> {};
+struct system_call<futimesat> : sandbox_call<futimesat, dir_fd<0>> {};
 
 template <>
 struct system_call<lutimes> : sandbox_call<lutimes, file_must_exist> {};

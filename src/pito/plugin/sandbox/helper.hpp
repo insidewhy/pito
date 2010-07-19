@@ -3,6 +3,7 @@
 
 #include <pito/system_call.hpp>
 #include <pito/lib/c_traits.hpp>
+#include <pito/config.hpp>
 
 #include <chilon/iterator_range.hpp>
 #include <chilon/print.hpp>
@@ -78,7 +79,10 @@ struct sandbox_call : system_call_real<Tag> {
     template <bool FileMustExist_, class... Args>
     write_mode path_type(chilon::realpath_type& realpath, Args... args) {
         enum {
-            Idx = meta::find_int<path_index, 0, Options...>::value
+            DirFdIdx = meta::find_int<dir_fd, -1, Options...>::value
+        };
+        enum {
+            Idx = meta::find_int<path_index, DirFdIdx + 1, Options...>::value
         };
 
         auto path_arg = chilon::argument<Idx>(args...);
@@ -92,6 +96,17 @@ struct sandbox_call : system_call_real<Tag> {
             return WRITE_MODE_UNKNOWN;
         }
 
+        return path_mode(realpath);
+    }
+
+    // test path, with default FileMustExist option
+    template <class... Args>
+    write_mode path_type(chilon::realpath_type& realpath, Args... args) {
+        return path_type<FileMustExist>(realpath, args...);
+    }
+
+
+    write_mode path_mode(chilon::realpath_type const& realpath) const {
         for (auto it = ctxt.paths.begin(); it != ctxt.paths.end(); ++it) {
             if (std::equal(it->begin() + 1, it->end(), realpath)) {
                 char const last = realpath[it->size() - 1];
@@ -102,34 +117,36 @@ struct sandbox_call : system_call_real<Tag> {
         return ctxt.default_mode;
     }
 
-    // test path, with default FileMustExist option
-    template <class... Args>
-    write_mode path_type(chilon::realpath_type& realpath, Args... args) {
-        return path_type<FileMustExist>(realpath, args...);
-    }
-
     template <bool FileMustExist_, class... Args>
     return_type run(Args... args) {
         chilon::realpath_type realpath;
-        auto const write_type =
-            path_type<FileMustExist_>(realpath, args...);
 
+        return handle_mode(
+            path_type<FileMustExist_>(realpath, args...), realpath, args...);
+    }
+
+    template <class... Args>
+    return_type handle_mode(
+        write_mode const             write_type,
+        chilon::realpath_type const& realpath,
+        Args...                      args)
+    {
         switch (write_type) {
-            case WRITE_MODE_WHITELIST:
-                return this->system(args...);
-
-            case WRITE_MODE_BLACKLIST:
-                errno = EACCES;
-                chilon::println(color::red,
-                    this->name(), ": ", realpath, " DENIED");
-
-                return this->mixin().blacklist();
-
             case WRITE_MODE_PRETEND:
                 chilon::println(color::red,
                     this->name(), ": ", realpath, " PRETEND");
 
                 return this->mixin().pretend(args...);
+
+            case WRITE_MODE_WHITELIST:
+                return this->system(args...);
+
+            default:
+                errno = EACCES;
+                chilon::println(color::red,
+                    this->name(), ": ", realpath, " DENIED");
+
+                return this->mixin().blacklist();
         }
     }
 
@@ -145,21 +162,8 @@ struct sandbox_call : system_call_real<Tag> {
     }
 };
 
-template <class Tag, int fdIndex = 0, int pathIndex = -1>
-struct sandbox_fd_call : system_call_real<Tag> {
-    // todo:
-
-    typedef PITO_RETURN(Tag) return_type;
-
-    template <class... Args>
-    return_type operator()(Args... args) {
-        // todo: remember to check for AT_FDCWD
-        return this->system(args...);
-    }
-};
-
-// if CreateFile is false, it can still possibly create the file depending
-// on the arguments
+// if FileMustExist is true, it may still be possible that the file may
+// not exist, depending on the arguments to the open call
 template <class Tag, bool FileMustExist = true>
 struct sandbox_call_open : sandbox_call<Tag> {
     typedef sandbox_call<Tag> base;
@@ -179,6 +183,16 @@ struct sandbox_call_open : sandbox_call<Tag> {
 
         return this->template run<
             FileMustExist && ! sizeof...(mode)>(path, oflag, mode...);
+    }
+};
+
+template <class Tag>
+struct sandbox_fd_call : sandbox_call<Tag> {
+    template <class... Args>
+    PITO_RETURN(Tag) operator()(int fd, Args... args) {
+        realpath_type realpath;
+        // TODO: get realpath from PITO_PROC_FD
+        return this->system(fd, args...);
     }
 };
 
@@ -203,7 +217,7 @@ struct sandbox_call_fopen : sandbox_call_open<Tag> {
 
         if ('r' == *mode) {
             if ('+' == *(mode + 1))
-                return this->template run<true>(path, mode, stream...);
+                return this->template run<false>(path, mode, stream...);
             else
                 return this->system(path, mode, stream...);
         }

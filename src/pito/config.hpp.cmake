@@ -16,9 +16,11 @@
 #ifndef PITO_APPLE
 #define PITO_LD_PRELOAD      "LD_PRELOAD"
 #define PITO_LD_LIBRARY_PATH "LD_LIBRARY_PATH"
+#define PITO_PROC_FD         "/dev/fd"
 #else
 #define PITO_LD_PRELOAD      "DYLD_INSERT_LIBRARIES"
 #define PITO_LD_LIBRARY_PATH "DYLD_LIBRARY_PATH"
+#define PITO_PROC_FD         "/proc/self/fd"
 #endif
 
 #endif
