@@ -1,4 +1,5 @@
 #include <chilon/conf/cmd/command_line.hpp>
+#include <chilon/print.hpp>
 #include <pito/application.hpp>
 #include <pito/config.hpp>
 #include <pito/plugin/context.hpp>
@@ -25,6 +26,8 @@ namespace pito {
 namespace cmd_line = chilon::conf::cmd;
 using chilon::conf::value;
 
+namespace color = chilon::color;
+
 bool verbose = false;
 
 inline int main(int argc, char *argv[]) {
@@ -44,18 +47,17 @@ inline int main(int argc, char *argv[]) {
 
         int arg_index;
         try {
-            arg_index = silent ?
-                cmd_line::parser(
-                    argc, argv, options).until_positional().index() :
+            arg_index =
                 cmd_line::parser(
                     argc, argv, options).until_positional(std::cerr).index();
 
             if (2 > argc - arg_index) {
                 if (! silent) {
                     if (1 == argc - arg_index)
-                        std::cerr << "missing <program> argument" << std::endl;
+                        chilon::println(std::cerr, "missing <program> argument");
                     else
-                        std::cerr << "missing <wrapper library name> and <program> arguments" << std::endl;
+                        chilon::println(std::cerr,
+                            "missing <wrapper library name> and <program> arguments");
                     std::cerr << options << std::endl;
                 }
                 return 1;
@@ -75,14 +77,16 @@ inline int main(int argc, char *argv[]) {
 
         if (preload.empty()) {
             if (! silent)
-                std::cerr << "library " << libPath
-                          << " could not be found at install location or in $"
-                             PITO_LD_LIBRARY_PATH "\n";
+                chilon::println(std::cerr,
+                    "library ", libPath,
+                    " could not be found at install location or in $"
+                    PITO_LD_LIBRARY_PATH);
 
         }
         else {
             if (verbose)
-                std::cerr << "load interceptor library (" << preload << ")\n";
+                chilon::println(std::cerr,
+                    "load interceptor library (", preload, ")");
 
             // the dlopen will trigger the preload initialisation so set
             // the environment for it here
@@ -92,7 +96,9 @@ inline int main(int argc, char *argv[]) {
             auto lib = dlopen(preload.c_str(), RTLD_LAZY);
 
             if (! lib) {
-                std::cerr << "could not dlopen library\n";
+                if (! silent)
+                    chilon::println(
+                        std::cerr, "could not dlopen library");
                 return 1;
             }
 
@@ -100,7 +106,7 @@ inline int main(int argc, char *argv[]) {
             auto init = dlsym(lib, lib_name.c_str());
             if (init) {
                 if (verbose)
-                    std::cerr << "init interceptor library (" << preload << ")\n";
+                    chilon::println(std::cerr, "init interceptor library (", preload, ")");
 
                 typedef int (*init_ptr)(int, int, char *[]);
                 arg_index =
@@ -110,11 +116,16 @@ inline int main(int argc, char *argv[]) {
 
             if (arg_index < argc) {
                 if (arg_index < 0) {
-                    if (plugin::HELP != arg_index)
-                        std::cerr << "invalid plugin arguments\n";
+                    if (plugin::HELP != arg_index && ! silent)
+                        chilon::println(
+                            std::cerr, "invalid plugin arguments");
                 }
-                else
+                else {
                     execvp(argv[arg_index], argv + arg_index);
+                    if (! silent)
+                        chilon::println(std::cerr,
+                            "could not exec program: ", argv[arg_index]);
+                }
             }
         }
         return 1;
