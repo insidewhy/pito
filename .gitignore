@@ -2,3 +2,5 @@ src/pito/.obj/
 src/pito/Makefile
 src/pito/config.hpp
 doc/website/*.html
+pito-*.tar.bz2
+src/pito/pito-*.tar.bz2

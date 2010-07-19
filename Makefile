@@ -1,1 +1,1 @@
-include mk/Makefile
+include src/chilon/mk/Makefile

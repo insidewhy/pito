@@ -1,0 +1,5 @@
+.PHONY: dist
+
+dist:
+	${MAKE} -C ../.. backupFiles
+	mv ../../pito-*.tar.bz2 .

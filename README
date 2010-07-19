@@ -1,6 +1,14 @@
 To install:
+    cd src/pito
+    ./configure
+    make
+    make install
 
-cd src/pito
-./configure
-make
-make install
+Options can be set at configure time see:
+    cd src/pito
+    ./configure --help
+
+Alternatively you can set options after configuring with cmake:
+    cd src/pito
+    ./configure
+    ccmake .obj
