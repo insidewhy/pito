@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <cmath>
 
 #include <sys/stat.h>
 
@@ -191,8 +192,23 @@ struct sandbox_fd_call : sandbox_call<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(int fd, Args... args) {
         realpath_type realpath;
-        // TODO: get realpath from PITO_PROC_FD
-        return this->system(fd, args...);
+
+        // 128-bit.. nah
+        char proc_path[sizeof(PITO_PROC_FD "/") + 21];
+        std::copy(PITO_PROC_FD "/", chilon::end(PITO_PROC_FD "/"), proc_path);
+
+        char *proc_ptr =
+            proc_path +
+            sizeof(PITO_PROC_FD "/") + static_cast<int>(std::log10(fd));
+
+        for (*proc_ptr = '\0'; fd > 0; fd /= 10)
+            *(--proc_ptr) = '0' + (fd % 10);
+
+        if (! ::realpath(proc_path, realpath))
+            return this->system(fd, args...);
+        else
+            return this->handle_mode(
+                this->path_mode(realpath), realpath, fd, args...);
     }
 };
 
