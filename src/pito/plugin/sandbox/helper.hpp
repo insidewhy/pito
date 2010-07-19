@@ -8,8 +8,8 @@
 #include <chilon/print.hpp>
 #include <chilon/argument.hpp>
 #include <chilon/realpath.hpp>
-#include <chilon/meta/same.hpp>
-#include <chilon/meta/conditional.hpp>
+#include <chilon/meta/contains.hpp>
+#include <chilon/meta/find_int.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -20,6 +20,18 @@
 #define PITO_SANDBOX_PATHS    "PITO_SANDBOX_PATHS"
 
 namespace pito { namespace sandbox {
+
+namespace meta = chilon::meta;
+
+// options
+struct file_must_exist;
+
+template <int i>
+struct path_index : std::integral_constant<int, i> {};
+
+template <int i>
+struct dir_fd : std::integral_constant<int, i> {};
+// end options
 
 template <class Tag>
 struct system_call;
@@ -42,9 +54,17 @@ struct context {
 
 extern context& ctxt;
 
-// would make idx = 0 a parameter of run, but gcc 4.5 can't handle it
-template <class Tag, int idx = 0, bool FileMustExist = false>
+template <class Tag, class... Options>
 struct sandbox_call : system_call_real<Tag> {
+
+    enum {
+        FileMustExist =
+            meta::contains<file_must_exist, Options...>::value
+    };
+
+    enum {
+        Idx = meta::find_int<path_index, 0, Options...>::value
+    };
 
     typedef PITO_RETURN(Tag) return_type;
 
@@ -61,7 +81,11 @@ struct sandbox_call : system_call_real<Tag> {
     // executes the system call depending on the path argument
     template <bool FileMustExist_, class... Args>
     write_mode path_type(chilon::realpath_type& realpath, Args... args) {
-        auto path_arg = chilon::argument<idx>(args...);
+
+        // TODO: delete
+        chilon::println(color::green, this->name(), ": ", Idx);
+
+        auto path_arg = chilon::argument<Idx>(args...);
         if (FileMustExist_ ?
                 ! ::realpath(path_arg, realpath) :
                 ! chilon::realpath(path_arg, realpath))

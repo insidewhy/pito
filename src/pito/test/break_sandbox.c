@@ -72,5 +72,7 @@ int main(int argc, char *argv[]) {
     }
     wait_for_return("execl touch succeeded");
 
+    symlink("execl-wiz", "symlink");
+
     return ret;
 }

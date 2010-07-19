@@ -76,10 +76,12 @@ template <>
 struct system_call<freopen> : sandbox_call_fopen<freopen> {};
 
 template <>
-struct system_call<lchown> : sandbox_call<lchown, 0, true> {};
+struct system_call<lchown> : sandbox_call<lchown, file_must_exist> {};
 
+// TODO: the symlink path should be measured relative to the path
+//       of the symlink argument if it is relative
 template <>
-struct system_call<link> : sandbox_call<link, 1> {};
+struct system_call<link> : sandbox_call<link, path_index<1>> {};
 
 template <>
 struct system_call<linkat> : sandbox_fd_call<linkat, 2, 3> {};
@@ -121,7 +123,7 @@ template <>
 struct system_call<rmdir> : sandbox_call<rmdir> {};
 
 template <>
-struct system_call<symlink> : sandbox_call<symlink, 1> {};
+struct system_call<symlink> : sandbox_call<symlink, path_index<1>> {};
 
 template <>
 struct system_call<symlinkat> : sandbox_fd_call<symlinkat, 1, 2> {};
@@ -151,7 +153,7 @@ template <>
 struct system_call<futimesat> : sandbox_fd_call<futimesat, 0, 1> {};
 
 template <>
-struct system_call<lutimes> : sandbox_call<lutimes, 0, true> {};
+struct system_call<lutimes> : sandbox_call<lutimes, file_must_exist> {};
 
 } }
 
