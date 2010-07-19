@@ -160,7 +160,7 @@ struct sandbox_fd_call : system_call_real<Tag> {
 
 // if CreateFile is false, it can still possibly create the file depending
 // on the arguments
-template <class Tag, bool CreateFile = false>
+template <class Tag, bool FileMustExist = true>
 struct sandbox_call_open : sandbox_call<Tag> {
     typedef sandbox_call<Tag> base;
     typedef PITO_RETURN(Tag)  return_type;
@@ -173,12 +173,12 @@ struct sandbox_call_open : sandbox_call<Tag> {
     template <class Arg2, class... ModeArg>
     return_type operator()(const char *path, Arg2 oflag, ModeArg... mode) {
         // can't test & with O_RDONLY because O_RDONLY can be 0
-        if (! CreateFile && ! sizeof...(mode) &&
+        if (FileMustExist && ! sizeof...(mode) &&
             ! (oflag & (O_WRONLY | O_RDWR)))
                 return this->system(path, oflag, mode...);
 
         return this->template run<
-            ! CreateFile && ! sizeof...(mode)>(path, oflag, mode...);
+            FileMustExist && ! sizeof...(mode)>(path, oflag, mode...);
     }
 };
 
