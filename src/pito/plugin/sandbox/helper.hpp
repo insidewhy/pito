@@ -62,10 +62,6 @@ struct sandbox_call : system_call_real<Tag> {
             meta::contains<file_must_exist, Options...>::value
     };
 
-    enum {
-        Idx = meta::find_int<path_index, 0, Options...>::value
-    };
-
     typedef PITO_RETURN(Tag) return_type;
 
   protected:
@@ -81,11 +77,12 @@ struct sandbox_call : system_call_real<Tag> {
     // executes the system call depending on the path argument
     template <bool FileMustExist_, class... Args>
     write_mode path_type(chilon::realpath_type& realpath, Args... args) {
-
-        // TODO: delete
-        chilon::println(color::green, this->name(), ": ", Idx);
+        enum {
+            Idx = meta::find_int<path_index, 0, Options...>::value
+        };
 
         auto path_arg = chilon::argument<Idx>(args...);
+
         if (FileMustExist_ ?
                 ! ::realpath(path_arg, realpath) :
                 ! chilon::realpath(path_arg, realpath))
