@@ -33,38 +33,24 @@ template <>
 struct system_call<fchownat> : sandbox_call<fchownat, dir_fd<0>> {};
 
 template <>
-struct system_call<open> : sandbox_call_open<open> {};
+struct system_call<open> : sandbox_call_open<open, file_must_exist> {};
 
 template <>
-struct system_call<open64> : sandbox_call_open<open64> {};
+struct system_call<open64> : sandbox_call_open<open64, file_must_exist> {};
 
 template <>
-struct system_call<openat> : system_call_real<openat> {
-    PITO_RETURN(openat) operator()(int fd, const char *path, int flags) {
-        return system(fd, path, flags);
-    }
-
-    PITO_RETURN(openat) operator()(int fd, const char *path, int flags, int mode) {
-        return system(fd, path, flags, mode);
-    }
-};
+struct system_call<openat>
+  : sandbox_call_open<openat, dir_fd<0>, file_must_exist> {};
 
 template <>
-struct system_call<openat64> : system_call_real<openat64> {
-    PITO_RETURN(openat64) operator()(int fd, const char *path, int flags) {
-        return system(fd, path, flags);
-    }
-
-    PITO_RETURN(openat64) operator()(int fd, const char *path, int flags, int mode) {
-        return system(fd, path, flags, mode);
-    }
-};
+struct system_call<openat64>
+  : sandbox_call_open<openat64, dir_fd<0>, file_must_exist> {};
 
 template <>
-struct system_call<creat> : sandbox_call_open<creat, false> {};
+struct system_call<creat> : sandbox_call_open<creat> {};
 
 template <>
-struct system_call<creat64> : sandbox_call_open<creat64, false> {};
+struct system_call<creat64> : sandbox_call_open<creat64> {};
 
 template <>
 struct system_call<fopen> : sandbox_call_fopen<fopen> {};

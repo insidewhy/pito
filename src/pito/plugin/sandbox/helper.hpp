@@ -11,6 +11,8 @@
 #include <chilon/realpath.hpp>
 #include <chilon/meta/contains.hpp>
 #include <chilon/meta/find_int.hpp>
+#include <chilon/meta/same.hpp>
+#include <chilon/meta/at.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -58,15 +60,22 @@ extern context& ctxt;
 
 template <class Tag, class... Options>
 struct sandbox_call : system_call_real<Tag> {
+    typedef PITO_RETURN(Tag) return_type;
 
+  protected:
     enum {
         FileMustExist =
             meta::contains<file_must_exist, Options...>::value
     };
 
-    typedef PITO_RETURN(Tag) return_type;
+    enum {
+        DirFdIdx = meta::find_int<dir_fd, -1, Options...>::value
+    };
 
-  protected:
+    enum {
+        PathIdx = meta::find_int<path_index, DirFdIdx + 1, Options...>::value
+    };
+
     system_call<Tag>& mixin() {
         return static_cast< system_call<Tag> & >(*this);
     }
@@ -79,14 +88,7 @@ struct sandbox_call : system_call_real<Tag> {
     // executes the system call depending on the path argument
     template <bool FileMustExist_, class... Args>
     write_mode path_type(chilon::realpath_type& realpath, Args... args) {
-        enum {
-            DirFdIdx = meta::find_int<dir_fd, -1, Options...>::value
-        };
-        enum {
-            Idx = meta::find_int<path_index, DirFdIdx + 1, Options...>::value
-        };
-
-        auto path_arg = chilon::argument<Idx>(args...);
+        auto path_arg = chilon::argument<PathIdx>(args...);
 
         if (FileMustExist_ ?
                 ! ::realpath(path_arg, realpath) :
@@ -189,25 +191,40 @@ struct sandbox_call : system_call_real<Tag> {
 
 // if FileMustExist is true, it may still be possible that the file may
 // not exist, depending on the arguments to the open call
-template <class Tag, bool FileMustExist = true>
-struct sandbox_call_open : sandbox_call<Tag> {
-    typedef sandbox_call<Tag> base;
-    typedef PITO_RETURN(Tag)  return_type;
+template <class Tag, class... Opts>
+struct sandbox_call_open : sandbox_call<Tag, Opts...> {
+    typedef sandbox_call<Tag, Opts...> base;
+    typedef PITO_RETURN(Tag)           return_type;
 
     template <class Path, class... Args>
     return_type pretend(Path, Args... args) {
         return this->system("/dev/null", args...);
     }
 
-    template <class Arg2, class... ModeArg>
-    return_type operator()(const char *path, Arg2 oflag, ModeArg... mode) {
-        // can't test & with O_RDONLY because O_RDONLY can be 0
-        if (FileMustExist && ! sizeof...(mode) &&
-            ! (oflag & (O_WRONLY | O_RDWR)))
-                return this->system(path, oflag, mode...);
+    template <class Path, class... Args>
+    return_type pretend(int const dirfd, Path, Args... args) {
+        return this->system(dirfd, "/dev/null", args...);
+    }
 
-        return this->template run<
-            FileMustExist && ! sizeof...(mode)>(path, oflag, mode...);
+    template <class... Args>
+    return_type operator()(Args... args) {
+        enum {
+            FlagIdx = meta::same<
+                typename meta::head<Args...>::type, int>::value + 1
+        };
+
+        enum {
+            FileMustExist =
+                base::FileMustExist && FlagIdx + 1 >= sizeof...(args)
+        };
+
+        auto const oflag = argument<FlagIdx>(args...);
+
+        // can't test & with O_RDONLY because O_RDONLY can be 0
+        if (FileMustExist && ! (oflag & (O_WRONLY | O_RDWR)))
+            return this->system(args...);
+        else
+            return this->template run<FileMustExist>(args...);
     }
 };
 
