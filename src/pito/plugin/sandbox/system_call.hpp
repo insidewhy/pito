@@ -64,11 +64,11 @@ struct system_call<lchown> : sandbox_call<lchown, on_symlink> {};
 
 template <>
 struct system_call<link>
-  : sandbox_call<link, path_index<1>, create_file> {};
+  : sandbox_call_link<link, path_index<1>, create_file> {};
 
 template <>
 struct system_call<linkat>
-  : sandbox_call<linkat, dir_fd<2>, create_file> {};
+  : sandbox_call_link<linkat, dir_fd<2>, create_file> {};
 
 template <>
 struct system_call<mkdir> : sandbox_call<mkdir, create_file> {};
@@ -90,19 +90,10 @@ template <>
 struct system_call<mkfifoat> : sandbox_call<mkfifoat, dir_fd<0>, create_file> {};
 
 template <>
-struct system_call<rename> : system_call_real<rename> {
-    PITO_RETURN(rename) operator()(const char *oldpath, const char *newpath) {
-        return system(oldpath, newpath);
-    }
-};
+struct system_call<rename> : sandbox_call_rename<rename> {};
 
 template <>
-struct system_call<renameat> : system_call_real<renameat> {
-    PITO_RETURN(renameat) operator()(int olddirfd, const char *oldpath,
-                                     int newdirfd, const char *newpath) {
-        return system(olddirfd, oldpath, newdirfd, newpath);
-    }
-};
+struct system_call<renameat> : sandbox_call_rename<renameat> {};
 
 template <>
 struct system_call<rmdir> : sandbox_call<rmdir> {};

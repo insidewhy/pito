@@ -31,14 +31,9 @@ namespace fs = chilon::filesystem;
 
 // options
 struct create_file;
-
 struct on_symlink;
-
-template <int i>
-struct path_index;
-
-template <int i>
-struct dir_fd;
+template <int i> struct path_index;
+template <int i> struct dir_fd;
 // end options
 
 template <class Tag>
@@ -48,10 +43,11 @@ namespace color = chilon::color;
 
 typedef char write_mode;
 
-write_mode const WRITE_MODE_UNKNOWN   = 'U';
+// unknown is A, so the alphabetical order is the same as the precedence
+write_mode const WRITE_MODE_UNKNOWN   = 'A';
+write_mode const WRITE_MODE_BLACKLIST = 'B';
 write_mode const WRITE_MODE_PRETEND   = 'P';
 write_mode const WRITE_MODE_WHITELIST = 'W';
-write_mode const WRITE_MODE_BLACKLIST = 'B';
 
 struct context {
     context();
@@ -136,11 +132,11 @@ struct sandbox_call : system_call_real<Tag> {
 
     template <bool CreateFile_, class... Args>
     write_mode path_mode(fs::realpath_type& realpath, char const *path) {
-        if (meta::contains<on_symlink, Options...>::value ?
-            ! fs::realpath_new(path, realpath) :
-            (CreateFile_ ?
+        if (CreateFile_ ?
                 ! fs::realpath(path, realpath) :
-                ! ::realpath(path, realpath)))
+                (meta::contains<on_symlink, Options...>::value ?
+                    ! fs::realpath_new(path, realpath) :
+                    ! ::realpath(path, realpath)))
         {
             chilon::println(color::red,
                 this->name(), ": error resolving path ", path);
@@ -313,6 +309,38 @@ struct sandbox_call_fopen : sandbox_call_open<Tag> {
         }
         else
             return this->run(path, mode, stream...);
+    }
+};
+
+template <class Tag, class... Options>
+struct sandbox_call_link : sandbox_call<Tag, Options...> {
+    typedef PITO_RETURN(Tag) return_type;
+
+    // TODO: stop file being hard linked to less permissive path in next 2
+    return_type operator()(const char *source, const char *dest) {
+        return this->system(source, dest);
+    }
+
+    return_type operator()(int olddirfd, const char *oldpath,
+                           int newdirfd, const char *newpath, int flags)
+    {
+        return this->system(olddirfd, oldpath, newdirfd, newpath, flags);
+    }
+};
+
+template <class Tag>
+struct sandbox_call_rename : sandbox_call<Tag> {
+    typedef PITO_RETURN(Tag) return_type;
+
+    // TODO: protect oldpath and newpath
+    return_type operator()(const char *oldpath, const char *newpath) {
+        return this->system(oldpath, newpath);
+    }
+
+    return_type operator()(int olddirfd, const char *oldpath,
+                           int newdirfd, const char *newpath)
+    {
+        return this->system(olddirfd, oldpath, newdirfd, newpath);
     }
 };
 
