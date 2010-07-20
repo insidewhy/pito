@@ -152,6 +152,30 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     template <class... Args>
+    return_type handle_path(
+        chilon::realpath_type const& realpath,
+        Args...                      args)
+    { return handle_mode(path_mode(realpath), realpath, args...); }
+
+
+    bool get_fd_path(realpath_type& realpath, int fd) const {
+        // 128-bit.. nah
+        char proc_path[sizeof(PITO_PROC_FD "/") + PITO_MAX_FD_LENGTH];
+        std::copy(PITO_PROC_FD "/", chilon::end(PITO_PROC_FD "/"), proc_path);
+
+        int const fd_length = static_cast<int>(std::log10(fd));
+        if (fd_length > PITO_MAX_FD_LENGTH)
+            return false;
+
+        char *proc_ptr = proc_path + sizeof(PITO_PROC_FD "/") + fd_length;
+
+        for (*proc_ptr = '\0'; fd > 0; fd /= 10)
+            *(--proc_ptr) = '0' + (fd % 10);
+
+        return ::realpath(proc_path, realpath);
+    }
+
+    template <class... Args>
     return_type run(Args... args) {
         return run<FileMustExist>(args...);
     }
@@ -192,23 +216,10 @@ struct sandbox_fd_call : sandbox_call<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(int fd, Args... args) {
         realpath_type realpath;
-
-        // 128-bit.. nah
-        char proc_path[sizeof(PITO_PROC_FD "/") + 21];
-        std::copy(PITO_PROC_FD "/", chilon::end(PITO_PROC_FD "/"), proc_path);
-
-        char *proc_ptr =
-            proc_path +
-            sizeof(PITO_PROC_FD "/") + static_cast<int>(std::log10(fd));
-
-        for (*proc_ptr = '\0'; fd > 0; fd /= 10)
-            *(--proc_ptr) = '0' + (fd % 10);
-
-        if (! ::realpath(proc_path, realpath))
-            return this->system(fd, args...);
+        if (! this->get_fd_path(realpath, fd))
+            return this->blacklist();
         else
-            return this->handle_mode(
-                this->path_mode(realpath), realpath, fd, args...);
+            return this->handle_path(realpath, fd, args...);
     }
 };
 

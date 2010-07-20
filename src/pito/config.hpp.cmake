@@ -22,5 +22,6 @@
 #define PITO_LD_LIBRARY_PATH "DYLD_LIBRARY_PATH"
 #define PITO_PROC_FD         "/proc/self/fd"
 #endif
+#define PITO_MAX_FD_LENGTH   21
 
 #endif

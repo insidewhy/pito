@@ -120,8 +120,6 @@ struct system_call<renameat> : system_call_real<renameat> {
 template <>
 struct system_call<rmdir> : sandbox_call<rmdir> {};
 
-// TODO: the symlink path should be measured relative to the path
-//       of the symlink argument if it is relative for the next two
 template <>
 struct system_call<symlink> : sandbox_call<symlink, path_index<1>> {};
 
