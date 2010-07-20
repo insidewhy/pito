@@ -76,8 +76,13 @@ int main(int argc, char *argv[]) {
     symlink("existing", "symlink");
 
     printf("*** fchmod\n");
-    int existing_fd = open("existing", O_RDONLY);
-    check_status("fchmod", fchmod(existing_fd, S_IRWXU));
+    int fd = open("existing", O_RDONLY);
+    check_status("fchmod", fchmod(fd, S_IRWXU));
+
+    printf("*** openat\n");
+    fd = open(".", O_RDONLY);
+    check_status("openat",
+        openat(fd, "../bumbum", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR));
 
     return ret;
 }

@@ -12,4 +12,4 @@ macro(pito_test _testType _testName _testArgs)
         DEPENDS ${_testName})
 endmacro()
 
-pito_test(sandbox break_sandbox "-b/")
+pito_test(sandbox break_sandbox "-b.")
