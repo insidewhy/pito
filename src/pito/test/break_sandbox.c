@@ -63,13 +63,12 @@ int main(int argc, char *argv[]) {
 
     if (! fork()) {
         unsetenv(PITO_LD_PRELOAD);
-        execl("/bin/touch", "/bin/touch", "execl-touch1", "execl-touch2",
-                (char *)0);
+        execl("/bin/touch", "/bin/touch", "execl-touch1", "execl-touch2", 0);
         return 0;
     }
     wait_for_return("execl touch");
 
-    symlink("file", "symlink");
+    check_status2("symlink", symlink("file", "new-symlink"));
 
     int fd = open("file", O_RDONLY);
     check_status2("fchmod", fchmod(fd, S_IRWXU));
@@ -77,6 +76,8 @@ int main(int argc, char *argv[]) {
     fd = open("dir", O_RDONLY);
     check_status2("openat",
         openat(fd, "../bumbum", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR));
+
+    check_status2("unlinkat", unlinkat(fd, "../file", 0));
 
     return ret;
 }

@@ -7,22 +7,20 @@
 #include <pito/plugin/context.hpp>
 
 #include <chilon/conf/cmd/command_line.hpp>
-#include <chilon/filesystem/current_directory.hpp>
+#include <chilon/filesystem/realpath.hpp>
 #include <chilon/print.hpp>
-#include <chilon/realpath.hpp>
 
 #include <set>
 #include <sstream>
 #include <cstring>
 
 namespace cmd_line = chilon::conf::cmd;
+namespace fs       = chilon::filesystem;
 using chilon::conf::value;
 
 extern "C" {
 
 int sandbox_init(int offset, int argc, char *argv[]) {
-    using chilon::filesystem::current_directory;
-
     struct entry_size_lessthan {
         bool operator()(std::string const& lhs, std::string const& rhs) {
             return
@@ -46,8 +44,8 @@ int sandbox_init(int offset, int argc, char *argv[]) {
         void operator()(char const * str) const {
             if (*str == '\0') return;
 
-            chilon::realpath_type realpath;
-            if (! chilon::realpath(str, realpath)) {
+            fs::realpath_type realpath;
+            if (! fs::realpath(str, realpath)) {
                 std::cerr << "can not access path: " << str << std::endl;
                 return;
             }

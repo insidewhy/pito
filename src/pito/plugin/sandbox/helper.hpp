@@ -8,11 +8,12 @@
 #include <chilon/iterator_range.hpp>
 #include <chilon/print.hpp>
 #include <chilon/argument.hpp>
-#include <chilon/realpath.hpp>
+#include <chilon/filesystem/realpath.hpp>
 #include <chilon/meta/contains.hpp>
 #include <chilon/meta/find_int.hpp>
 #include <chilon/meta/same.hpp>
 #include <chilon/meta/at.hpp>
+#include <chilon/meta/contains.hpp>
 
 #include <vector>
 #include <unordered_map>
@@ -26,15 +27,18 @@
 namespace pito { namespace sandbox {
 
 namespace meta = chilon::meta;
+namespace fs = chilon::filesystem;
 
 // options
-struct file_must_exist;
+struct create_file;
+
+struct on_symlink;
 
 template <int i>
-struct path_index : std::integral_constant<int, i> {};
+struct path_index;
 
 template <int i>
-struct dir_fd : std::integral_constant<int, i> {};
+struct dir_fd;
 // end options
 
 template <class Tag>
@@ -64,8 +68,8 @@ struct sandbox_call : system_call_real<Tag> {
 
   protected:
     enum {
-        FileMustExist =
-            meta::contains<file_must_exist, Options...>::value
+        CreateFile =
+            meta::contains<create_file, Options...>::value
     };
 
     enum { DirFdIdx = meta::find_int<dir_fd, -1, Options...>::value };
@@ -87,24 +91,25 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     // gets write mode for a path
-    template <int DirFdIdx_, bool FileMustExist_, class... Args>
+    template <int DirFdIdx_, bool CreateFile_, class... Args>
     CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ == -1)
-    call_mode(chilon::realpath_type& realpath, Args... args) {
-        return path_mode<FileMustExist_>(realpath, path_arg(args...));
+    call_mode(fs::realpath_type& realpath, Args... args) {
+        return path_mode<CreateFile_>(realpath, path_arg(args...));
     }
 
-    template <int DirFdIdx_, bool FileMustExist_, class... Args>
+    template <int DirFdIdx_, bool CreateFile_, class... Args>
     CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ > -1)
-    call_mode(chilon::realpath_type& realpath, Args... args) {
+    call_mode(fs::realpath_type& realpath, Args... args) {
         auto path = path_arg(args...);
         if (! path)
             return WRITE_MODE_UNKNOWN;
-        else if ('/' == *path)
-            return path_mode<FileMustExist_>(realpath, path);
 
         auto const dirfd = chilon::argument<DirFdIdx_>(args...);
 
-        realpath_type abs_path;
+        if ('/' == *path || AT_FDCWD == dirfd)
+            return path_mode<CreateFile_>(realpath, path);
+
+        fs::realpath_type abs_path;
         if (! get_fd_path(abs_path, dirfd))
             return WRITE_MODE_UNKNOWN;
 
@@ -115,25 +120,27 @@ struct sandbox_call : system_call_real<Tag> {
         }
         *(++abs_path_it) = '\0';
 
-        return path_mode<FileMustExist_>(realpath, abs_path);
+        return path_mode<CreateFile_>(realpath, abs_path);
     }
 
-    template <bool FileMustExist_, class... Args>
-    write_mode call_mode(chilon::realpath_type& realpath, Args... args) {
-        return call_mode<DirFdIdx, FileMustExist_>(realpath, args...);
+    template <bool CreateFile_, class... Args>
+    write_mode call_mode(fs::realpath_type& realpath, Args... args) {
+        return call_mode<DirFdIdx, CreateFile_>(realpath, args...);
     }
 
-    // test path, with default FileMustExist option
+    // test path, with default CreateFile option
     template <class... Args>
-    write_mode call_mode(chilon::realpath_type& realpath, Args... args) {
-        return call_mode<DirFdIdx, FileMustExist>(realpath, args...);
+    write_mode call_mode(fs::realpath_type& realpath, Args... args) {
+        return call_mode<DirFdIdx, CreateFile>(realpath, args...);
     }
 
-    template <bool FileMustExist_, class... Args>
-    write_mode path_mode(chilon::realpath_type& realpath, char const *path) {
-        if (FileMustExist_ ?
-                ! ::realpath(path, realpath) :
-                ! chilon::realpath(path, realpath))
+    template <bool CreateFile_, class... Args>
+    write_mode path_mode(fs::realpath_type& realpath, char const *path) {
+        if (meta::contains<on_symlink, Options...>::value ?
+            ! fs::realpath_new(path, realpath) :
+            (CreateFile_ ?
+                ! fs::realpath(path, realpath) :
+                ! ::realpath(path, realpath)))
         {
             chilon::println(color::red,
                 this->name(), ": error resolving path ", path);
@@ -142,7 +149,7 @@ struct sandbox_call : system_call_real<Tag> {
         else return absolute_path_mode(realpath);
     }
 
-    write_mode absolute_path_mode(chilon::realpath_type const& realpath) const {
+    write_mode absolute_path_mode(fs::realpath_type const& realpath) const {
         for (auto it = ctxt.paths.begin(); it != ctxt.paths.end(); ++it) {
             if (std::equal(it->begin() + 1, it->end(), realpath)) {
                 char const last = realpath[it->size() - 1];
@@ -153,21 +160,21 @@ struct sandbox_call : system_call_real<Tag> {
         return ctxt.default_mode;
     }
 
-    template <bool FileMustExist_, class... Args>
+    template <bool CreateFile_, class... Args>
     return_type run(Args... args) {
-        chilon::realpath_type realpath;
+        fs::realpath_type realpath;
 
         return handle_mode(
-            call_mode<FileMustExist_>(realpath, args...),
+            call_mode<CreateFile_>(realpath, args...),
             realpath,
             args...);
     }
 
     template <class... Args>
     return_type handle_mode(
-        write_mode const             write_type,
-        chilon::realpath_type const& realpath,
-        Args...                      args)
+        write_mode const         write_type,
+        fs::realpath_type const& realpath,
+        Args...                  args)
     {
         switch (write_type) {
             case WRITE_MODE_PRETEND:
@@ -194,12 +201,12 @@ struct sandbox_call : system_call_real<Tag> {
 
     template <class... Args>
     return_type handle_path(
-        chilon::realpath_type const& realpath,
-        Args...                      args)
+        fs::realpath_type const& realpath,
+        Args...                  args)
     { return handle_mode(absolute_path_mode(realpath), realpath, args...); }
 
 
-    bool get_fd_path(realpath_type& realpath, int fd) const {
+    bool get_fd_path(fs::realpath_type& realpath, int fd) const {
         // 128-bit.. nah
         char proc_path[sizeof(PITO_PROC_FD "/") + PITO_MAX_FD_LENGTH];
         std::copy(PITO_PROC_FD "/", chilon::end(PITO_PROC_FD "/"), proc_path);
@@ -218,7 +225,7 @@ struct sandbox_call : system_call_real<Tag> {
 
     template <class... Args>
     return_type run(Args... args) {
-        return run<FileMustExist>(args...);
+        return run<CreateFile>(args...);
     }
 
   public:
@@ -228,8 +235,8 @@ struct sandbox_call : system_call_real<Tag> {
     }
 };
 
-// if FileMustExist is true, it may still be possible that the file may
-// not exist, depending on the arguments to the open call
+// if CreateFile is true, it is still possible for the file to
+// exist, depending on the arguments to the call
 template <class Tag, class... Opts>
 struct sandbox_call_open : sandbox_call<Tag, Opts...> {
     typedef sandbox_call<Tag, Opts...> base;
@@ -253,17 +260,17 @@ struct sandbox_call_open : sandbox_call<Tag, Opts...> {
         };
 
         enum {
-            FileMustExist =
-                base::FileMustExist && FlagIdx + 1 >= sizeof...(args)
+            CreateFile =
+                base::CreateFile || FlagIdx + 1 < sizeof...(args)
         };
 
         auto const oflag = argument<FlagIdx>(args...);
 
         // can't test & with O_RDONLY because O_RDONLY can be 0
-        if (FileMustExist && ! (oflag & (O_WRONLY | O_RDWR)))
+        if (! CreateFile && ! (oflag & (O_WRONLY | O_RDWR)))
             return this->system(args...);
         else
-            return this->template run<FileMustExist>(args...);
+            return this->template run<CreateFile>(args...);
     }
 };
 
@@ -271,7 +278,7 @@ template <class Tag>
 struct sandbox_fd_call : sandbox_call<Tag> {
     template <class... Args>
     PITO_RETURN(Tag) operator()(int fd, Args... args) {
-        realpath_type realpath;
+        fs::realpath_type realpath;
         if (! this->get_fd_path(realpath, fd))
             return this->blacklist();
         else
@@ -300,7 +307,7 @@ struct sandbox_call_fopen : sandbox_call_open<Tag> {
 
         if ('r' == *mode) {
             if ('+' == *(mode + 1))
-                return this->template run<false>(path, mode, stream...);
+                return this->template run<true>(path, mode, stream...);
             else
                 return this->system(path, mode, stream...);
         }
