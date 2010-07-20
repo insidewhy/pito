@@ -72,10 +72,10 @@ int main(int argc, char *argv[]) {
     symlink("existing", "symlink");
 
     int fd = open("existing", O_RDONLY);
-    check_status("fchmod", fchmod(fd, S_IRWXU));
+    check_status2("fchmod", fchmod(fd, S_IRWXU));
 
     fd = open(".", O_RDONLY);
-    check_status("openat",
+    check_status2("openat",
         openat(fd, "../bumbum", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR));
 
     return ret;

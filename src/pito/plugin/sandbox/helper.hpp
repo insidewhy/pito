@@ -85,27 +85,29 @@ struct sandbox_call : system_call_real<Tag> {
 
     return_type blacklist() { return -1; }
 
-    // executes the system call depending on the path argument
-    template <bool FileMustExist_, class... Args>
-    write_mode path_type(chilon::realpath_type& realpath, Args... args) {
-        auto path_arg = chilon::argument<PathIdx>(args...);
+    template <class... Args>
+    char const *path_arg(Args... args) const {
+        return chilon::argument<PathIdx>(args...);
+    }
 
+    // gets write mode for a path
+    template <bool FileMustExist_, class... Args>
+    write_mode path_write_mode(chilon::realpath_type& realpath, char const *path) {
         if (FileMustExist_ ?
-                ! ::realpath(path_arg, realpath) :
-                ! chilon::realpath(path_arg, realpath))
+                ! ::realpath(path, realpath) :
+                ! chilon::realpath(path, realpath))
         {
             chilon::println(color::red,
-                this->name(), ": error resolving path ", path_arg);
+                this->name(), ": error resolving path ", path);
             return WRITE_MODE_UNKNOWN;
         }
-
-        return path_mode(realpath);
+        else return path_mode(realpath);
     }
 
     // test path, with default FileMustExist option
     template <class... Args>
-    write_mode path_type(chilon::realpath_type& realpath, Args... args) {
-        return path_type<FileMustExist>(realpath, args...);
+    write_mode path_write_mode(chilon::realpath_type& realpath, char const *path) {
+        return path_write_mode<FileMustExist>(realpath, path);
     }
 
 
@@ -125,7 +127,9 @@ struct sandbox_call : system_call_real<Tag> {
         chilon::realpath_type realpath;
 
         return handle_mode(
-            path_type<FileMustExist_>(realpath, args...), realpath, args...);
+            path_write_mode<FileMustExist_>(realpath, path_arg(args...)),
+            realpath,
+            args...);
     }
 
     template <class... Args>
