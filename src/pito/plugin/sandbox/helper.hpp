@@ -68,13 +68,9 @@ struct sandbox_call : system_call_real<Tag> {
             meta::contains<file_must_exist, Options...>::value
     };
 
-    enum {
-        DirFdIdx = meta::find_int<dir_fd, -1, Options...>::value
-    };
+    enum { DirFdIdx = meta::find_int<dir_fd, -1, Options...>::value };
 
-    enum {
-        PathIdx = meta::find_int<path_index, DirFdIdx + 1, Options...>::value
-    };
+    enum { PathIdx = meta::find_int<path_index, DirFdIdx + 1, Options...>::value };
 
     system_call<Tag>& mixin() {
         return static_cast< system_call<Tag> & >(*this);
@@ -91,8 +87,50 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     // gets write mode for a path
+    template <int DirFdIdx_, bool FileMustExist_, class... Args>
+    CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ == -1)
+    call_mode(chilon::realpath_type& realpath, Args... args) {
+        return path_mode<FileMustExist_>(realpath, path_arg(args...));
+    }
+
+    template <int DirFdIdx_, bool FileMustExist_, class... Args>
+    CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ > -1)
+    call_mode(chilon::realpath_type& realpath, Args... args) {
+        auto path = path_arg(args...);
+        if (! path)
+            return WRITE_MODE_UNKNOWN;
+        else if ('/' == *path)
+            return path_mode<FileMustExist_>(realpath, path);
+
+        auto const dirfd = chilon::argument<DirFdIdx_>(args...);
+
+        realpath_type abs_path;
+        if (! get_fd_path(abs_path, dirfd))
+            return WRITE_MODE_UNKNOWN;
+
+        auto abs_path_it = chilon::end(abs_path);
+        *abs_path_it = '/';
+        for (auto it = path; *it != '\0'; ++it) {
+            *(++abs_path_it) = *it;
+        }
+        *(++abs_path_it) = '\0';
+
+        return path_mode<FileMustExist_>(realpath, abs_path);
+    }
+
     template <bool FileMustExist_, class... Args>
-    write_mode path_write_mode(chilon::realpath_type& realpath, char const *path) {
+    write_mode call_mode(chilon::realpath_type& realpath, Args... args) {
+        return call_mode<DirFdIdx, FileMustExist_>(realpath, args...);
+    }
+
+    // test path, with default FileMustExist option
+    template <class... Args>
+    write_mode call_mode(chilon::realpath_type& realpath, Args... args) {
+        return call_mode<DirFdIdx, FileMustExist>(realpath, args...);
+    }
+
+    template <bool FileMustExist_, class... Args>
+    write_mode path_mode(chilon::realpath_type& realpath, char const *path) {
         if (FileMustExist_ ?
                 ! ::realpath(path, realpath) :
                 ! chilon::realpath(path, realpath))
@@ -101,17 +139,10 @@ struct sandbox_call : system_call_real<Tag> {
                 this->name(), ": error resolving path ", path);
             return WRITE_MODE_UNKNOWN;
         }
-        else return path_mode(realpath);
+        else return absolute_path_mode(realpath);
     }
 
-    // test path, with default FileMustExist option
-    template <class... Args>
-    write_mode path_write_mode(chilon::realpath_type& realpath, char const *path) {
-        return path_write_mode<FileMustExist>(realpath, path);
-    }
-
-
-    write_mode path_mode(chilon::realpath_type const& realpath) const {
+    write_mode absolute_path_mode(chilon::realpath_type const& realpath) const {
         for (auto it = ctxt.paths.begin(); it != ctxt.paths.end(); ++it) {
             if (std::equal(it->begin() + 1, it->end(), realpath)) {
                 char const last = realpath[it->size() - 1];
@@ -127,7 +158,7 @@ struct sandbox_call : system_call_real<Tag> {
         chilon::realpath_type realpath;
 
         return handle_mode(
-            path_write_mode<FileMustExist_>(realpath, path_arg(args...)),
+            call_mode<FileMustExist_>(realpath, args...),
             realpath,
             args...);
     }
@@ -148,11 +179,15 @@ struct sandbox_call : system_call_real<Tag> {
             case WRITE_MODE_WHITELIST:
                 return this->system(args...);
 
-            default:
+            case WRITE_MODE_BLACKLIST:
                 errno = EACCES;
                 chilon::println(color::red,
                     this->name(), ": ", realpath, " DENIED");
 
+                return this->mixin().blacklist();
+
+            default:
+                errno = EACCES;
                 return this->mixin().blacklist();
         }
     }
@@ -161,7 +196,7 @@ struct sandbox_call : system_call_real<Tag> {
     return_type handle_path(
         chilon::realpath_type const& realpath,
         Args...                      args)
-    { return handle_mode(path_mode(realpath), realpath, args...); }
+    { return handle_mode(absolute_path_mode(realpath), realpath, args...); }
 
 
     bool get_fd_path(realpath_type& realpath, int fd) const {

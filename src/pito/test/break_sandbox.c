@@ -69,12 +69,12 @@ int main(int argc, char *argv[]) {
     }
     wait_for_return("execl touch");
 
-    symlink("existing", "symlink");
+    symlink("file", "symlink");
 
-    int fd = open("existing", O_RDONLY);
+    int fd = open("file", O_RDONLY);
     check_status2("fchmod", fchmod(fd, S_IRWXU));
 
-    fd = open(".", O_RDONLY);
+    fd = open("dir", O_RDONLY);
     check_status2("openat",
         openat(fd, "../bumbum", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR));
 
