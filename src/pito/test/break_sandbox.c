@@ -79,5 +79,8 @@ int main(int argc, char *argv[]) {
 
     check_status2("unlinkat", unlinkat(fd, "../file", 0));
 
+    check_status2("rename", rename("file", "write/read_file"));
+    check_status2("rename", rename("write/write_file", "write_file"));
+
     return ret;
 }

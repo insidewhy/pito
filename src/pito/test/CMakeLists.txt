@@ -8,6 +8,7 @@ macro(pito_test _testType _testName _testArgs)
         rm -rf .tmp && mkdir .tmp && cd .tmp &&
         touch file && ln -s file symlink && mkdir dir &&
         mkdir write && ln -s ../file write/symlink &&
+        touch write/write_file &&
         LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/plugin
                 ${CMAKE_BINARY_DIR}/pito ${_testType}
                 ${_testArgs} ${CMAKE_CURRENT_BINARY_DIR}/${_testName}
