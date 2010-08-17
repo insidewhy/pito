@@ -88,19 +88,22 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     // gets write mode for a path
-    template <int DirFdIdx_, class... RunOpts, class... Args>
-    CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ == -1)
+    template <class... RunOpts, class... Args>
+    CHILON_RETURN_NOT_REQUIRE(write_mode,
+        meta::contains_i_template<dir_fd, RunOpts...>)
     call_mode(fs::realpath_type& realpath, Args... args) {
         return path_mode<RunOpts...>(realpath, path_arg(args...));
     }
 
-    template <int DirFdIdx_, class... RunOpts, class... Args>
-    CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ > -1)
+    template <class... RunOpts, class... Args>
+    CHILON_RETURN_REQUIRE(write_mode,
+        meta::contains_i_template<dir_fd, RunOpts...>)
     call_mode(fs::realpath_type& realpath, Args... args) {
         auto path = path_arg(args...);
         if (! path)
             return WRITE_MODE_UNKNOWN;
 
+        enum { DirFdIdx_ = meta::find_int<dir_fd, -1, RunOpts...>::value };
         auto const dirfd = chilon::argument<DirFdIdx_>(args...);
 
         if ('/' == *path || AT_FDCWD == dirfd)
@@ -211,7 +214,7 @@ struct sandbox_call : system_call_real<Tag> {
         fs::realpath_type realpath;
 
         return handle_mode(
-            call_mode<DirFdIdx, RunOpts...>(realpath, args...),
+            call_mode<RunOpts..., Options...>(realpath, args...),
             realpath,
             args...);
     }
@@ -223,8 +226,8 @@ struct sandbox_call : system_call_real<Tag> {
     }
 };
 
-// if CreateFile is true, it is still possible for the file to
-// exist, depending on the arguments to the call
+// if create_file is used it is still possible for the file to exist
+// depending on the arguments to the call
 template <class Tag, class... Opts>
 struct sandbox_call_open : sandbox_call<Tag, Opts...> {
     typedef sandbox_call<Tag, Opts...> base;
