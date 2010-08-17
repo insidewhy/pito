@@ -201,8 +201,13 @@ struct sandbox_call : system_call_real<Tag> {
         return ::realpath(proc_path, realpath);
     }
 
-    template <bool CreateFile_, class... Args>
+    template <class RunOpts, class... Args>
     return_type run(Args... args) {
+        enum {
+            CreateFile_ = CreateFile |
+                meta::contains_expand<create_file, RunOpts>::value
+        };
+
         fs::realpath_type realpath;
 
         return handle_mode(
@@ -213,7 +218,7 @@ struct sandbox_call : system_call_real<Tag> {
 
     template <class... Args>
     return_type run(Args... args) {
-        return run<CreateFile>(args...);
+        return run<options<>>(args...);
     }
 
   public:
@@ -257,8 +262,10 @@ struct sandbox_call_open : sandbox_call<Tag, Opts...> {
         // can't test & with O_RDONLY because O_RDONLY can be 0
         if (! CreateFile && ! (oflag & (O_WRONLY | O_RDWR)))
             return this->system(args...);
+        else if (CreateFile)
+            return this->template run<options<create_file>>(args...);
         else
-            return this->template run<CreateFile>(args...);
+            return this->template run(args...);
     }
 };
 
@@ -295,7 +302,7 @@ struct sandbox_call_fopen : sandbox_call_open<Tag> {
 
         if ('r' == *mode) {
             if ('+' == *(mode + 1))
-                return this->template run<true>(path, mode, stream...);
+                return this->template run<options<create_file>>(path, mode, stream...);
             else
                 return this->system(path, mode, stream...);
         }
