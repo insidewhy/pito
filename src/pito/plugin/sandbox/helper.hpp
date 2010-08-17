@@ -39,6 +39,9 @@ template <int i> struct dir_fd;
 template <class Tag>
 struct system_call;
 
+template <class... T>
+struct options;
+
 namespace color = chilon::color;
 
 typedef char write_mode;
@@ -62,7 +65,6 @@ template <class Tag, class... Options>
 struct sandbox_call : system_call_real<Tag> {
     typedef PITO_RETURN(Tag) return_type;
 
-  protected:
     enum {
         CreateFile =
             meta::contains<create_file, Options...>::value
@@ -72,14 +74,13 @@ struct sandbox_call : system_call_real<Tag> {
 
     enum { PathIdx = meta::find_int<path_index, DirFdIdx + 1, Options...>::value };
 
+  private:
     system_call<Tag>& mixin() {
         return static_cast< system_call<Tag> & >(*this);
     }
 
     template <class... Args>
     return_type pretend(Args... args) const { return 0; }
-
-    return_type blacklist() { return -1; }
 
     template <class... Args>
     char const *path_arg(Args... args) const {
@@ -120,17 +121,6 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     template <bool CreateFile_, class... Args>
-    write_mode call_mode(fs::realpath_type& realpath, Args... args) {
-        return call_mode<DirFdIdx, CreateFile_>(realpath, args...);
-    }
-
-    // test path, with default CreateFile option
-    template <class... Args>
-    write_mode call_mode(fs::realpath_type& realpath, Args... args) {
-        return call_mode<DirFdIdx, CreateFile>(realpath, args...);
-    }
-
-    template <bool CreateFile_, class... Args>
     write_mode path_mode(fs::realpath_type& realpath, char const *path) {
         if (CreateFile_ ?
                 ! fs::realpath(path, realpath) :
@@ -154,16 +144,6 @@ struct sandbox_call : system_call_real<Tag> {
         }
 
         return ctxt.default_mode;
-    }
-
-    template <bool CreateFile_, class... Args>
-    return_type run(Args... args) {
-        fs::realpath_type realpath;
-
-        return handle_mode(
-            call_mode<CreateFile_>(realpath, args...),
-            realpath,
-            args...);
     }
 
     template <class... Args>
@@ -195,12 +175,14 @@ struct sandbox_call : system_call_real<Tag> {
         }
     }
 
+  protected:
     template <class... Args>
     return_type handle_path(
         fs::realpath_type const& realpath,
         Args...                  args)
     { return handle_mode(absolute_path_mode(realpath), realpath, args...); }
 
+    return_type blacklist() { return -1; }
 
     bool get_fd_path(fs::realpath_type& realpath, int fd) const {
         // 128-bit.. nah
@@ -217,6 +199,16 @@ struct sandbox_call : system_call_real<Tag> {
             *(--proc_ptr) = '0' + (fd % 10);
 
         return ::realpath(proc_path, realpath);
+    }
+
+    template <bool CreateFile_, class... Args>
+    return_type run(Args... args) {
+        fs::realpath_type realpath;
+
+        return handle_mode(
+            call_mode<DirFdIdx, CreateFile_>(realpath, args...),
+            realpath,
+            args...);
     }
 
     template <class... Args>
