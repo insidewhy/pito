@@ -88,13 +88,13 @@ struct sandbox_call : system_call_real<Tag> {
     }
 
     // gets write mode for a path
-    template <int DirFdIdx_, bool CreateFile_, class... Args>
+    template <int DirFdIdx_, class... RunOpts, class... Args>
     CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ == -1)
     call_mode(fs::realpath_type& realpath, Args... args) {
-        return path_mode<CreateFile_>(realpath, path_arg(args...));
+        return path_mode<RunOpts...>(realpath, path_arg(args...));
     }
 
-    template <int DirFdIdx_, bool CreateFile_, class... Args>
+    template <int DirFdIdx_, class... RunOpts, class... Args>
     CHILON_RETURN_REQUIRE_I(write_mode, DirFdIdx_ > -1)
     call_mode(fs::realpath_type& realpath, Args... args) {
         auto path = path_arg(args...);
@@ -104,7 +104,7 @@ struct sandbox_call : system_call_real<Tag> {
         auto const dirfd = chilon::argument<DirFdIdx_>(args...);
 
         if ('/' == *path || AT_FDCWD == dirfd)
-            return path_mode<CreateFile_>(realpath, path);
+            return path_mode<RunOpts...>(realpath, path);
 
         fs::realpath_type abs_path;
         if (! get_fd_path(abs_path, dirfd))
@@ -117,11 +117,16 @@ struct sandbox_call : system_call_real<Tag> {
         }
         *(++abs_path_it) = '\0';
 
-        return path_mode<CreateFile_>(realpath, abs_path);
+        return path_mode<RunOpts...>(realpath, abs_path);
     }
 
-    template <bool CreateFile_, class... Args>
+    template <class... RunOpts, class... Args>
     write_mode path_mode(fs::realpath_type& realpath, char const *path) {
+        enum {
+            CreateFile_ = CreateFile |
+                meta::contains<create_file, RunOpts...>::value
+        };
+
         if (CreateFile_ ?
                 ! fs::realpath(path, realpath) :
                 (meta::contains<on_symlink, Options...>::value ?
@@ -203,15 +208,10 @@ struct sandbox_call : system_call_real<Tag> {
 
     template <class... RunOpts, class... Args>
     return_type run(Args... args) {
-        enum {
-            CreateFile_ = CreateFile |
-                meta::contains<create_file, RunOpts...>::value
-        };
-
         fs::realpath_type realpath;
 
         return handle_mode(
-            call_mode<DirFdIdx, CreateFile_>(realpath, args...),
+            call_mode<DirFdIdx, RunOpts...>(realpath, args...),
             realpath,
             args...);
     }
