@@ -219,7 +219,7 @@ struct sandbox_call : system_call_real<Tag> {
   public:
     template <class... Args>
     return_type operator()(Args... args) {
-        return run<void>(args...);
+        return run(args...);
     }
 };
 
