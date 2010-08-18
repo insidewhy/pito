@@ -65,14 +65,7 @@ template <class Tag, class... Options>
 struct sandbox_call : system_call_real<Tag> {
     typedef PITO_RETURN(Tag) return_type;
 
-    enum {
-        CreateFile =
-            meta::contains<create_file, Options...>::value
-    };
-
-    enum { DirFdIdx = meta::find_int<dir_fd, -1, Options...>::value };
-
-    enum { PathIdx = meta::find_int<path_index, DirFdIdx + 1, Options...>::value };
+    enum { CreateFile = meta::contains<create_file, Options...>::value };
 
   private:
     system_call<Tag>& mixin() {
@@ -82,53 +75,21 @@ struct sandbox_call : system_call_real<Tag> {
     template <class... Args>
     return_type pretend(Args... args) const { return 0; }
 
-    template <class... Args>
+    template <class... RunOpts, class... Args>
     char const *path_arg(Args... args) const {
+        enum {
+            DirFdIdx = meta::find_int<dir_fd, -1, RunOpts...>::value
+        };
+        enum {
+            PathIdx = meta::find_int<path_index, DirFdIdx + 1, RunOpts...>::value
+        };
+
         return chilon::argument<PathIdx>(args...);
-    }
-
-    // gets write mode for a path
-    template <class... RunOpts, class... Args>
-    CHILON_RETURN_NOT_REQUIRE(write_mode,
-        meta::contains_i_template<dir_fd, RunOpts...>)
-    call_mode(fs::realpath_type& realpath, Args... args) {
-        return path_mode<RunOpts...>(realpath, path_arg(args...));
-    }
-
-    template <class... RunOpts, class... Args>
-    CHILON_RETURN_REQUIRE(write_mode,
-        meta::contains_i_template<dir_fd, RunOpts...>)
-    call_mode(fs::realpath_type& realpath, Args... args) {
-        auto path = path_arg(args...);
-        if (! path)
-            return WRITE_MODE_UNKNOWN;
-
-        enum { DirFdIdx_ = meta::find_int<dir_fd, -1, RunOpts...>::value };
-        auto const dirfd = chilon::argument<DirFdIdx_>(args...);
-
-        if ('/' == *path || AT_FDCWD == dirfd)
-            return path_mode<RunOpts...>(realpath, path);
-
-        fs::realpath_type abs_path;
-        if (! get_fd_path(abs_path, dirfd))
-            return WRITE_MODE_UNKNOWN;
-
-        auto abs_path_it = chilon::end(abs_path);
-        *abs_path_it = '/';
-        for (auto it = path; *it != '\0'; ++it) {
-            *(++abs_path_it) = *it;
-        }
-        *(++abs_path_it) = '\0';
-
-        return path_mode<RunOpts...>(realpath, abs_path);
     }
 
     template <class... RunOpts, class... Args>
     write_mode path_mode(fs::realpath_type& realpath, char const *path) {
-        enum {
-            CreateFile_ = CreateFile |
-                meta::contains<create_file, RunOpts...>::value
-        };
+        enum { CreateFile_ = meta::contains<create_file, RunOpts...>::value };
 
         if (CreateFile_ ?
                 ! fs::realpath(path, realpath) :
@@ -160,15 +121,25 @@ struct sandbox_call : system_call_real<Tag> {
         fs::realpath_type const& realpath,
         Args...                  args)
     {
+        if (WRITE_MODE_WHITELIST == write_type)
+            return this->system(args...);
+        else
+            return handle_sandboxed_mode(write_type, realpath, args...);
+    }
+
+  protected:
+    template <class... Args>
+    return_type handle_sandboxed_mode(
+        write_mode const         write_type,
+        fs::realpath_type const& realpath,
+        Args...                  args)
+    {
         switch (write_type) {
             case WRITE_MODE_PRETEND:
                 chilon::println(color::red,
                     this->name(), ": ", realpath, " PRETEND");
 
                 return this->mixin().pretend(args...);
-
-            case WRITE_MODE_WHITELIST:
-                return this->system(args...);
 
             case WRITE_MODE_BLACKLIST:
                 errno = EACCES;
@@ -183,7 +154,45 @@ struct sandbox_call : system_call_real<Tag> {
         }
     }
 
-  protected:
+    // gets write mode for a path
+    // NOTE: call_mode must be past all options, including those already
+    //       specified in class, so that SFINA can be used to distinguish
+    //       between regular and fd calls.
+    template <class... RunOpts, class... Args>
+    CHILON_RETURN_NOT_REQUIRE(write_mode,
+        meta::contains_i_template<dir_fd, RunOpts...>)
+    call_mode(fs::realpath_type& realpath, Args... args) {
+        return path_mode<RunOpts...>(realpath, path_arg<RunOpts...>(args...));
+    }
+
+    template <class... RunOpts, class... Args>
+    CHILON_RETURN_REQUIRE(write_mode,
+        meta::contains_i_template<dir_fd, RunOpts...>)
+    call_mode(fs::realpath_type& realpath, Args... args) {
+        auto path = path_arg<RunOpts...>(args...);
+        if (! path)
+            return WRITE_MODE_UNKNOWN;
+
+        enum { DirFdIdx_ = meta::find_int<dir_fd, -1, RunOpts...>::value };
+        auto const dirfd = chilon::argument<DirFdIdx_>(args...);
+
+        if ('/' == *path || AT_FDCWD == dirfd)
+            return path_mode<RunOpts...>(realpath, path);
+
+        fs::realpath_type abs_path;
+        if (! get_fd_path(abs_path, dirfd))
+            return WRITE_MODE_UNKNOWN;
+
+        auto abs_path_it = chilon::end(abs_path);
+        *abs_path_it = '/';
+        for (auto it = path; *it != '\0'; ++it) {
+            *(++abs_path_it) = *it;
+        }
+        *(++abs_path_it) = '\0';
+
+        return path_mode<RunOpts...>(realpath, abs_path);
+    }
+
     template <class... Args>
     return_type handle_path(
         fs::realpath_type const& realpath,
@@ -209,12 +218,12 @@ struct sandbox_call : system_call_real<Tag> {
         return ::realpath(proc_path, realpath);
     }
 
-    template <class... RunOpts, class... Args>
+    template <class... AdditionalOptions, class... Args>
     return_type run(Args... args) {
         fs::realpath_type realpath;
 
         return handle_mode(
-            call_mode<RunOpts..., Options...>(realpath, args...),
+            call_mode<AdditionalOptions..., Options...>(realpath, args...),
             realpath,
             args...);
     }
@@ -250,10 +259,7 @@ struct sandbox_call_open : sandbox_call<Tag, Opts...> {
                 typename meta::head<Args...>::type, int>::value + 1
         };
 
-        enum {
-            CreateFile =
-                base::CreateFile || FlagIdx + 1 < sizeof...(args)
-        };
+        enum { CreateFile = base::CreateFile || FlagIdx + 1 < sizeof...(args) };
 
         auto const oflag = argument<FlagIdx>(args...);
 
@@ -329,8 +335,21 @@ template <class Tag>
 struct sandbox_call_rename : sandbox_call<Tag> {
     typedef PITO_RETURN(Tag) return_type;
 
-    // TODO: protect oldpath and newpath
     return_type operator()(const char *oldpath, const char *newpath) {
+        fs::realpath_type realpath;
+        auto write_type = this->template
+            call_mode<on_symlink>(realpath, oldpath);
+
+        if (WRITE_MODE_WHITELIST != write_type)
+            return this->handle_sandboxed_mode(
+                write_type, realpath, oldpath, newpath);
+
+        write_type = this->template call_mode<create_file>(realpath, newpath);
+
+        if (WRITE_MODE_WHITELIST != write_type)
+            return this->handle_sandboxed_mode(
+                write_type, realpath, oldpath, newpath);
+
         return this->system(oldpath, newpath);
     }
 
