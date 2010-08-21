@@ -15,7 +15,7 @@ head {
 }
 
 %p {
-    Pito is a set of c++0x header libraries for writing system call interceptor shared libraries based on LD_PRELOAD wrappers. Pito also provides the program &ldquo;pito&rdquo; for loading unix commands with such wrappers. &ldquo;pito&rdquo; can also capable of passing command line arguments to loaded plugins.
+    Pito is a set of c++0x header libraries for writing system call interceptor shared libraries based on LD_PRELOAD wrappers. Pito also provides the program &ldquo;pito&rdquo; for loading unix commands with such wrappers. &ldquo;pito&rdquo; is also capable of passing command line arguments to loaded libraries.
 }
 
 %h2 1: Using pito and loading plugins
