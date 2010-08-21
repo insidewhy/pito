@@ -78,9 +78,14 @@ int main(int argc, char *argv[]) {
         openat(fd, "../bumbum", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR));
 
     check_status2("unlinkat", unlinkat(fd, "../file", 0));
+    close(fd);
 
     check_status2("rename", rename("file", "write/read_file"));
     check_status2("rename", rename("write/write_file", "write_file"));
+
+    fd = open(".", O_RDONLY);
+    check_status2("renameat", renameat(fd, "file", fd, "write/read_file"));
+    check_status2("renameat", renameat(fd, "write/write_file", fd, "write_file"));
 
     return ret;
 }

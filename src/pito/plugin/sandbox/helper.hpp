@@ -89,12 +89,10 @@ struct sandbox_call : system_call_real<Tag> {
 
     template <class... RunOpts, class... Args>
     write_mode path_mode(fs::realpath_type& realpath, char const *path) {
-        enum { CreateFile_ = meta::contains<create_file, RunOpts...>::value };
-
-        if (CreateFile_ ?
-                ! fs::realpath(path, realpath) :
-                (meta::contains<on_symlink, Options...>::value ?
-                    ! fs::realpath_new(path, realpath) :
+        if (meta::contains<on_symlink, Options...>::value ?
+                ! fs::realpath_new(path, realpath) :
+                (meta::contains<create_file, RunOpts...>::value ?
+                    ! fs::realpath(path, realpath) :
                     ! ::realpath(path, realpath)))
         {
             chilon::println(color::red,
@@ -173,8 +171,8 @@ struct sandbox_call : system_call_real<Tag> {
         if (! path)
             return WRITE_MODE_UNKNOWN;
 
-        enum { DirFdIdx_ = meta::find_int<dir_fd, -1, RunOpts...>::value };
-        auto const dirfd = chilon::argument<DirFdIdx_>(args...);
+        enum { DirFdIdx = meta::find_int<dir_fd, -1, RunOpts...>::value };
+        auto const dirfd = chilon::argument<DirFdIdx>(args...);
 
         if ('/' == *path || AT_FDCWD == dirfd)
             return path_mode<RunOpts...>(realpath, path);
@@ -356,6 +354,21 @@ struct sandbox_call_rename : sandbox_call<Tag> {
     return_type operator()(int olddirfd, const char *oldpath,
                            int newdirfd, const char *newpath)
     {
+        fs::realpath_type realpath;
+        auto write_type = this->template
+            call_mode<on_symlink, dir_fd<0> >(realpath, olddirfd, oldpath);
+
+        if (WRITE_MODE_WHITELIST != write_type)
+            return this->handle_sandboxed_mode(
+                write_type, realpath, oldpath, newpath);
+
+        write_type = this->template
+            call_mode<create_file, dir_fd<0> >(realpath, newdirfd, newpath);
+
+        if (WRITE_MODE_WHITELIST != write_type)
+            return this->handle_sandboxed_mode(
+                write_type, realpath, oldpath, newpath);
+
         return this->system(olddirfd, oldpath, newdirfd, newpath);
     }
 };
