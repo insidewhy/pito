@@ -304,12 +304,12 @@ struct sandbox_call_fopen : sandbox_call_open<Tag> {
 
         if ('r' == *mode) {
             if ('+' == *(mode + 1))
-                return this->template run<create_file>(path, mode, stream...);
+                return this->template run<>(path, mode, stream...);
             else
                 return this->system(path, mode, stream...);
         }
         else
-            return this->run(path, mode, stream...);
+            return this->template run<create_file>(path, mode, stream...);
     }
 };
 
