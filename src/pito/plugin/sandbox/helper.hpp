@@ -68,13 +68,6 @@ struct sandbox_call : system_call_real<Tag> {
     enum { CreateFile = meta::contains<create_file, Options...>::value };
 
   private:
-    system_call<Tag>& mixin() {
-        return static_cast< system_call<Tag> & >(*this);
-    }
-
-    template <class... Args>
-    return_type pretend(Args... args) const { return 0; }
-
     template <class... RunOpts, class... Args>
     char const *path_arg(Args... args) const {
         enum {
@@ -127,6 +120,13 @@ struct sandbox_call : system_call_real<Tag> {
 
   protected:
     template <class... Args>
+    return_type pretend(Args... args) const { return 0; }
+
+    system_call<Tag>& mixin() {
+        return static_cast< system_call<Tag> & >(*this);
+    }
+
+    template <class... Args>
     return_type handle_sandboxed_mode(
         write_mode const         write_type,
         fs::realpath_type const& realpath,
@@ -135,20 +135,20 @@ struct sandbox_call : system_call_real<Tag> {
         switch (write_type) {
             case WRITE_MODE_PRETEND:
                 chilon::println(color::red,
-                    this->name(), ": ", realpath, " PRETEND");
+                    this->name(), ": ", realpath, " pretend");
 
                 return this->mixin().pretend(args...);
 
             case WRITE_MODE_BLACKLIST:
                 errno = EACCES;
                 chilon::println(color::red,
-                    this->name(), ": ", realpath, " DENIED");
+                    this->name(), ": ", realpath, " denied");
 
                 return this->mixin().blacklist();
 
             default:
-                errno = EACCES;
-                return this->mixin().blacklist();
+                // something messed up so let the system call set the error
+                return this->mixin().system(args...);
         }
     }
 
@@ -317,15 +317,59 @@ template <class Tag, class... Options>
 struct sandbox_call_link : sandbox_call<Tag, Options...> {
     typedef PITO_RETURN(Tag) return_type;
 
-    // TODO: stop file being hard linked to less permissive path in next 2
+    template <class... Args>
+    return_type handle_source_type(
+        write_mode const          write_type,
+        fs::realpath_type const& realpath,
+        Args...                  args)
+    {
+        if (WRITE_MODE_BLACKLIST == write_type) {
+            chilon::println(color::red,
+                this->name(), ": ", realpath, " link denied");
+            return this->mixin().blacklist();
+        }
+        else if (WRITE_MODE_PRETEND == write_type) {
+            chilon::println(color::red,
+                this->name(), ": ", realpath, " link pretend");
+            return this->mixin().pretend(args...);
+        }
+        else return this->system(args...);
+    }
+
+    // stop file being hard linked to less permissive path
     return_type operator()(const char *source, const char *dest) {
-        return this->system(source, dest);
+        fs::realpath_type realpath;
+        auto write_type = this->template
+            call_mode<create_file>(realpath, dest);
+
+        if (WRITE_MODE_WHITELIST != write_type)
+            return this->handle_sandboxed_mode(
+                write_type, realpath, source, dest);
+
+        write_type = this->template call_mode<>(realpath, source);
+
+        return handle_source_type(write_type, realpath, source, dest);
     }
 
     return_type operator()(int olddirfd, const char *oldpath,
                            int newdirfd, const char *newpath, int flags)
     {
-        return this->system(olddirfd, oldpath, newdirfd, newpath, flags);
+        fs::realpath_type realpath;
+        auto write_type = this->template
+            call_mode<create_file, dir_fd<0>>(realpath, newdirfd, newpath);
+
+        if (WRITE_MODE_WHITELIST != write_type)
+            return this->handle_sandboxed_mode(
+                write_type, realpath, olddirfd,
+                oldpath, newdirfd, newpath, flags);
+
+        write_type = flags == AT_SYMLINK_FOLLOW ?
+            this->template call_mode<dir_fd<0>>(realpath, olddirfd, oldpath) :
+            this->template call_mode<dir_fd<0>, on_symlink>(
+                realpath, olddirfd, oldpath);
+
+        return handle_source_type(
+            write_type, realpath, olddirfd, oldpath, newdirfd, newpath, flags);
     }
 };
 
@@ -360,14 +404,14 @@ struct sandbox_call_rename : sandbox_call<Tag> {
 
         if (WRITE_MODE_WHITELIST != write_type)
             return this->handle_sandboxed_mode(
-                write_type, realpath, oldpath, newpath);
+                write_type, realpath, olddirfd, oldpath, newdirfd, newpath);
 
         write_type = this->template
             call_mode<create_file, dir_fd<0> >(realpath, newdirfd, newpath);
 
         if (WRITE_MODE_WHITELIST != write_type)
             return this->handle_sandboxed_mode(
-                write_type, realpath, oldpath, newpath);
+                write_type, realpath, olddirfd, oldpath, newdirfd, newpath);
 
         return this->system(olddirfd, oldpath, newdirfd, newpath);
     }

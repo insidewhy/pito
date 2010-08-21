@@ -80,10 +80,13 @@ int main(int argc, char *argv[]) {
     check_status2("unlinkat", unlinkat(fd, "../file", 0));
     close(fd);
 
+    fd = open(".", O_RDONLY);
+    check_status2("link", link("file", "write/file_link"));
+    check_status2("linkat", linkat(fd, "file", fd, "write/file_link", 0));
+
     check_status2("rename", rename("file", "write/read_file"));
     check_status2("rename", rename("write/write_file", "write_file"));
 
-    fd = open(".", O_RDONLY);
     check_status2("renameat", renameat(fd, "file", fd, "write/read_file"));
     check_status2("renameat", renameat(fd, "write/write_file", fd, "write_file"));
 

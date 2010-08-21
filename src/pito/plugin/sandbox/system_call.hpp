@@ -63,8 +63,7 @@ template <>
 struct system_call<lchown> : sandbox_call<lchown, on_symlink> {};
 
 template <>
-struct system_call<link>
-  : sandbox_call_link<link, path_index<1>, create_file> {};
+struct system_call<link> : sandbox_call_link<link> {};
 
 template <>
 struct system_call<linkat>
