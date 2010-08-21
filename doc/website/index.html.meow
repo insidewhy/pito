@@ -17,10 +17,10 @@ head {
     Pito is a set of c++ libraries to make writing system call interceptors based on LD_PRELOAD wrappers easy.
 }
 
-%h2 Example 1: Using the pito log plugin
+%h2 1: Using pito and loading plugins
 
 %code(source=sh) <<EOF
-    james@turbstick chilon % pito log ls hello 
+    % pito log ls hello
     2112 - calling opendir(hello) - 0x24a1d30
     2112 - calling readdir(0x24a1d30) - 0x24a1d58
     2112 - calling readdir(0x24a1d30) - 0x24a1d70
@@ -29,20 +29,31 @@ head {
     2112 - calling readdir(0x24a1d30) - 0
     baby  kitten
 
-    pito 0.9.1
+    % pito -h
+    pito 0.9.9
     usage: pito [arguments] <wrapper library name> [wrapper arguments] <program> [program arguments]
      -v [ --verbose ]       increase verbosity
      -h [ --help ]          display help
      -s [ --silent ]        remain silent
      -l [ --library-dir ]   pito library directory
 
-    james@turbstick pito % pito sandbox -h
+    % pito sandbox -h
     pito sandbox arguments
      -b [ --blacklist ]   disallow writes to this directory
      -w [ --whitelist ]   allow writes to this directory
      -p [ --pretend ]     pretend to allow writes to this directory
      -v [ --verbose ]     increase verbosity
      -h [ --help ]        display help
+
+    % pito sandbox -b/ touch cock
+    open: /tmp/cock denied
+    utimensat: /tmp/cock denied
+    touch: cannot touch `cock': Permission denied
+
+    % pito sandbox -w blah -v touch cock
+    default: P
+    white list: /tmp/blah
+    open: /tmp/cock pretend
 EOF
 
 %h2 The log plugin:

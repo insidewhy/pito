@@ -19,7 +19,7 @@
  *          LD_PRELOAD=/usr/local/mylibdir/libpito_log.so ls -R
  */
 
-#define PITO_PROGRAM_VERSION "0.9.1"
+#define PITO_PROGRAM_VERSION "0.9.9"
 
 namespace pito {
 
