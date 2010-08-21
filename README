@@ -12,3 +12,8 @@ Alternatively you can set options after configuring with cmake:
     cd src/pito
     ./configure
     ccmake .obj
+
+Please see the website for documentation:
+    http://chilon.net/pito
+
+If you have meow you can "cd doc && make" to generate the website locally.

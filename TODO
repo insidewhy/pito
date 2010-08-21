@@ -1,6 +1,2 @@
- * modify environment for execve
- * convert execl, execle and execlp to execv, execve and execvp respectively
- * sandbox
-    * parse environment arguments
-    * enforce sandbox on system calls
+ * Redirect execlp and execle through execve to enforce environment.
  * redirect - plugin for redirecting writes to another directory hierachy

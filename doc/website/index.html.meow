@@ -14,7 +14,7 @@ head {
 }
 
 %p {
-    Pito is a set of c++ libraries to make writing system call interceptors based on LD_PRELOAD wrappers easy.
+    Pito is a set of c++0x header libraries for writing system call interceptor shared libraries based on LD_PRELOAD wrappers. Pito also provides the program &ldquo;pito&rdquo; for loading unix commands with such wrappers. &ldquo;pito&rdquo; can also capable of passing command line arguments to loaded plugins.
 }
 
 %h2 1: Using pito and loading plugins
@@ -56,13 +56,29 @@ head {
     open: /tmp/cock pretend
 EOF
 
-%h2 The log plugin:
+%h2 The log plugin
 
 %h3 "plugin/log/helper.hpp - print system calls names, arguments and return values."
 
 %code(file=../../src/pito/plugin/log/helper.hpp)
 
-%h3 "plugin/log/libc.cpp - redirect system calls to helper.cpp objects:"
+%h3 "plugin/log/libc.cpp - redirect system calls to helper.cpp objects"
 
 %code(file=../../src/pito/plugin/log/libc.cpp)
+
+%h2 Writing plugins
+
+%p Until this website is updated to include documentation for writing plugins the best way to start is to copy one of the existing plugins from git out of src/pito/plugins. This plugin can be added to the build process of pito by adding its directory name as for the existing plugins in src/pito/plugins/CMakeLists.txt. The log plugin is the simplest to copy and the sandbox plugin shows how plugins may received and use command line arguments.
+
+%h2 Protected environment variables
+
+%p Any environment variables beginning with &ldquo;PITO_&rdquo (in addition to the LD_PRELOAD environment variable); will be protected by the underlying library code and passed on in the environment unmodified to all instances of a library. These variables can be used in a plugin's init function to pass options set by command line arguments.
+
+%h2 Supported operating systems
+
+pito is primarily developed and tested on Linux. It has also been developed and tested on OS X. It may also work on other unix environments, any help testing and/or porting pito to other operating systems would be greatly appreciated.
+
+%h2 Supported development environments.
+
+pito uses C++0x features already available in certain compilers. It is primarily developed using gcc 4.5 and has also been tested using gcc 4.4.
 
