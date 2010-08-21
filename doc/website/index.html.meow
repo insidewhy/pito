@@ -11,6 +11,7 @@ head {
 #links {
     links:
     %a(href=http://gitorious.org/pito/pito/trees/master) source
+    %a(href=https://sourceforge.net/projects/pito/files/) download
 }
 
 %p {
