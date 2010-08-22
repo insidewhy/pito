@@ -30,8 +30,9 @@ struct system_call : system_call_real<Tag> {
 
     template <class... Args>
     PITO_RETURN(Tag) operator()(Args... args) {
+        chilon::print(std::cerr, chilon::color::blue);
 #ifdef PITO_LOG_PID
-        chilon::print(std::cerr, chilon::color::blue, ctxt.pid_, " - ");
+        chilon::print(std::cerr, ctxt.pid_, ": ");
 #endif
         // name() inherited from system_call_real, contains name of
         // system call as cstring. this-> is necessary due to call

@@ -71,10 +71,10 @@ struct sandbox_call : system_call_real<Tag> {
     template <class... RunOpts, class... Args>
     char const *path_arg(Args... args) const {
         enum {
-            DirFdIdx = meta::find_int<dir_fd, -1, RunOpts...>::value
-        };
-        enum {
-            PathIdx = meta::find_int<path_index, DirFdIdx + 1, RunOpts...>::value
+            PathIdx = meta::find_int<
+                path_index,
+                meta::find_int<dir_fd, -1, RunOpts...>::value + 1,
+                RunOpts...>::value
         };
 
         return chilon::argument<PathIdx>(args...);

@@ -22,12 +22,12 @@ head {
 
 %code(source=sh) <<EOF
     % pito log ls hello
-    2112 - calling opendir(hello) - 0x24a1d30
-    2112 - calling readdir(0x24a1d30) - 0x24a1d58
-    2112 - calling readdir(0x24a1d30) - 0x24a1d70
-    2112 - calling readdir(0x24a1d30) - 0x24a1d88
-    2112 - calling readdir(0x24a1d30) - 0x24a1da0
-    2112 - calling readdir(0x24a1d30) - 0
+    2112: calling opendir(hello) - 0x24a1d30
+    2112: calling readdir(0x24a1d30) - 0x24a1d58
+    2112: calling readdir(0x24a1d30) - 0x24a1d70
+    2112: calling readdir(0x24a1d30) - 0x24a1d88
+    2112: calling readdir(0x24a1d30) - 0x24a1da0
+    2112: calling readdir(0x24a1d30) - 0
     baby  kitten
 
     % pito -h
