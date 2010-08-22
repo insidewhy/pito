@@ -5,12 +5,12 @@ body {
 
 h1 {
     margin: 0;
-    padding: 15px 0px 5px 0px;
+    padding: 8px 0px 5px 0px;
 }
 
 h2 {
     margin: 0;
-    padding: 15px 0px 5px 0px;
+    padding: 8px 0px 5px 0px;
     font-size: 140%;
 }
 
@@ -35,7 +35,7 @@ a:active {
 }
 
 p {
-    margin: 0px 0px 20px 0px;
+    margin: 0px 0px 10px 0px;
     padding: 0;
 }
 
