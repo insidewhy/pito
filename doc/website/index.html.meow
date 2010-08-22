@@ -69,7 +69,7 @@ EOF
 
 %h2 Writing plugins
 
-%p Until this website is updated to include documentation for writing plugins the best way to start is to copy one of the existing plugins from git out of src/pito/plugins. This plugin can be added to the build process of pito by adding its directory name as for the existing plugins in src/pito/plugins/CMakeLists.txt. The log plugin is the simplest to copy and the sandbox plugin shows how plugins may received and use command line arguments.
+%p Until this website is updated to include documentation for writing plugins the best way to start is to copy one of the existing plugins from git out of src/pito/plugins. This plugin can be added to the build process of pito by adding its directory name as for the existing plugins in src/pito/plugins/CMakeLists.txt. The log plugin is the simplest to copy and the sandbox plugin shows how plugins may receive and use command line arguments.
 
 %h2 Protected environment variables
 
