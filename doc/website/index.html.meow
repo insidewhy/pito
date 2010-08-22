@@ -73,7 +73,7 @@ EOF
 
 %h2 Protected environment variables
 
-%p Any environment variables beginning with &ldquo;PITO_&rdquo (in addition to the LD_PRELOAD environment variable); will be protected by the underlying library code and passed on in the environment unmodified to all instances of a library. These variables can be used in a plugin's init function to pass options set by command line arguments.
+%p Any environment variables beginning with &ldquo;PITO_&rdquo (in addition to the LD_PRELOAD environment variable) will be protected by the underlying library code and passed on in the environment unmodified to all instances of a library. These variables can be used in a plugin's init function to pass options set by command line arguments.
 
 %h2 Supported operating systems
 
