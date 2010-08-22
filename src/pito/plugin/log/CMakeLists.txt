@@ -1,1 +1,1 @@
-interceptor_lib(log 0.9.1 libc.cpp)
+interceptor_lib(log 1.0.0 libc.cpp)

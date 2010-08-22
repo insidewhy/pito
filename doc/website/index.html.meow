@@ -15,20 +15,14 @@ head {
 }
 
 %p {
-    Pito is a set of c++0x header libraries for writing system call interceptor shared libraries based on LD_PRELOAD wrappers. Pito also provides the program &ldquo;pito&rdquo; for loading unix commands with such wrappers. &ldquo;pito&rdquo; is capable of passing command line arguments to loaded libraries.
+    Pito is a set of c++0x header libraries for writing system call interceptor shared libraries based on LD_PRELOAD wrappers. Pito also provides the program &ldquo;pito&rdquo; for loading programs with such wrappers. &ldquo;pito&rdquo; is capable of passing command line arguments to loaded libraries.
 }
 
 %h2 1: Using pito and loading plugins
 
 %code(source=sh) <<EOF
-    % pito log ls hello
-    2112: calling opendir(hello) - 0x24a1d30
-    2112: calling readdir(0x24a1d30) - 0x24a1d58
-    2112: calling readdir(0x24a1d30) - 0x24a1d70
-    2112: calling readdir(0x24a1d30) - 0x24a1d88
-    2112: calling readdir(0x24a1d30) - 0x24a1da0
-    2112: calling readdir(0x24a1d30) - 0
-    baby  kitten
+    % pito log touch cock
+    2041: calling open(cock, 2369, 438) - 3
 
     % pito -h
     pito 0.9.9
@@ -37,6 +31,16 @@ head {
      -h [ --help ]          display help
      -s [ --silent ]        remain silent
      -l [ --library-dir ]   pito library directory
+
+    % pito -v log ls hello
+    load interceptor library (/usr/lib/libpito_log.so)
+    2112: calling opendir(hello) - 0x24a1d30
+    2112: calling readdir(0x24a1d30) - 0x24a1d58
+    2112: calling readdir(0x24a1d30) - 0x24a1d70
+    2112: calling readdir(0x24a1d30) - 0x24a1d88
+    2112: calling readdir(0x24a1d30) - 0x24a1da0
+    2112: calling readdir(0x24a1d30) - 0
+    baby  kitten
 
     % pito sandbox -h
     pito sandbox arguments
@@ -79,7 +83,12 @@ EOF
 
 pito is primarily developed and tested on Linux. It has also been developed and tested on OS X. It may also work on other unix environments, any help testing and/or porting pito to other operating systems would be greatly appreciated.
 
-%h2 Supported development environments.
+%h2 Supported development environments
 
 pito uses C++0x features already available in certain compilers. It is primarily developed using gcc 4.5 and has also been tested using gcc 4.4.
 
+%h2 Pito packages
+%ul {
+    %li ArchLinux - pito-git is in the AUR.
+    %li Other - must compile from source. Instructions in README.
+}
